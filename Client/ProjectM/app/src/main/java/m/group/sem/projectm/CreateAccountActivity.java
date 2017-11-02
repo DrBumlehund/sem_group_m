@@ -6,6 +6,8 @@ import android.view.View;
 
 public class CreateAccountActivity extends AppCompatActivity {
 
+    private static final String tag = "CreateAccountActivity";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -13,8 +15,7 @@ public class CreateAccountActivity extends AppCompatActivity {
     }
 
 
-
-    public void createAccount(View view){
+    public void createAccount(View view) {
         //TODO: implement a way to create the account
     }
 

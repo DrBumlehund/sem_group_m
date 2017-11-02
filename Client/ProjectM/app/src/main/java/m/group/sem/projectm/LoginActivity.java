@@ -3,21 +3,20 @@ package m.group.sem.projectm;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.content.pm.PackageManager;
-import android.support.annotation.NonNull;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.app.LoaderManager.LoaderCallbacks;
-
 import android.content.CursorLoader;
+import android.content.Intent;
 import android.content.Loader;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
-
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.annotation.NonNull;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
@@ -28,7 +27,10 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +40,8 @@ import static android.Manifest.permission.READ_CONTACTS;
  * A login screen that offers login via email/password.
  */
 public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<Cursor> {
+
+    private static final String tag = "LoginActivity";
 
     /**
      * Id to identity READ_CONTACTS permission request.
@@ -49,7 +53,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      * TODO: remove after connecting to a real authentication system.
      */
     private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "foo@example.com:hello", "bar@example.com:world"
+            "han:9379c98db8165036cf2315f548165a19c740d531f9b2e49bafbd82cb46cbfa96", "thomas:91fe4a2035d1847fdfd7076a8bf1aef87207b77c17334a08bd80c91ebb11dff5"
     };
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
@@ -94,6 +98,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mProgressView = findViewById(R.id.login_progress);
     }
 
+
     private void populateAutoComplete() {
         if (!mayRequestContacts()) {
             return;
@@ -137,6 +142,20 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 
+    public void logoClick(View view) {
+        Toast.makeText(getApplicationContext(), "I literally stole this, and we should definitely remove this before hand-in", Toast.LENGTH_LONG).show();
+    }
+
+    public void createNewAccount(View view) {
+        Intent intent = new Intent(this, CreateAccountActivity.class);
+        startActivity(intent);
+    }
+
+    public void continueToMainActivity(int id) {
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra("id", id);
+        startActivity(intent);
+    }
 
     /**
      * Attempts to sign in or register the account specified by the login form.
@@ -171,7 +190,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             mEmailView.setError(getString(R.string.error_field_required));
             focusView = mEmailView;
             cancel = true;
-        } else if (!isEmailValid(email)) {
+        } else if (!isUsernameValid(email)) {
             mEmailView.setError(getString(R.string.error_invalid_email));
             focusView = mEmailView;
             cancel = true;
@@ -185,19 +204,41 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
+            password = hashPassword(password);
+            mAuthTask = new UserLoginTask(email, password, this);
             mAuthTask.execute((Void) null);
         }
     }
 
-    private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
-        return email.contains("@");
+    private boolean isUsernameValid(String username) {
+        return username.length() >= 3;
     }
 
     private boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
-        return password.length() > 4;
+        return password.length() >= 6;
+    }
+
+    /**
+     * hashes the password using the SHA-256 algorithm
+     *
+     * @param password the password to be hashed
+     * @return the hash of the password
+     */
+    private String hashPassword(String password) {
+        byte[] hashBytes = null;
+        // shitty (or sneaky) attempt at salting the password :)
+        password += password.substring(0, 4);
+        MessageDigest md;
+        try {
+            md = MessageDigest.getInstance("SHA-256");
+            md.update(password.getBytes());
+            hashBytes = md.digest();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        return String.format("%064x", new java.math.BigInteger(1, hashBytes)).toLowerCase();
     }
 
     /**
@@ -296,35 +337,36 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
 
+        private int id;
+
         private final String mEmail;
         private final String mPassword;
+        private final LoginActivity mCallbackRef;
 
-        UserLoginTask(String email, String password) {
+        UserLoginTask(String email, String password, LoginActivity callbackRef) {
             mEmail = email;
             mPassword = password;
+            mCallbackRef = callbackRef;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
-
             try {
                 // Simulate network access.
                 Thread.sleep(2000);
             } catch (InterruptedException e) {
                 return false;
             }
-
             for (String credential : DUMMY_CREDENTIALS) {
                 String[] pieces = credential.split(":");
                 if (pieces[0].equals(mEmail)) {
                     // Account exists, return true if the password matches.
+                    id = 1337;
                     return pieces[1].equals(mPassword);
                 }
             }
-
-            // TODO: register the new account here.
-            return true;
+            return false;
         }
 
         @Override
@@ -333,7 +375,9 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             showProgress(false);
 
             if (success) {
-                finish();
+                //TODO: Change view to MainView
+                mCallbackRef.continueToMainActivity(id);
+//                finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
