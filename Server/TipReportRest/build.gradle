@@ -14,7 +14,7 @@ apply plugin: 'org.springframework.boot'
 
 jar {
     baseName = 'TipReportRest'
-    version =  '1.o'
+    version =  '1.0'
 }
 
 repositories {

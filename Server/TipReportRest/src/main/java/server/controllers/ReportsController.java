@@ -24,7 +24,7 @@ public class ReportsController {
 	}
 	
 	public ReportsController(DatabaseFacade databaseFacade) {
-		this.databaseFacade = databaseFacade;
+		this.databaseFacade = databaseFacade;getReports(true);
 	}
 
 	@RequestMapping(value = "/reports", params = {"only-coordinates"})

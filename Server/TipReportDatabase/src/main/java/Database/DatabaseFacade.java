@@ -95,7 +95,7 @@ public class DatabaseFacade {
 
 	public ArrayList<Report> getReportCoordinates() {
 		try (Connection connection = DriverManager.getConnection(DB_URL,USER,PASS)){
-			String sql = "SELECT id, longitude, latitude FROM reports;";
+			String sql = "SELECT id, longitude, latitude FROM report;";
 			PreparedStatement statement = connection.prepareStatement(sql);
 			ResultSet result  = statement.executeQuery();
 
@@ -109,6 +109,7 @@ public class DatabaseFacade {
 	        	report.setLongitude(longitude);
 	        	report.setLatitude(latitude);
 	        	report.setId(id);
+	        	reports.add(report);
 	        }
 			
 			return reports;
@@ -136,12 +137,22 @@ public class DatabaseFacade {
 	        	double latitude = result.getInt("latitude");
 	        	double longitude = result.getInt("longitude");
 	        	String comment = result.getString("comment");
-	        	
+	        	int userId = result.getInt("id_user");
+	        	String username = result.getString("username");
+
 	        	Report report = new Report();
+	        	if (userId != 0) {
+	        		User user = new User();
+	        		user.setId(userId);
+	        		user.setUsername(username);
+	        		report.setUser(user);
+	        	}
+	        	
 	        	report.setLongitude(longitude);
 	        	report.setLatitude(latitude);
 	        	report.setId(id);
 	        	report.setComment(comment);
+	        	reports.add(report);
 	        }
 
 			// Second result set will contain the comments
