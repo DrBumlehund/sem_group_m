@@ -6,13 +6,13 @@ import java.util.ArrayList;
 public class Report implements Serializable {
 	private static final long serialVersionUID = 5972999490607843127L;
 	private User user;
+	private int id;
 	private double latitude;
 	private double longitude;
 	private String Comment;
 	private ArrayList<Byte[]> images = new ArrayList<Byte[]>();
-	private int upvotes;
-	private int downvotes;
-	private ArrayList<String> userComments = new ArrayList<String>();
+	private ArrayList<Vote> votes;
+	private ArrayList<UserComment> userComments = new ArrayList<UserComment>();
 	public User getUser() {
 		return user;
 	}
@@ -31,24 +31,6 @@ public class Report implements Serializable {
 	public void setLongitude(double longitude) {
 		this.longitude = longitude;
 	}
-	public int getUpvotes() {
-		return upvotes;
-	}
-	public void setUpvotes(int upvotes) {
-		this.upvotes = upvotes;
-	}
-	public int getDownvotes() {
-		return downvotes;
-	}
-	public void setDownvotes(int downvotes) {
-		this.downvotes = downvotes;
-	}
-	public ArrayList<String> getUserComments() {
-		return userComments;
-	}
-	public void setUserComments(ArrayList<String> userComments) {
-		this.userComments = userComments;
-	}
 	public String getComment() {
 		return Comment;
 	}
@@ -60,6 +42,24 @@ public class Report implements Serializable {
 	}
 	public void setImages(ArrayList<Byte[]> images) {
 		this.images = images;
+	}
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public ArrayList<Vote> getVotes() {
+		return votes;
+	}
+	public void setVotes(ArrayList<Vote> votes) {
+		this.votes = votes;
+	}
+	public ArrayList<UserComment> getUserComments() {
+		return userComments;
+	}
+	public void setUserComments(ArrayList<UserComment> userComments) {
+		this.userComments = userComments;
 	}
 	
 }
