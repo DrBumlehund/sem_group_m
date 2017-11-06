@@ -79,3 +79,15 @@ google-services.json
 freeline.py
 freeline/
 freeline_project_description.json
+
+
+# Eclipse
+.metadata
+.project
+.settings/
+tmp/
+*.bak
+*.swp
+*~.nib
+.loadpath
+.recommenders
