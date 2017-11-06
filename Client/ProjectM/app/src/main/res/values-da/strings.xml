@@ -5,13 +5,12 @@
     <string name="prompt_password">Kodeord</string>
     <string name="action_sign_in">Log ind</string>
     <string name="action_sign_in_short">Log ind</string>
-    <string name="error_invalid_email">Email adressen er ugyldig</string>
+    <string name="error_invalid_email">Brugernavnet er ugyldig</string>
     <string name="error_invalid_password">Kodeordet er for kort</string>
     <string name="error_incorrect_password">Kodeordet er forkert</string>
     <string name="error_field_required">Dette felt skal udfyldes</string>
     <string name="permission_rationale">Adgang til kontakter er nødvendigt for at få automatisk email udfyldelse</string>
-    <string name="create_acc_password">Kodeord</string>
     <string name="create_acc_create_btn">Opret Konto</string>
-    <string name="create_acc_username">Brugernavn</string>
     <string name="action_create_user">Opret ny konto</string>
+    <string name="create_pwd_no_match">Kodeordene er ikke ens</string>
 </resources>

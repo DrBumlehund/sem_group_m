@@ -18,6 +18,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -29,8 +30,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,17 +70,18 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     private UserLoginTask mAuthTask = null;
 
     // UI references.
-    private AutoCompleteTextView mEmailView;
+    private AutoCompleteTextView mUsernameView;
     private EditText mPasswordView;
     private View mProgressView;
     private View mLoginFormView;
+    private AccountHelper mAccountHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
         // Set up the login form.
-        mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
+        mUsernameView = (AutoCompleteTextView) findViewById(R.id.email);
         populateAutoComplete();
 
         mPasswordView = (EditText) findViewById(R.id.password);
@@ -96,6 +106,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+        mAccountHelper = new AccountHelper();
     }
 
 
@@ -115,7 +126,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             return true;
         }
         if (shouldShowRequestPermissionRationale(READ_CONTACTS)) {
-            Snackbar.make(mEmailView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
+            Snackbar.make(mUsernameView, R.string.permission_rationale, Snackbar.LENGTH_INDEFINITE)
                     .setAction(android.R.string.ok, new View.OnClickListener() {
                         @Override
                         @TargetApi(Build.VERSION_CODES.M)
@@ -151,9 +162,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         startActivity(intent);
     }
 
-    public void continueToMainActivity(int id) {
+    public void continueToMainActivity(int id, String username) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.putExtra("id", id);
+        intent.putExtra("username", username);
         startActivity(intent);
     }
 
@@ -168,31 +180,31 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
 
         // Reset errors.
-        mEmailView.setError(null);
+        mUsernameView.setError(null);
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String email = mEmailView.getText().toString();
+        String username = mUsernameView.getText().toString();
         String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
         View focusView = null;
 
         // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
+        if (!TextUtils.isEmpty(password) && !mAccountHelper.isPasswordValid(password)) {
             mPasswordView.setError(getString(R.string.error_invalid_password));
             focusView = mPasswordView;
             cancel = true;
         }
 
         // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
+        if (TextUtils.isEmpty(username)) {
+            mUsernameView.setError(getString(R.string.error_field_required));
+            focusView = mUsernameView;
             cancel = true;
-        } else if (!isUsernameValid(email)) {
-            mEmailView.setError(getString(R.string.error_invalid_email));
-            focusView = mEmailView;
+        } else if (!mAccountHelper.isUsernameValid(username)) {
+            mUsernameView.setError(getString(R.string.error_invalid_email));
+            focusView = mUsernameView;
             cancel = true;
         }
 
@@ -204,42 +216,56 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            password = hashPassword(password);
-            mAuthTask = new UserLoginTask(email, password, this);
-            mAuthTask.execute((Void) null);
+
+            // hash password
+            password = mAccountHelper.hashPassword(password);
+
+            //TODO: Remove UserLoginTask if Volley is actually async.
+//            mAuthTask = new UserLoginTask(email, password, this);
+//            mAuthTask.execute((Void) null);
+
+            RequestQueue queue = Volley.newRequestQueue(this);
+
+            String url = "http://51.254.127.173:8080/api/login?username=" + username + "&password=" + password;
+
+            JsonObjectRequest jsObjRequest = new JsonObjectRequest
+                    (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            showProgress(false);
+                            int id = -1;
+                            String username = "";
+                            try {
+                                Log.d(tag, "received id: " + response.get("id"));
+                                id = response.getInt("id");
+                                username = response.getString("username");
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            continueToMainActivity(id, username);
+                        }
+                    }, new Response.ErrorListener() {
+
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            error.printStackTrace();
+                            String response = new String(error.networkResponse.data);
+                            showProgress(false);
+
+                            if (response.contains("Incorrect username or password")) {
+                                mPasswordView.setError(getString(R.string.error_incorrect_password));
+                                mPasswordView.requestFocus();
+                            } else {
+                                Toast.makeText(getApplicationContext(), getText(R.string.connection_err) + "\nerror code: " + error.networkResponse.statusCode, Toast.LENGTH_LONG).show();
+                            }
+                        }
+
+                    });
+            queue.add(jsObjRequest);
         }
     }
 
-    private boolean isUsernameValid(String username) {
-        return username.length() >= 3;
-    }
-
-    private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        return password.length() >= 6;
-    }
-
-    /**
-     * hashes the password using the SHA-256 algorithm
-     *
-     * @param password the password to be hashed
-     * @return the hash of the password
-     */
-    private String hashPassword(String password) {
-        byte[] hashBytes = null;
-        // shitty (or sneaky) attempt at salting the password :)
-        password += password.substring(0, 4);
-        MessageDigest md;
-        try {
-            md = MessageDigest.getInstance("SHA-256");
-            md.update(password.getBytes());
-            hashBytes = md.digest();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-
-        return String.format("%064x", new java.math.BigInteger(1, hashBytes)).toLowerCase();
-    }
 
     /**
      * Shows the progress UI and hides the login form.
@@ -317,7 +343,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                 new ArrayAdapter<>(LoginActivity.this,
                         android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
 
-        mEmailView.setAdapter(adapter);
+        mUsernameView.setAdapter(adapter);
     }
 
 
@@ -339,19 +365,24 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         private int id;
 
-        private final String mEmail;
+        private final String mUsername;
         private final String mPassword;
-        private final LoginActivity mCallbackRef;
+        private final LoginActivity mCallback;
 
         UserLoginTask(String email, String password, LoginActivity callbackRef) {
-            mEmail = email;
+            mUsername = email;
             mPassword = password;
-            mCallbackRef = callbackRef;
+            mCallback = callbackRef;
         }
 
         @Override
         protected Boolean doInBackground(Void... params) {
             // TODO: attempt authentication against a network service.
+
+
+            String url = "http://51.254.127.173:8080/api/users?username=" + mUsername + "&password=" + mPassword;
+
+
             try {
                 // Simulate network access.
                 Thread.sleep(2000);
@@ -360,7 +391,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             }
             for (String credential : DUMMY_CREDENTIALS) {
                 String[] pieces = credential.split(":");
-                if (pieces[0].equals(mEmail)) {
+                if (pieces[0].equals(mUsername)) {
                     // Account exists, return true if the password matches.
                     id = 1337;
                     return pieces[1].equals(mPassword);
@@ -376,7 +407,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
             if (success) {
                 //TODO: Change view to MainView
-                mCallbackRef.continueToMainActivity(id);
+                mCallback.continueToMainActivity(id, mUsername);
 //                finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
