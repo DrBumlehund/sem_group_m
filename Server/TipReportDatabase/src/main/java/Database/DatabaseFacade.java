@@ -42,7 +42,7 @@ public class DatabaseFacade {
 
 	public User addUser(String username, String password) {
 		try (Connection connection = DriverManager.getConnection(DB_URL,USER,PASS)){
-			String sql = "INSERT INTO User (username, password) VALUES (?, ?);";
+			String sql = "INSERT INTO user (username, password) VALUES (?, ?);";
 			PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS );
 			statement.setString(1, username);
 			statement.setString(2, password);
@@ -73,7 +73,7 @@ public class DatabaseFacade {
 
 	public User getUser(String username, String password) {
 		try (Connection connection = DriverManager.getConnection(DB_URL,USER,PASS)){
-			String sql = "SELECT * FROM User WHERE username = ? && password = ?;";
+			String sql = "SELECT * FROM user WHERE username = ? && password = ?;";
 			PreparedStatement statement = connection.prepareStatement(sql);
 			statement.setString(1, username);
 			statement.setString(2, password);
@@ -84,6 +84,10 @@ public class DatabaseFacade {
 			
 	        while (result.next()) {
 	        	user.setId(result.getInt("id"));
+	        }
+	        
+	        if (user.getId() == 0) {
+	        	throw new WebException("Incorrect username or password.");
 	        }
 			
 			return user;
