@@ -24,7 +24,7 @@ public class ReportsController {
 	}
 	
 	public ReportsController(DatabaseFacade databaseFacade) {
-		this.databaseFacade = databaseFacade;getReports(true);
+		this.databaseFacade = databaseFacade;
 	}
 
 	@RequestMapping(value = "/reports", params = {"only-coordinates"})
@@ -39,6 +39,5 @@ public class ReportsController {
 	@RequestMapping(value = "/reports", params = {"latitude", "longitude", "comment", "user-id"})
 	public Report addReport (@RequestParam(value="latitude") double latitude, @RequestParam(value="longitude") double longitude, @RequestParam(value="comment") String comment, @RequestParam(value="userId") int userId) {
 		return databaseFacade.addReport(latitude, longitude, comment, userId);
-	}
-	
+	}	
 }

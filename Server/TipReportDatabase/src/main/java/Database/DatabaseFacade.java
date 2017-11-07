@@ -260,5 +260,62 @@ public class DatabaseFacade {
 			throw new WebException(e);
 		}
 	}
+
+	public UserComment addComment(int reportId, String comment, int userId) {
+		try (Connection connection = DriverManager.getConnection(DB_URL,USER,PASS)){
+			String sql = "INSERT INTO comment_report (id_user, id_report, comment) VALUES (?, ?, ?)";
+			PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+			statement.setInt(1, userId);
+			statement.setInt(2, reportId);
+			statement.setString(3, comment);
+			int affectedRows  = statement.executeUpdate();
+
+			if (affectedRows == 0) {
+				throw new SQLException("Create comment failed, no rows affected.");
+			}
+			
+			UserComment userComment = new UserComment();
+			userComment.setComment(comment);
+			userComment.setUserId(userId);
+	        try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+	            if (generatedKeys.next()) {
+	            	userComment.setId(generatedKeys.getInt(1));
+	            }
+	            else {
+	                throw new SQLException("Create user failed, no ID obtained.");
+	            }
+	        }
+	        
+			return userComment;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new WebException(e);
+		}
+	}
+
+	public Vote addVote(int reportId, boolean upvote, int userId) {
+		try (Connection connection = DriverManager.getConnection(DB_URL,USER,PASS)){
+			String sql = "INSERT INTO vote_report (id_user, id_report, upvote) VALUES (?, ?, ?)" + 
+					" ON DUPLICATE KEY UPDATE (upvote=VALUES(upvote));";
+			PreparedStatement statement = connection.prepareStatement(sql);
+			statement.setInt(1, userId);
+			statement.setInt(2, reportId);
+			statement.setBoolean(3, upvote);
+			int affectedRows  = statement.executeUpdate();
+
+			if (affectedRows == 0) {
+				throw new SQLException("Create vote failed, no rows affected.");
+			}
+			
+			Vote vote = new Vote();
+			vote.setUpvote(upvote);
+			vote.setUserId(userId);
+	        
+			return vote;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new WebException(e);
+		}
+	}
 }
  
