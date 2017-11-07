@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -26,7 +27,11 @@
         </activity>
         <activity
             android:name=".CreateAccountActivity"
-            android:theme="@style/AppTheme" />
+            android:label="@string/app_name">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="m.group.sem.projectm.LoginActivity" />
+        </activity>
         <activity
             android:name=".MainActivity"
             android:label="@string/title_activity_main"
@@ -38,13 +43,16 @@
         </activity>
 
         <meta-data
-        android:name="com.google.android.gms.version"
-        android:value="@integer/google_play_services_version" />
-
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCKB5_T5rMwOqkZQsDY4Humn909EI0GOH8"/>
+            android:value="AIzaSyCKB5_T5rMwOqkZQsDY4Humn909EI0GOH8" />
 
+        <activity
+            android:name=".MainActivityDrawer"
+            android:label="@string/title_activity_main_drawer"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>

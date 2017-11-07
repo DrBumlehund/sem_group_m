@@ -12,9 +12,13 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 
+import m.group.sem.projectm.models.User;
+
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private static final String tag = "MainActivity";
+
+    private User mUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,11 +37,12 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         });
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        Log.d(tag, "received id: " + getIntent().getIntExtra("id", 0));
-
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        mUser = new User(getIntent().getIntExtra("id", -1), getIntent().getStringExtra("username"));
+        Log.d(tag, "Received user: " + mUser.toString());
     }
 
     @Override
