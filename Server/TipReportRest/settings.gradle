@@ -1,4 +1,6 @@
 rootProject.name = 'TipReportRest'
 
 include 'TipReportDatabase'
+include 'TipReportCommon'
 project(':TipReportDatabase').projectDir = new File('../TipReportDatabase')
+project(':TipReportCommon').projectDir = new File('../TipReportCommon')

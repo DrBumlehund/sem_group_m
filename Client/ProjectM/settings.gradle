@@ -1,1 +1,4 @@
 include ':app'
+
+include 'TipReportCommon'
+project(':TipReportCommon').projectDir = new File('../../Server/TipReportCommon')

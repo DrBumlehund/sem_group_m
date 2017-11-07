@@ -1,2 +1,5 @@
 
 rootProject.name = 'TipReportDatabase'
+
+include 'TipReportCommon'
+project(':TipReportCommon').projectDir = new File('../TipReportCommon')
