@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".LoginActivity"
+            android:name=".Activities.LoginActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme">
             <intent-filter>
@@ -26,20 +26,20 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".CreateAccountActivity"
+            android:name=".Activities.CreateAccountActivity"
             android:label="@string/app_name">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="m.group.sem.projectm.LoginActivity" />
+                android:value="m.group.sem.projectm.Activities.LoginActivity" />
         </activity>
         <activity
-            android:name=".MainActivity"
+            android:name=".Activities.MainActivity"
             android:label="@string/title_activity_main"
-            android:parentActivityName=".LoginActivity"
+            android:parentActivityName=".Activities.LoginActivity"
             android:theme="@style/AppTheme">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="m.group.sem.projectm.LoginActivity" />
+                android:value="m.group.sem.projectm.Activities.LoginActivity" />
         </activity>
 
         <meta-data
@@ -50,7 +50,7 @@
             android:value="AIzaSyCKB5_T5rMwOqkZQsDY4Humn909EI0GOH8" />
 
         <activity
-            android:name=".MainActivityDrawer"
+            android:name=".Activities.MainActivityDrawer"
             android:label="@string/title_activity_main_drawer"
             android:theme="@style/AppTheme"></activity>
     </application>

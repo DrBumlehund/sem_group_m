@@ -1,4 +1,4 @@
-package m.group.sem.projectm;
+package m.group.sem.projectm.Activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -42,6 +42,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import m.group.sem.projectm.AccountHelper;
+import m.group.sem.projectm.R;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
