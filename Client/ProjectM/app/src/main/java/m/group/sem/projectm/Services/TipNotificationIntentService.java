@@ -2,19 +2,15 @@ package m.group.sem.projectm.Services;
 
 
 import android.app.IntentService;
-import android.app.PendingIntent;
-import android.app.Service;
 import android.content.Intent;
 import android.util.Log;
 
-import com.google.android.gms.location.ActivityRecognition;
-import com.google.android.gms.location.ActivityRecognitionClient;
 import com.google.android.gms.location.ActivityRecognitionResult;
 import com.google.android.gms.location.DetectedActivity;
-import com.google.android.gms.tasks.Task;
 
-import java.io.Serializable;
 import java.util.Date;
+
+import m.group.sem.projectm.TipNotificationHandler;
 
 public class TipNotificationIntentService extends IntentService {
 
@@ -32,15 +28,15 @@ public class TipNotificationIntentService extends IntentService {
             ActivityRecognitionResult result = ActivityRecognitionResult.extractResult(intent);
             int type = result.getMostProbableActivity().getType();
             int activityConfidence = result.getMostProbableActivity().getConfidence();
-            String activityName = getType(type);
 
-            Log.i("Mine", activityName);
+            Log.i("Mine", getType(type));
 
             ActivityRecognitionContainer activityRecognitionContainer = new ActivityRecognitionContainer();
-            activityRecognitionContainer.type = type;
+            activityRecognitionContainer.type = ActivityRecognitionContainer.ActivityType.values()[type];
             activityRecognitionContainer.confidence = activityConfidence;
-            activityRecognitionContainer.activityName = activityName;
             activityRecognitionContainer.timestamp = new Date().toString();
+
+            TipNotificationHandler.getInstance().ActivityDetected(activityRecognitionContainer);
         }
     }
 
@@ -61,10 +57,4 @@ public class TipNotificationIntentService extends IntentService {
             return "";
     }
 
-    private class ActivityRecognitionContainer implements Serializable {
-        public int type;
-        public int confidence;
-        public String activityName;
-        public String timestamp;
-    }
 }
