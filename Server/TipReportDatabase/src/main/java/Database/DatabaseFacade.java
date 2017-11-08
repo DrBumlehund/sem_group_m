@@ -11,6 +11,7 @@ import java.sql.Statement;
 import java.sql.Types;
 import java.util.ArrayList;
 
+import Exceptions.WebException;
 import Model.Report;
 import Model.User;
 import Model.UserComment;

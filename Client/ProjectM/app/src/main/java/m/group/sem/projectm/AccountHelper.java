@@ -12,12 +12,12 @@ public class AccountHelper {
     public AccountHelper() {
     }
 
-    protected boolean isUsernameValid(String username) {
+    public boolean isUsernameValid(String username) {
         //TODO: Introduce some kind of SQL injection protection
         return username.length() >= 3;
     }
 
-    protected boolean isPasswordValid(String password) {
+    public boolean isPasswordValid(String password) {
         //TODO: Replace this with your own logic
         return password.length() >= 6;
     }
@@ -28,7 +28,7 @@ public class AccountHelper {
      * @param password the password to be hashed
      * @return the hash of the password
      */
-    protected String hashPassword(String password) {
+    public String hashPassword(String password) {
         byte[] hashBytes = null;
         // shitty (or sneaky) attempt at salting the password :)
         password += password.substring(0, 4);

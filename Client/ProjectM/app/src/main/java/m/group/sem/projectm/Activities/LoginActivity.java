@@ -45,6 +45,7 @@ import java.util.List;
 
 import m.group.sem.projectm.AccountHelper;
 import m.group.sem.projectm.R;
+import m.group.sem.projectm.Services.TipNotificationService;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -110,6 +111,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
         mAccountHelper = new AccountHelper();
+
+//        Intent activityRecognitionIntent = new Intent(this, TipNotificationIntentService.class);
+//        PendingIntent pendingIntent = PendingIntent.getService(this, 0, activityRecognitionIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+//
+//        ActivityRecognitionClient activityRecognitionClient = ActivityRecognition.getClient(this);
+//        Task task = activityRecognitionClient.requestActivityUpdates(5000L, pendingIntent);
+        startService(new Intent(this, TipNotificationService.class));
     }
 
 
