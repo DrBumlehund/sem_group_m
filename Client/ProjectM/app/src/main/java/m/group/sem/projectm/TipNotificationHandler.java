@@ -44,7 +44,8 @@ public class TipNotificationHandler {
     }
 
     private void getReports() {
-        checkNearestReport(radius);
+        // TODO: Get reports here
+        //checkNearestReport(radius);
     }
 
     private void checkNearestReport(double radius) {
