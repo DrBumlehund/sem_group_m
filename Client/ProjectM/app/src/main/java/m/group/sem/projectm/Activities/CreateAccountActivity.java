@@ -1,4 +1,4 @@
-package m.group.sem.projectm;
+package m.group.sem.projectm.Activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
@@ -28,6 +28,9 @@ import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import m.group.sem.projectm.AccountHelper;
+import m.group.sem.projectm.R;
 
 /**
  * A login screen that offers login via email/password.

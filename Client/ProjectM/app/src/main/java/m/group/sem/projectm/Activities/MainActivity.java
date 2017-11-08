@@ -1,4 +1,4 @@
-package m.group.sem.projectm;
+package m.group.sem.projectm.Activities;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -13,6 +13,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 
 import Model.User;
+import m.group.sem.projectm.R;
 
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
