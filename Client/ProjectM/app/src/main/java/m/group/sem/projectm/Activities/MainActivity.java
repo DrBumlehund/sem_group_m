@@ -1,4 +1,4 @@
-package m.group.sem.projectm.Activities;
+package m.group.sem.projectm;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -12,8 +12,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 
-import m.group.sem.projectm.R;
-import m.group.sem.projectm.models.User;
+import Model.User;
+
 
 public class MainActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -42,7 +42,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        mUser = new User(getIntent().getIntExtra("id", -1), getIntent().getStringExtra("username"));
+        mUser = new User();
+        mUser.setId(getIntent().getIntExtra("id", -1));
+        mUser.setUsername(getIntent().getStringExtra("username"));
         Log.d(tag, "Received user: " + mUser.toString());
     }
 
