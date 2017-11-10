@@ -44,6 +44,8 @@
         </activity>
 
         <service android:name=".Services.TipNotificationIntentService"></service>
+        <service android:name=".Services.TipLocationService"
+            android:process=":my_process"></service>
         <service android:name=".Services.TipNotificationService"
             android:enabled="true"
             android:exported="false"

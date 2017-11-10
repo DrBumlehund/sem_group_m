@@ -3,9 +3,13 @@ package m.group.sem.projectm.Activities;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -31,6 +35,7 @@ import org.json.JSONObject;
 
 import m.group.sem.projectm.AccountHelper;
 import m.group.sem.projectm.R;
+import m.group.sem.projectm.Services.TipLocationService;
 import m.group.sem.projectm.Services.TipNotificationService;
 
 public class LoginActivity extends AppCompatActivity {
@@ -56,6 +61,10 @@ public class LoginActivity extends AppCompatActivity {
 
         Intent intent = new Intent(this, TipNotificationService.class);
         startService(intent);
+        Log.d("Mine", "try to bind from activity: ");
+        Intent locationIntent = new Intent(this, TipLocationService.class);
+        bindService(locationIntent, mConnection, Context.BIND_AUTO_CREATE);
+
 
         mRequestQueue = Volley.newRequestQueue(this);
         mRequestRunning = false;
@@ -239,5 +248,38 @@ public class LoginActivity extends AppCompatActivity {
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
     }
+
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        public TipLocationService mService;
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            Log.d("Mine", "connected activity: ");
+
+            try {
+                // We've bound to LocalService, cast the IBinder and get LocalService instance
+                Log.d("Mine", "onServiceConnected activity: " + service.getClass());
+                TipLocationService.TipLocationBinder binder = (TipLocationService.TipLocationBinder) service;
+                mService = binder.getService();
+
+                mService.exampleCallbackImplementation(new TipLocationService.ExampleCallbackInterface() {
+                    @Override
+                    public void newLocationReceived(double someeVar) {
+                        Log.d("Mine", "newLocationReceived activity: " + someeVar);
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.d("Mine", "onServiceConnected activity: " + e.getMessage());
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            Log.d("Mine", "disconnected activity: ");
+        }
+    };
 }
 
