@@ -36,7 +36,7 @@ public class TipNotificationIntentService extends IntentService {
             activityRecognitionContainer.confidence = activityConfidence;
             activityRecognitionContainer.timestamp = new Date().toString();
 
-            TipNotificationHandler.getInstance().ActivityDetected(activityRecognitionContainer);
+            TipNotificationHandler.getInstance().ActivityDetected(activityRecognitionContainer, this);
         }
     }
 

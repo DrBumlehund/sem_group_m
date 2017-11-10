@@ -31,6 +31,7 @@ import org.json.JSONObject;
 
 import m.group.sem.projectm.AccountHelper;
 import m.group.sem.projectm.R;
+import m.group.sem.projectm.Services.TipNotificationService;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -52,6 +53,9 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        Intent intent = new Intent(this, TipNotificationService.class);
+        startService(intent);
 
         mRequestQueue = Volley.newRequestQueue(this);
         mRequestRunning = false;
