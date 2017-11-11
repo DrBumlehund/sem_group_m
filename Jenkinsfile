@@ -1,16 +1,10 @@
 pipeline {
-  agent {
-    docker {
-      image 'gradle:jdk8'
-    }
-    
-  }
+  agent any
   stages {
     stage('Initialize') {
       steps {
         sh '''echo PATH = ${PATH}
-echo M2_HOME = ${M2_HOME}
-sudo rm -r .gradle'''
+echo M2_HOME = ${M2_HOME}'''
       }
     }
     stage('Build') {
@@ -26,6 +20,7 @@ sudo rm -r .gradle'''
     stage('Deploy') {
       steps {
         echo 'Server deployed'
+        sh 'java -jar /Server/TipReportRest/build/libs/TipReportRest-1.0.jar'
       }
     }
   }
