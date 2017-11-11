@@ -12,6 +12,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -65,9 +66,9 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         LatLng pos = new LatLng(lat, lon);
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, zoom));
         map.addMarker(new MarkerOptions()
-                        .position(pos)
-//                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher_foreground))
-                        .draggable(false)
+                .position(pos)
+                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.arrow))
+                .draggable(false)
         );
 
     }
