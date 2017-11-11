@@ -10,7 +10,8 @@ echo M2_HOME = ${M2_HOME}'''
     stage('Build') {
       steps {
         sh '''chmod +x Server/TipReportRest/gradlew
-./Server/TipReportRest/gradlew build'''
+cd Server/TipReportRest
+./gradlew build'''
       }
     }
     stage('Test') {
