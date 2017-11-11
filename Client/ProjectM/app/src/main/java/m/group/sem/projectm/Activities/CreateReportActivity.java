@@ -2,13 +2,23 @@ package m.group.sem.projectm.Activities;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -17,10 +27,15 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.IOException;
+
+import Model.Report;
 import Model.User;
 import m.group.sem.projectm.R;
 
 public class CreateReportActivity extends AppCompatActivity implements OnMapReadyCallback {
+
+    private static final String tag = "CREATE_REPORT_ACTIVITY";
 
     // data
     private User mUser;
@@ -38,6 +53,11 @@ public class CreateReportActivity extends AppCompatActivity implements OnMapRead
     private Button mSubmit;
     private TextView mLatView;
     private TextView mLonView;
+
+    // request related stuff
+    private RequestQueue mRequestQueue;
+    private boolean mRequestRunning;
+    private ObjectMapper mMapper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +87,10 @@ public class CreateReportActivity extends AppCompatActivity implements OnMapRead
             }
         });
 
+        mRequestQueue = Volley.newRequestQueue(this);
+        mRequestRunning = false;
+        mMapper = new ObjectMapper();
+
     }
 
     @Override
@@ -95,10 +119,52 @@ public class CreateReportActivity extends AppCompatActivity implements OnMapRead
     }
 
     private void attemptSubmitReport() {
-        if (!isValidDesc()) {
-            mDescription.setError(String.format(String.valueOf(getString(R.string.create_r_desc_size_err))));
+        if (mRequestRunning) {
             return;
         }
+        if (!isValidDesc()) {
+            mDescription.setError(String.format(String.valueOf(getString(R.string.create_r_desc_size_err)), mMinDescLength, mMaxDescLength));
+            return;
+        }
+
+        String description = String.valueOf(mDescription.getText()).replaceAll(" ", "%20");
+
+        String url = "http://51.254.127.173:8080/api/reports?latitude" + mPosition.latitude + "&longitude=" + mPosition.longitude + "&comment=" + description + "&user-id=" + mUser.getId();
+
+        StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                mRequestRunning = false;
+                showProgress(false);
+
+                Log.i(tag, "Received response: " + response);
+                try {
+                    Report report = mMapper.readValue(response, Report.class);
+                    if (report != null) {
+                        Intent intent = new Intent(CreateReportActivity.this, MainActivity.class);
+                        intent.putExtra(getString(R.string.i_user), mUser);
+                        startActivity(intent);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                mRequestRunning = false;
+                showProgress(false);
+                error.printStackTrace();
+                if (error.networkResponse != null) {
+                    Toast.makeText(getApplicationContext(), String.format("Networking error, error code %d", error.networkResponse.statusCode), Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        mRequestRunning = true;
+        showProgress(true);
+        mRequestQueue.add(request);
+
+
     }
 
     private boolean isValidDesc() {

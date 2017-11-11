@@ -250,15 +250,16 @@ public class LoginActivity extends AppCompatActivity {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             mRequestRunning = false;
-                            error.printStackTrace();
-                            String response = new String(error.networkResponse.data);
                             showProgress(false);
-
-                            if (response.contains("Incorrect username or password")) {
-                                mPasswordView.setError(getString(R.string.error_incorrect_password));
-                                mPasswordView.requestFocus();
-                            } else {
-                                Toast.makeText(getApplicationContext(), getText(R.string.connection_err) + "\nerror code: " + error.networkResponse.statusCode, Toast.LENGTH_LONG).show();
+                            error.printStackTrace();
+                            if (error.networkResponse != null) {
+                                String response = new String(error.networkResponse.data);
+                                if (response.contains("Incorrect username or password")) {
+                                    mPasswordView.setError(getString(R.string.error_incorrect_password));
+                                    mPasswordView.requestFocus();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), getText(R.string.connection_err) + "\nerror code: " + error.networkResponse.statusCode, Toast.LENGTH_LONG).show();
+                                }
                             }
                         }
 

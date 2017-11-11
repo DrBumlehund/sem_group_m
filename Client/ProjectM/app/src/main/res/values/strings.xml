@@ -1,6 +1,7 @@
 <resources>
     <!-- General -->
     <string name="app_name">Project M</string>
+    <string name="api_url">http://51.254.127.173:8080/api/</string>
     <!-- intent keys -->
     <string name="i_user">USER</string>
     <string name="i_location">LOCATION</string>

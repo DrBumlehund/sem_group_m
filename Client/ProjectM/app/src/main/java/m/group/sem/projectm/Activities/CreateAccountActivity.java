@@ -185,14 +185,14 @@ public class CreateAccountActivity extends AppCompatActivity {
                             mRequestRunning = false;
                             showProgress(false);
                             error.printStackTrace();
-                            String response = new String(error.networkResponse.data);
-
-                            if (response.contains("com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry")) {
-                                mUsernameView.setError(getString(R.string.create_username_taken));
-                                mUsernameView.requestFocus();
-                            } else {
-                                Toast.makeText(getApplicationContext(), getText(R.string.connection_err) + "\nerror code: " + error.networkResponse.statusCode, Toast.LENGTH_LONG).show();
-
+                            if (error.networkResponse != null) {
+                                String response = new String(error.networkResponse.data);
+                                if (response.contains("com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry")) {
+                                    mUsernameView.setError(getString(R.string.create_username_taken));
+                                    mUsernameView.requestFocus();
+                                } else {
+                                    Toast.makeText(getApplicationContext(), getText(R.string.connection_err) + "\nerror code: " + error.networkResponse.statusCode, Toast.LENGTH_LONG).show();
+                                }
                             }
                         }
 
