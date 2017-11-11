@@ -10,7 +10,7 @@ echo M2_HOME = ${M2_HOME}'''
     stage('Build') {
       steps {
         sh '''whoami
-chmod +x /Server/TipReportRest/gradlew
+chmod +x Server/TipReportRest/gradlew
 ./Server/TipReportRest/gradlew build'''
       }
     }
