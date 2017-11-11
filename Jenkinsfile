@@ -29,7 +29,8 @@ cd Server/TipReportRest
 
 
 sshpass -p 123456789 scp -r -o StrictHostKeyChecking=no Server/TipReportRest/build/libs jenkinsdeploy@51.254.127.173: 
-trap \'sshpass -p 123456789 ssh -o StrictHostKeyChecking=no jenkinsdeploy@51.254.127.173 "screen -ls | grep Detached | cut -d. -f1 | awk \'{print $1}\' | xargs kill"\' QUIT TERM INT EXIT
+sshpass -p 123456789 ssh -o StrictHostKeyChecking=no jenkinsdeploy@51.254.127.173 "screen -dm sleep 100"
+sshpass -p 123456789 ssh -o StrictHostKeyChecking=no jenkinsdeploy@51.254.127.173 "screen -ls | grep Detached | cut -d. -f1 | awk \'{print $1}\' | xargs kill"
 sshpass -p 123456789 ssh -o StrictHostKeyChecking=no jenkinsdeploy@51.254.127.173 "screen -S TipReportProduction"
 sshpass -p 123456789 ssh -o StrictHostKeyChecking=no jenkinsdeploy@51.254.127.173 java -jar TipReportRest-1.0.jar S
 '''
