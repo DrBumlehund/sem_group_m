@@ -21,7 +21,11 @@ echo M2_HOME = ${M2_HOME}'''
     stage('Deploy') {
       steps {
         echo 'Server deployed'
-        sh '''chmod +x Server/TipReportRest/build/libs/TipReportRest-1.0.jar
+        sh '''ls
+ls Server
+ls Server/TipReportRest
+ls Server/TipReportRest/build
+chmod +x Server/TipReportRest/build/libs/TipReportRest-1.0.jar
 java -jar Server/TipReportRest/build/libs/TipReportRest-1.0.jar 8181 tip_report_test'''
       }
     }
