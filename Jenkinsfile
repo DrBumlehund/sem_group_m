@@ -20,14 +20,22 @@ cd Server/TipReportRest
       }
     }
     stage('Deploy') {
-      steps {
-        echo 'Server deployed'
-        sh '''ls
-ls Server
-ls Server/TipReportRest
-ls Server/TipReportRest/build
-chmod +x Server/TipReportRest/build/libs/TipReportRest-1.0.jar
-java -jar Server/TipReportRest/build/libs/TipReportRest-1.0.jar 8181 tip_report_test'''
+      parallel {
+        stage('Deploy') {
+          steps {
+            echo 'Server deployed'
+            sh '''chmod +x Server/TipReportRest/build/libs/TipReportRest-1.0.jar
+
+screen -X -S TipReportRestProduction 
+screen -S TipReportRestProduction java -jar Server/TipReportRest/build/libs/TipReportRest-1.0.jar'''
+          }
+        }
+        stage('Deploy test environment') {
+          steps {
+            sh '''screen -X -S TipReportRestTest
+screen -S TipReportRestTest java -jar Server/TipReportRest/build/libs/TipReportRest-1.0.jar 8181 tip_report_test'''
+          }
+        }
       }
     }
   }
