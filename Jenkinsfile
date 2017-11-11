@@ -29,8 +29,8 @@ cd Server/TipReportRest
 
 
 sshpass -p 123456789 scp -r Server/TipReportRest/build/libs jenkinsdeploy@51.254.127.173:
-sshpass -p 123456789 jenkinsdeploy@51.254.127.173 trap \'screen -X -S TipReportRestProduction quit\' QUIT TERM INT EXIT StrictHostKeyChecking=no
-sshpass -p 123456789 jenkinsdeploy@51.254.127.173 trap java -jar TipReportRest-1.0.jar StrictHostKeyChecking=no'''
+sshpass -p 123456789 jenkinsdeploy@51.254.127.173 trap \'screen -X -S TipReportRestProduction quit\' QUIT TERM INT EXIT -o StrictHostKeyChecking=no
+sshpass -p 123456789 jenkinsdeploy@51.254.127.173 trap java -jar TipReportRest-1.0.jar -o StrictHostKeyChecking=no'''
           }
         }
         stage('Deploy test environment') {
