@@ -9,7 +9,8 @@ echo M2_HOME = ${M2_HOME}'''
     }
     stage('Build') {
       steps {
-        sh './Server/TipReportRest/gradlew build'
+        sh '''whoami
+./Server/TipReportRest/gradlew build'''
       }
     }
     stage('Test') {
