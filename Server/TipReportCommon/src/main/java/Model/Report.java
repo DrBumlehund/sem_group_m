@@ -11,7 +11,7 @@ public class Report implements Serializable {
     private double longitude;
     private String Comment;
     private ArrayList<Byte[]> images = new ArrayList<Byte[]>();
-    private ArrayList<Vote> votes;
+    private ArrayList<Vote> votes = new ArrayList<>();
     private ArrayList<UserComment> userComments = new ArrayList<UserComment>();
 
     public User getUser() {

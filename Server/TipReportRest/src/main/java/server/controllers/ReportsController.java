@@ -37,7 +37,7 @@ public class ReportsController {
     }
 
 	@RequestMapping(value = "/reports", params = {"latitude", "longitude", "comment", "user-id"})
-	public Report addReport (@RequestParam(value="latitude") double latitude, @RequestParam(value="longitude") double longitude, @RequestParam(value="comment") String comment, @RequestParam(value="userId") int userId) {
+	public Report addReport (@RequestParam(value="latitude") double latitude, @RequestParam(value="longitude") double longitude, @RequestParam(value="comment") String comment, @RequestParam(value="user-id") int userId) {
 		return databaseFacade.addReport(latitude, longitude, comment, userId);
 	}	
 }

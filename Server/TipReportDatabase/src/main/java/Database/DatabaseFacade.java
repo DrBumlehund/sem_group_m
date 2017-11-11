@@ -21,7 +21,8 @@ public class DatabaseFacade {
 	
 	private static DatabaseFacade instance;
 	private final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
-    private String DB_URL = "jdbc:mysql://localhost:3306/tip_report";
+    private final String DB_URL = "jdbc:mysql://localhost:3306/";
+	private String dbSchemaName = "tip_report";
     private static final String USER = "simon";
     private static final String PASS = "123456789";
 	
@@ -41,8 +42,20 @@ public class DatabaseFacade {
 		}
 	}
 
+	public String getDB_URL() {
+		return DB_URL + dbSchemaName;
+	}
+
+	public void setSchemaName(String dbSchemaName) {
+		this.dbSchemaName = dbSchemaName;		
+	}
+	
+	public String getSchemaName() {
+		return dbSchemaName;
+	}
+
 	public User addUser(String username, String password) {
-		try (Connection connection = DriverManager.getConnection(DB_URL,USER,PASS)){
+		try (Connection connection = DriverManager.getConnection(getDB_URL(),USER,PASS)){
 			String sql = "INSERT INTO user (username, password) VALUES (?, ?);";
 			PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS );
 			statement.setString(1, username);
@@ -73,7 +86,7 @@ public class DatabaseFacade {
 	}
 
 	public User getUser(String username, String password) {
-		try (Connection connection = DriverManager.getConnection(DB_URL,USER,PASS)){
+		try (Connection connection = DriverManager.getConnection(getDB_URL(),USER,PASS)){
 			String sql = "SELECT * FROM user WHERE username = ? && password = ?;";
 			PreparedStatement statement = connection.prepareStatement(sql);
 			statement.setString(1, username);
@@ -99,7 +112,7 @@ public class DatabaseFacade {
 	}
 
 	public ArrayList<Report> getReportCoordinates() {
-		try (Connection connection = DriverManager.getConnection(DB_URL,USER,PASS)){
+		try (Connection connection = DriverManager.getConnection(getDB_URL(),USER,PASS)){
 			String sql = "SELECT id, longitude, latitude FROM report;";
 			PreparedStatement statement = connection.prepareStatement(sql);
 			ResultSet result  = statement.executeQuery();
@@ -125,7 +138,7 @@ public class DatabaseFacade {
 	}
 
 	public ArrayList<Report> getReports() {
-		try (Connection connection = DriverManager.getConnection(DB_URL,USER,PASS)){
+		try (Connection connection = DriverManager.getConnection(getDB_URL(),USER,PASS)){
 
 		    CallableStatement cs = connection.prepareCall("CALL getReports()");
 		    boolean isResultSet  = cs.execute();
@@ -226,7 +239,7 @@ public class DatabaseFacade {
 	}
 
 	public Report addReport(double latitude, double longitude, String comment, int userId) {
-		try (Connection connection = DriverManager.getConnection(DB_URL,USER,PASS)){
+		try (Connection connection = DriverManager.getConnection(getDB_URL(),USER,PASS)){
 		    CallableStatement cs = connection.prepareCall("{CALL addReport(?, ?, ?, ?, ?)}");
 
 		    cs.setDouble(1, latitude);
@@ -263,7 +276,7 @@ public class DatabaseFacade {
 	}
 
 	public UserComment addComment(int reportId, String comment, int userId) {
-		try (Connection connection = DriverManager.getConnection(DB_URL,USER,PASS)){
+		try (Connection connection = DriverManager.getConnection(getDB_URL(),USER,PASS)){
 			String sql = "INSERT INTO comment_report (id_user, id_report, comment) VALUES (?, ?, ?)";
 			PreparedStatement statement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			statement.setInt(1, userId);
@@ -295,7 +308,7 @@ public class DatabaseFacade {
 	}
 
 	public Vote addVote(int reportId, boolean upvote, int userId) {
-		try (Connection connection = DriverManager.getConnection(DB_URL,USER,PASS)){
+		try (Connection connection = DriverManager.getConnection(getDB_URL(),USER,PASS)){
 			String sql = "INSERT INTO vote_report (id_user, id_report, upvote) VALUES (?, ?, ?)" + 
 					" ON DUPLICATE KEY UPDATE (upvote=VALUES(upvote));";
 			PreparedStatement statement = connection.prepareStatement(sql);
