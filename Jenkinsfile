@@ -9,7 +9,7 @@ echo M2_HOME = ${M2_HOME}'''
     }
     stage('Build') {
       steps {
-        sh 'gradle build /Server/TipReportRest/build.gradle'
+        sh './Server/TipReportRest/gradlew.build'
       }
     }
     stage('Test') {
