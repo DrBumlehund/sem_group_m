@@ -19,22 +19,6 @@ cd Server/TipReportRest
         echo 'All tests passed'
       }
     }
-    stage('Deploy') {
-      parallel {
-        stage('Deploy test environment') {
-          steps {
-            sh '''sshpass -p 123456789 ssh -o StrictHostKeyChecking=no jenkinsdeploy@51.254.127.173 "screen -dmS TipReportTest sh -c \'java -jar libs/TipReportRest-1.0.jar 8181 tip_report_test; exec bash\'"
-'''
-          }
-        }
-        stage('Deploy production environment') {
-          steps {
-            sh '''sshpass -p 123456789 ssh -o StrictHostKeyChecking=no jenkinsdeploy@51.254.127.173 "screen -dmS TipReportProduction sh -c \'java -jar libs/TipReportRest-1.0.jar; exec bash\'"
-'''
-          }
-        }
-      }
-    }
     stage('Clean up') {
       parallel {
         stage('Shutdown current servers') {
@@ -48,6 +32,22 @@ sshpass -p 123456789 ssh -o StrictHostKeyChecking=no jenkinsdeploy@51.254.127.17
           steps {
             sh '''chmod +x Server/TipReportRest/build/libs/TipReportRest-1.0.jar
 sshpass -p 123456789 scp -r -o StrictHostKeyChecking=no Server/TipReportRest/build/libs jenkinsdeploy@51.254.127.173: '''
+          }
+        }
+      }
+    }
+    stage('Deploy') {
+      parallel {
+        stage('Deploy test environment') {
+          steps {
+            sh '''sshpass -p 123456789 ssh -o StrictHostKeyChecking=no jenkinsdeploy@51.254.127.173 "screen -dmS TipReportTest sh -c \'java -jar libs/TipReportRest-1.0.jar 8181 tip_report_test; exec bash\'"
+'''
+          }
+        }
+        stage('Deploy production environment') {
+          steps {
+            sh '''sshpass -p 123456789 ssh -o StrictHostKeyChecking=no jenkinsdeploy@51.254.127.173 "screen -dmS TipReportProduction sh -c \'java -jar libs/TipReportRest-1.0.jar; exec bash\'"
+'''
           }
         }
       }
