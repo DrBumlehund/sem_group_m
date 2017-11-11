@@ -25,7 +25,7 @@ cd Server/TipReportRest
           steps {
             echo 'Server deployed'
             sh '''chmod +x Server/TipReportRest/build/libs/TipReportRest-1.0.jar
-
+su jenkinsdeploy
 trap \'screen -X -S TipReportRestProduction quit\' QUIT TERM INT EXIT
 screen -S TipReportRestProduction'''
           }
