@@ -71,6 +71,14 @@
 
             </android.support.design.widget.TextInputLayout>
 
+
+            <CheckBox
+                android:id="@+id/storeLogin"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/login_store_credentials" />
+
             <Button
                 android:id="@+id/email_sign_in_button"
                 style="?android:textAppearanceSmall"
@@ -80,16 +88,15 @@
                 android:text="@string/action_sign_in"
                 android:textStyle="bold" />
 
-
             <Button
                 android:id="@+id/create_new_acc_button"
                 style="?android:textAppearanceSmall"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:onClick="createNewAccount"
                 android:text="@string/action_create_user"
-                android:textStyle="bold"
-                android:onClick="createNewAccount"/>
+                android:textStyle="bold" />
 
         </LinearLayout>
 

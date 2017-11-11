@@ -1,6 +1,10 @@
 <resources>
+    <!-- General -->
     <string name="app_name">Project M</string>
-
+    <!-- shared preferences -->
+    <string name="sp_key">PROJECT_M_SEM</string>
+    <string name="sp_user_login">USER_LOGIN</string>
+    <string name="sp_user_login_checked">USER_LOGIN_CHECKED</string>
     <!-- Strings related to login -->
     <string name="prompt_email">Username</string>
     <string name="prompt_password">Password</string>
@@ -10,20 +14,19 @@
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email completions."</string>
+    <string name="connection_err">Unable to connect to server</string>
+    <string name="login_store_credentials">Remember login settings</string>
+    <!-- Strings related to create account -->
     <string name="create_acc_create_btn">Create Account</string>
     <string name="action_create_user">Create new account</string>
-    <string name="title_activity_main" translatable="false">MainActivity</string>
     <string name="create_pwd_no_match">The passwords did not match</string>
     <string name="create_username_taken">That username is already in use</string>
-    <string name="connection_err">Unable to connect to server</string>
+    <!-- Strings for MainActivity -->
+    <string name="title_activity_main" translatable="false">MainActivity</string>
+    <!-- Strings for MainActivityDrawer -->
     <string name="title_activity_main_drawer">MainActivityDrawer</string>
-
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-
     <string name="action_settings">Settings</string>
-
 </resources>

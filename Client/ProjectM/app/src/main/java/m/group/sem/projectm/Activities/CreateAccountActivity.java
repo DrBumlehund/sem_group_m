@@ -23,12 +23,13 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.io.IOException;
 
+import Model.User;
 import m.group.sem.projectm.AccountHelper;
 import m.group.sem.projectm.R;
 
@@ -52,20 +53,25 @@ public class CreateAccountActivity extends AppCompatActivity {
     private View mProgressView;
     private View mLoginFormView;
 
+    // Object Mapper
+    private ObjectMapper mMapper;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_account);
 
+        mMapper = new ObjectMapper();
+
         mRequestQueue = Volley.newRequestQueue(this);
         mRequestRunning = false;
 
         // Set up the login form.
-        mUsernameView = (AutoCompleteTextView) findViewById(R.id.email);
+        mUsernameView = findViewById(R.id.email);
 
-        mPasswordView = (EditText) findViewById(R.id.password);
+        mPasswordView = findViewById(R.id.password);
 
-        mPasswordView2 = (EditText) findViewById(R.id.password_check);
+        mPasswordView2 = findViewById(R.id.password_check);
         mPasswordView2.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -77,7 +83,7 @@ public class CreateAccountActivity extends AppCompatActivity {
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
+        Button mEmailSignInButton = findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -92,10 +98,9 @@ public class CreateAccountActivity extends AppCompatActivity {
     }
 
 
-    public void continueToMainActivity(int id, String username) {
+    public void continueToMainActivity(User user) {
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("id", id);
-        intent.putExtra("username", username);
+        intent.putExtra("user", user);
         startActivity(intent);
     }
 
@@ -158,23 +163,20 @@ public class CreateAccountActivity extends AppCompatActivity {
 
             String url = "http://51.254.127.173:8080/api/users?username=" + username + "&password=" + password;
 
-            JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                    (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            StringRequest request = new StringRequest
+                    (Request.Method.GET, url, new Response.Listener<String>() {
 
                         @Override
-                        public void onResponse(JSONObject response) {
+                        public void onResponse(String response) {
                             mRequestRunning = false;
                             showProgress(false);
-                            int id = -1;
-                            String username = "";
+                            Log.d(tag, "received response: " + response);
                             try {
-                                Log.d(tag, "received id: " + response.get("id"));
-                                id = response.getInt("id");
-                                username = response.getString("username");
-                            } catch (JSONException e) {
+                                User mUser = mMapper.readValue(response, User.class);
+                                continueToMainActivity(mUser);
+                            } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                            continueToMainActivity(id, username);
                         }
                     }, new Response.ErrorListener() {
 
@@ -196,7 +198,7 @@ public class CreateAccountActivity extends AppCompatActivity {
 
                     });
             mRequestRunning = true;
-            mRequestQueue.add(jsObjRequest);
+            mRequestQueue.add(request);
         }
     }
 

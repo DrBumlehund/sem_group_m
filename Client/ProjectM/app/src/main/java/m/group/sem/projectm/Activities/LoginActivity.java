@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -19,6 +20,7 @@ import android.view.View.OnClickListener;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -27,12 +29,14 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.io.IOException;
 
+import Model.User;
 import m.group.sem.projectm.AccountHelper;
 import m.group.sem.projectm.R;
 import m.group.sem.projectm.Services.TipLocationService;
@@ -41,7 +45,6 @@ import m.group.sem.projectm.Services.TipNotificationService;
 public class LoginActivity extends AppCompatActivity {
 
     private static final String tag = "LoginActivity";
-
 
     // request queue
     private RequestQueue mRequestQueue;
@@ -53,6 +56,41 @@ public class LoginActivity extends AppCompatActivity {
     private View mProgressView;
     private View mLoginFormView;
     private AccountHelper mAccountHelper;
+    private CheckBox mStoreLoginSettingsCheckBox;
+
+    // object mapper
+    private ObjectMapper mMapper;
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        public TipLocationService mService;
+
+        @Override
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            Log.d("Mine", "connected activity: ");
+
+            try {
+                // We've bound to LocalService, cast the IBinder and get LocalService instance
+                Log.d("Mine", "onServiceConnected activity: " + service.getClass());
+                TipLocationService.TipLocationBinder binder = (TipLocationService.TipLocationBinder) service;
+                mService = binder.getService();
+
+                mService.exampleCallbackImplementation(new TipLocationService.ExampleCallbackInterface() {
+                    @Override
+                    public void newLocationReceived(double someeVar) {
+                        Log.d("Mine", "newLocationReceived activity: " + someeVar);
+                    }
+                });
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.d("Mine", "onServiceConnected activity: " + e.getMessage());
+            }
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName arg0) {
+            Log.d("Mine", "disconnected activity: ");
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,14 +103,29 @@ public class LoginActivity extends AppCompatActivity {
         Intent locationIntent = new Intent(this, TipLocationService.class);
         bindService(locationIntent, mConnection, Context.BIND_AUTO_CREATE);
 
+        mMapper = new ObjectMapper();
+
+        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(getString(R.string.sp_key), MODE_PRIVATE);
+        String serializedUser = sharedPref.getString(getString(R.string.sp_user_login), null);
+        if (serializedUser != null) {
+            try {
+                User mUser = mMapper.readValue(serializedUser, User.class);
+
+                if (mUser != null) {
+                    continueToMainActivity(mUser);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
 
         mRequestQueue = Volley.newRequestQueue(this);
         mRequestRunning = false;
 
         // Set up the login form.
-        mUsernameView = (AutoCompleteTextView) findViewById(R.id.email);
+        mUsernameView = findViewById(R.id.email);
 
-        mPasswordView = (EditText) findViewById(R.id.password);
+        mPasswordView = findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView textView, int id, KeyEvent keyEvent) {
@@ -84,7 +137,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
+        Button mEmailSignInButton = findViewById(R.id.email_sign_in_button);
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -94,7 +147,12 @@ public class LoginActivity extends AppCompatActivity {
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
+        mStoreLoginSettingsCheckBox = findViewById(R.id.storeLogin);
+        mStoreLoginSettingsCheckBox.setChecked(sharedPref.getBoolean(getString(R.string.sp_user_login_checked), false));
+
         mAccountHelper = new AccountHelper();
+
+
     }
 
     public void logoClick(View view) {
@@ -106,10 +164,9 @@ public class LoginActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void continueToMainActivity(int id, String username) {
+    public void continueToMainActivity(User user) {
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("id", id);
-        intent.putExtra("username", username);
+        intent.putExtra("user", user);
         startActivity(intent);
     }
 
@@ -164,30 +221,29 @@ public class LoginActivity extends AppCompatActivity {
             // hash password
             password = mAccountHelper.hashPassword(password);
 
-            //TODO: Remove UserLoginTask if Volley is actually async.
-//            mAuthTask = new UserLoginTask(email, password, this);
-//            mAuthTask.execute((Void) null);
-
-
             String url = "http://51.254.127.173:8080/api/login?username=" + username + "&password=" + password;
 
-            JsonObjectRequest jsObjRequest = new JsonObjectRequest
-                    (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            StringRequest request = new StringRequest
+                    (Request.Method.GET, url, new Response.Listener<String>() {
 
                         @Override
-                        public void onResponse(JSONObject response) {
+                        public void onResponse(String response) {
                             mRequestRunning = false;
                             showProgress(false);
-                            int id = -1;
-                            String username = "";
+                            Log.d(tag, "received response: " + response);
                             try {
-                                Log.d(tag, "received id: " + response.get("id"));
-                                id = response.getInt("id");
-                                username = response.getString("username");
-                            } catch (JSONException e) {
+                                User mUser = mMapper.readValue(response, User.class);
+
+                                if (mStoreLoginSettingsCheckBox.isChecked()) {
+                                    saveLoginSettings(mUser, mStoreLoginSettingsCheckBox.isChecked());
+                                } else {
+                                    saveLoginSettings(null, mStoreLoginSettingsCheckBox.isChecked());
+                                }
+
+                                continueToMainActivity(mUser);
+                            } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                            continueToMainActivity(id, username);
                         }
                     }, new Response.ErrorListener() {
 
@@ -208,10 +264,21 @@ public class LoginActivity extends AppCompatActivity {
 
                     });
             mRequestRunning = true;
-            mRequestQueue.add(jsObjRequest);
+            mRequestQueue.add(request);
         }
     }
 
+    private void saveLoginSettings(User user, boolean checked) {
+        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(getString(R.string.sp_key), MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        try {
+            editor.putString(getString(R.string.sp_user_login), mMapper.writeValueAsString(user));
+            editor.putBoolean(getString(R.string.sp_user_login_checked), checked);
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+        }
+        editor.commit();
+    }
 
     /**
      * Shows the progress UI and hides the login form.
@@ -248,38 +315,5 @@ public class LoginActivity extends AppCompatActivity {
             mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
         }
     }
-
-
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        public TipLocationService mService;
-
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            Log.d("Mine", "connected activity: ");
-
-            try {
-                // We've bound to LocalService, cast the IBinder and get LocalService instance
-                Log.d("Mine", "onServiceConnected activity: " + service.getClass());
-                TipLocationService.TipLocationBinder binder = (TipLocationService.TipLocationBinder) service;
-                mService = binder.getService();
-
-                mService.exampleCallbackImplementation(new TipLocationService.ExampleCallbackInterface() {
-                    @Override
-                    public void newLocationReceived(double someeVar) {
-                        Log.d("Mine", "newLocationReceived activity: " + someeVar);
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.d("Mine", "onServiceConnected activity: " + e.getMessage());
-            }
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            Log.d("Mine", "disconnected activity: ");
-        }
-    };
 }
 
