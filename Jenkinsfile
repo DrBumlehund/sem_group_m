@@ -26,13 +26,13 @@ cd Server/TipReportRest
             echo 'Server deployed'
             sh '''chmod +x Server/TipReportRest/build/libs/TipReportRest-1.0.jar
 
-screen -X -S TipReportRestProduction quit
+trap \'screen -X -S TipReportRestProduction quit\' QUIT TERM INT EXIT
 screen -S TipReportRestProduction java -jar Server/TipReportRest/build/libs/TipReportRest-1.0.jar'''
           }
         }
         stage('Deploy test environment') {
           steps {
-            sh '''screen -X -S TipReportRestTest quit
+            sh '''trap \'screen -X -S TipReportRestTest quit\' QUIT TERM INT EXIT
 screen -S TipReportRestTest java -jar Server/TipReportRest/build/libs/TipReportRest-1.0.jar 8181 tip_report_test'''
           }
         }
