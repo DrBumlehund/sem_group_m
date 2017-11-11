@@ -27,9 +27,10 @@ cd Server/TipReportRest
             sh '''chmod +x Server/TipReportRest/build/libs/TipReportRest-1.0.jar
 echo "import pty; pty.spawn(\'/bin/bash\')" > /tmp/asdf.py
 python /tmp/asdf.py
-su jenkinsdeplou
+su jenkinsdeploy
 trap \'screen -X -S TipReportRestProduction quit\' QUIT TERM INT EXIT
-screen -S TipReportRestProduction'''
+screen -S TipReportRestProduction
+exit'''
           }
         }
         stage('Deploy test environment') {
