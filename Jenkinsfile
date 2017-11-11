@@ -34,13 +34,13 @@ sshpass -p 123456789 ssh -o StrictHostKeyChecking=no jenkinsdeploy@51.254.127.17
         }
         stage('Deploy test environment') {
           steps {
-            sh '''sshpass -p 123456789 ssh -o StrictHostKeyChecking=no jenkinsdeploy@51.254.127.173 "screen -dmS TipReportProduction java -jar TipReportRest-1.0.jar 8181 tip_report_test"
+            sh '''sshpass -p 123456789 ssh -o StrictHostKeyChecking=no jenkinsdeploy@51.254.127.173 "screen -dmS TipReportProduction sh -c \'java -jar TipReportRest-1.0.jar 8181 tip_report_test; exec bash\'"
 '''
           }
         }
         stage('Deploy production environment') {
           steps {
-            sh '''sshpass -p 123456789 ssh -o StrictHostKeyChecking=no jenkinsdeploy@51.254.127.173 "screen -dmS TipReportProduction java -jar TipReportRest-1.0.jar"
+            sh '''sshpass -p 123456789 ssh -o StrictHostKeyChecking=no jenkinsdeploy@51.254.127.173 "screen -dmS TipReportProduction sh -c \'java -jar TipReportRest-1.0.jar; exec bash\'"
 '''
           }
         }
