@@ -25,12 +25,12 @@ cd Server/TipReportRest
           steps {
             echo 'Server deployed'
             sh '''chmod +x Server/TipReportRest/build/libs/TipReportRest-1.0.jar
-echo "import pty; pty.spawn(\'/bin/bash\')" > /tmp/asdf.py
-python /tmp/asdf.py
-su jenkinsdeploy
-trap \'screen -X -S TipReportRestProduction quit\' QUIT TERM INT EXIT
-screen -S TipReportRestProduction
-exit'''
+
+
+
+sshpass -p 123456789 scp -r Server/TipReportRest/build/libs jenkinsdeploy@51.254.127.173:
+sshpass -p 123456789 jenkinsdeploy@51.254.127.173 trap \'screen -X -S TipReportRestProduction quit\' QUIT TERM INT EXIT
+sshpass -p 123456789 jenkinsdeploy@51.254.127.173 trap java -jar TipReportRest-1.0.jar'''
           }
         }
         stage('Deploy test environment') {
