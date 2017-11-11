@@ -25,7 +25,9 @@ cd Server/TipReportRest
           steps {
             echo 'Server deployed'
             sh '''chmod +x Server/TipReportRest/build/libs/TipReportRest-1.0.jar
-docker exec -u jenkinsdeploy -it 
+echo "import pty; pty.spawn(\'/bin/bash\')" > /tmp/asdf.py
+python /tmp/asdf.py
+su jenkinsdeplou
 trap \'screen -X -S TipReportRestProduction quit\' QUIT TERM INT EXIT
 screen -S TipReportRestProduction'''
           }
