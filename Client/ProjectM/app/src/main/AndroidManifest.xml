@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permission.READ_PROFILE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION"/>
+    <uses-permission android:name="com.google.android.gms.permission.ACTIVITY_RECOGNITION" />
 
     <application
         android:allowBackup="true"
@@ -43,13 +43,15 @@
                 android:value="m.group.sem.projectm.Activities.LoginActivity" />
         </activity>
 
-        <service android:name=".Services.TipNotificationIntentService"></service>
-        <service android:name=".Services.TipLocationService"
-            android:process=":my_process"></service>
-        <service android:name=".Services.TipNotificationService"
+        <service android:name=".Services.TipNotificationIntentService" />
+        <service
+            android:name=".Services.TipLocationService"
+            android:process=":my_process" />
+        <service
+            android:name=".Services.TipNotificationService"
             android:enabled="true"
             android:exported="false"
-            android:process=":my_process"></service>
+            android:process=":my_process" />
 
         <meta-data
             android:name="com.google.android.gms.version"
@@ -61,7 +63,8 @@
         <activity
             android:name=".Activities.MainActivityDrawer"
             android:label="@string/title_activity_main_drawer"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
+        <activity android:name=".Activities.CreateReportActivity"></activity>
     </application>
 
 </manifest>
