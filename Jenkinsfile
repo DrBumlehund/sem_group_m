@@ -27,7 +27,7 @@ cd Server/TipReportRest
             sh '''chmod +x Server/TipReportRest/build/libs/TipReportRest-1.0.jar
 
 trap \'screen -X -S TipReportRestProduction quit\' QUIT TERM INT EXIT
-screen -S TipReportRestProduction java -jar Server/TipReportRest/build/libs/TipReportRest-1.0.jar'''
+screen -S TipReportRestProduction'''
           }
         }
         stage('Deploy test environment') {
