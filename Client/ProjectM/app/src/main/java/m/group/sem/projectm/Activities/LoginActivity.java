@@ -103,6 +103,11 @@ public class LoginActivity extends AppCompatActivity {
         Intent locationIntent = new Intent(this, TipLocationService.class);
         bindService(locationIntent, mConnection, Context.BIND_AUTO_CREATE);
 
+        boolean b = getIntent().hasExtra(getString(R.string.i_sign_out));
+        if (b) {
+            saveLoginSettings(null, !b);
+        }
+
         mMapper = new ObjectMapper();
 
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(getString(R.string.sp_key), MODE_PRIVATE);

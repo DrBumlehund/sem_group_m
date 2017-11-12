@@ -33,15 +33,6 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="m.group.sem.projectm.Activities.LoginActivity" />
         </activity>
-        <activity
-            android:name=".Activities.MainActivity"
-            android:label="@string/title_activity_main"
-            android:parentActivityName=".Activities.LoginActivity"
-            android:theme="@style/AppTheme">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="m.group.sem.projectm.Activities.LoginActivity" />
-        </activity>
 
         <service android:name=".Services.TipNotificationIntentService" />
         <service
@@ -61,7 +52,7 @@
             android:value="AIzaSyCKB5_T5rMwOqkZQsDY4Humn909EI0GOH8" />
 
         <activity
-            android:name=".Activities.MainActivityDrawer"
+            android:name=".Activities.MainActivity"
             android:label="@string/title_activity_main_drawer"
             android:theme="@style/AppTheme" />
         <activity android:name=".Activities.CreateReportActivity"></activity>

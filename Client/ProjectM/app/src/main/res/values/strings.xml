@@ -5,6 +5,7 @@
     <!-- intent keys -->
     <string name="i_user">USER</string>
     <string name="i_location">LOCATION</string>
+    <string name="i_sign_out">SIGN_OUT</string>
     <!-- shared preferences -->
     <string name="sp_key">PROJECT_M_SEM</string>
     <string name="sp_user_login">USER_LOGIN</string>
@@ -27,12 +28,13 @@
     <string name="create_pwd_no_match">The passwords did not match</string>
     <string name="create_username_taken">That username is already in use</string>
     <!-- Strings for MainActivity -->
-    <string name="title_activity_main" translatable="false">MainActivity</string>
-    <!-- Strings for MainActivityDrawer -->
-    <string name="title_activity_main_drawer">MainActivityDrawer</string>
+    <string name="title_activity_main_drawer">Home?</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_sign_out">Sign Out</string>
+    <string name="nav_create_r">Create Report</string>
     <string name="action_settings">Settings</string>
+    <string name="nav_user_id">User Id: %d</string>
     <!-- Strings for CreateReportActivity -->
     <string name="create_r_desc">Description</string>
     <string name="create_r_location">Location</string>
