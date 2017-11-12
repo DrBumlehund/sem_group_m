@@ -155,10 +155,6 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
-    public void logoClick(View view) {
-        Toast.makeText(getApplicationContext(), "I literally stole this, and we should definitely remove this before hand-in", Toast.LENGTH_LONG).show();
-    }
-
     public void createNewAccount(View view) {
         Intent intent = new Intent(this, CreateAccountActivity.class);
         startActivity(intent);
