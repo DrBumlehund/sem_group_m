@@ -274,7 +274,7 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(getString(R.string.sp_key), MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         try {
-            editor.putString(getString(R.string.sp_user_login), mMapper.writeValueAsString(user));
+            editor.putString(getString(R.string.sp_user_login), user != null ? mMapper.writeValueAsString(user) : null);
             editor.putBoolean(getString(R.string.sp_user_login_checked), checked);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
