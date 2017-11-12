@@ -3,9 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/ProjectM.iml" filepath="$PROJECT_DIR$/ProjectM.iml" />
-      <module fileurl="file://C:\Users\drbum\github\sem_group_m\Client\ProjectM\ProjectM.iml" filepath="C:\Users\drbum\github\sem_group_m\Client\ProjectM\ProjectM.iml" />
       <module fileurl="file://$PROJECT_DIR$/../../Server/TipReportCommon/TipReportCommon.iml" filepath="$PROJECT_DIR$/../../Server/TipReportCommon/TipReportCommon.iml" />
-      <module fileurl="file://C:\Users\drbum\github\sem_group_m\Server\TipReportCommon\TipReportCommon.iml" filepath="C:\Users\drbum\github\sem_group_m\Server\TipReportCommon\TipReportCommon.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

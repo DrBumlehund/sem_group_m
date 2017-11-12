@@ -13,4 +13,18 @@
     <string name="create_acc_create_btn">Opret Konto</string>
     <string name="action_create_user">Opret ny konto</string>
     <string name="create_pwd_no_match">Kodeordene er ikke ens</string>
+    <string name="connection_err">Kan ikke oprette forbindelse til serveren</string>
+    <string name="login_store_credentials">Husk mine logind instillinger</string>
+    <string name="create_username_taken">Brugernavnet er allerede taget</string>
+    <string name="title_activity_main_drawer">Hjem</string>
+    <string name="navigation_drawer_open">Åben navigations skuffen</string>
+    <string name="navigation_drawer_close">Luk navigations skuffen</string>
+    <string name="nav_sign_out">Log ud</string>
+    <string name="nav_create_r">Opret Rapport</string>
+    <string name="action_settings">Indstillinger</string>
+    <string name="nav_user_id">Bruger id %d</string>
+    <string name="create_r_desc">Beskrivelse</string>
+    <string name="create_r_location">Placering</string>
+    <string name="create_r_submit">Indsænd rapport</string>
+    <string name="create_r_desc_size_err">Beskrivelsen skal være mellem %1$d og %2$d bogstaver lang</string>
 </resources>
