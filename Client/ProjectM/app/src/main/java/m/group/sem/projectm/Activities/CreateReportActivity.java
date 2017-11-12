@@ -129,7 +129,7 @@ public class CreateReportActivity extends AppCompatActivity implements OnMapRead
 
         String description = String.valueOf(mDescription.getText()).replaceAll(" ", "%20");
 
-        String url = "http://51.254.127.173:8080/api/reports?latitude" + mPosition.latitude + "&longitude=" + mPosition.longitude + "&comment=" + description + "&user-id=" + mUser.getId();
+        final String url = "http://51.254.127.173:8080/api/reports?latitude=" + mPosition.latitude + "&longitude=" + mPosition.longitude + "&comment=" + description + "&user-id=" + mUser.getId();
 
         StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
             @Override
@@ -152,6 +152,7 @@ public class CreateReportActivity extends AppCompatActivity implements OnMapRead
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Log.e(tag, "Error in network call with url: " + url);
                 mRequestRunning = false;
                 showProgress(false);
                 error.printStackTrace();

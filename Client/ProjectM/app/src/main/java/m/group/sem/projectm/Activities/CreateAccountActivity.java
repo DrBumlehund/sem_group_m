@@ -100,7 +100,7 @@ public class CreateAccountActivity extends AppCompatActivity {
 
     public void continueToMainActivity(User user) {
         Intent intent = new Intent(this, MainActivity.class);
-        intent.putExtra("user", user);
+        intent.putExtra(getString(R.string.i_user), user);
         startActivity(intent);
     }
 

@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        mUser = (User) getIntent().getSerializableExtra("user");
+        mUser = (User) getIntent().getSerializableExtra(getString(R.string.i_user));
 
         Log.d(tag, "Received user: " + mUser.toString());
         zoom = 13;
