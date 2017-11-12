@@ -1,15 +1,15 @@
 <resources>
     <!-- General -->
     <string name="app_name">Project M</string>
-    <string name="api_url">http://51.254.127.173:8080/api/</string>
+    <string name="api_url" translatable="false">http://51.254.127.173:8080/api/</string>
     <!-- intent keys -->
-    <string name="i_user">USER</string>
-    <string name="i_location">LOCATION</string>
-    <string name="i_sign_out">SIGN_OUT</string>
+    <string name="i_user" translatable="false">USER</string>
+    <string name="i_location" translatable="false">LOCATION</string>
+    <string name="i_sign_out" translatable="false">SIGN_OUT</string>
     <!-- shared preferences -->
-    <string name="sp_key">PROJECT_M_SEM</string>
-    <string name="sp_user_login">USER_LOGIN</string>
-    <string name="sp_user_login_checked">USER_LOGIN_CHECKED</string>
+    <string name="sp_key" translatable="false">PROJECT_M_SEM</string>
+    <string name="sp_user_login" translatable="false">USER_LOGIN</string>
+    <string name="sp_user_login_checked" translatable="false">USER_LOGIN_CHECKED</string>
     <!-- Strings related to login -->
     <string name="prompt_email">Username</string>
     <string name="prompt_password">Password</string>
