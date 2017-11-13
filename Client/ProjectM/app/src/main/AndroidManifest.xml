@@ -39,12 +39,19 @@
         <service android:name=".Services.TipNotificationIntentService" />
         <service
             android:name=".Services.TipLocationService"
-            android:process=":my_process" />
+            android:enabled="true"
+            android:process=":my_process">
+        </service>
         <service
             android:name=".Services.TipNotificationService"
             android:enabled="true"
             android:exported="false"
             android:process=":my_process" />
+        <receiver android:name=".Services.LocationBroadcastReceiver">
+            <intent-filter>
+                <action android:name="projectM.LOCATION_BROADCAST" />
+            </intent-filter>
+        </receiver>
 
         <meta-data
             android:name="com.google.android.gms.version"

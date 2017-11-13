@@ -55,6 +55,15 @@ public class TipLocationService extends Service implements GoogleApiClient.Conne
                 @Override
                 public void onLocationResult(LocationResult locationResult) {
                     newestLocation = locationResult.getLastLocation();
+
+                    locationIntent.putExtra("projectm.LOCATION_LATITUDE", newestLocation.getLatitude());
+                    locationIntent.putExtra("projectm.LOCATION_LONGITUDE", newestLocation.getLongitude());
+
+                    Log.i(tag, "onLocationResult : New location:" +
+                            locationIntent.getDoubleExtra("projectm.LOCATION_LATITUDE", 0) +", " +
+                            locationIntent.getDoubleExtra("projectm.LOCATION_LONGITUDE", 0));
+
+                    sendBroadcast(locationIntent);
                 }
             };
 
