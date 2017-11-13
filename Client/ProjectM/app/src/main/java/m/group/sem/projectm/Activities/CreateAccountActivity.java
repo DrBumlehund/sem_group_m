@@ -173,7 +173,7 @@ public class CreateAccountActivity extends AppCompatActivity {
 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                    Log.d(tag, String.format("Status code %d received response : %s", statusCode, new String(responseBody)));
+                    Log.d(tag, String.format("Request Successful: status code %d received response : %s", statusCode, new String(responseBody)));
                     try {
                         User mUser = mMapper.readValue(responseBody, User.class);
                         continueToMainActivity(mUser);
