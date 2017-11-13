@@ -3,14 +3,10 @@ package m.group.sem.projectm.Activities;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -25,21 +21,19 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
+import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import java.io.IOException;
 
 import Model.User;
+import cz.msebera.android.httpclient.Header;
 import m.group.sem.projectm.AccountHelper;
 import m.group.sem.projectm.R;
-import m.group.sem.projectm.Services.TipLocationService;
 import m.group.sem.projectm.Services.TipNotificationService;
 
 public class LoginActivity extends AppCompatActivity {
@@ -47,7 +41,7 @@ public class LoginActivity extends AppCompatActivity {
     private static final String tag = "LoginActivity";
 
     // request queue
-    private RequestQueue mRequestQueue;
+    private AsyncHttpClient mHttpClient;
     private boolean mRequestRunning;
 
     // UI references.
@@ -96,7 +90,7 @@ public class LoginActivity extends AppCompatActivity {
             Log.d(tag, "I was signed out, don't even wanna try to auto-login");
         }
 
-        mRequestQueue = Volley.newRequestQueue(this);
+        mHttpClient = new AsyncHttpClient();
         mRequestRunning = false;
 
         // Set up the login form.
@@ -158,7 +152,7 @@ public class LoginActivity extends AppCompatActivity {
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String username = mUsernameView.getText().toString();
+        final String username = mUsernameView.getText().toString();
         String password = mPasswordView.getText().toString();
 
         boolean cancel = false;
@@ -196,49 +190,99 @@ public class LoginActivity extends AppCompatActivity {
 
             String url = "http://51.254.127.173:8080/api/login?username=" + username + "&password=" + password;
 
-            StringRequest request = new StringRequest
-                    (Request.Method.GET, url, new Response.Listener<String>() {
+            mHttpClient.post(url, new AsyncHttpResponseHandler() {
 
-                        @Override
-                        public void onResponse(String response) {
-                            mRequestRunning = false;
-                            showProgress(false);
-                            Log.d(tag, "received response: " + response);
-                            try {
-                                User mUser = mMapper.readValue(response, User.class);
+                @Override
+                public void onStart() {
+                    super.onStart();
+                    mRequestRunning = true;
+                    showProgress(true);
+                }
 
-                                if (mStoreLoginSettingsCheckBox.isChecked()) {
-                                    saveLoginSettings(mUser, mStoreLoginSettingsCheckBox.isChecked());
-                                } else {
-                                    saveLoginSettings(null, mStoreLoginSettingsCheckBox.isChecked());
-                                }
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                    Log.d(tag, String.format("Status code %d received response : %s", statusCode, new String(responseBody)));
+                    try {
+                        User mUser = mMapper.readValue(responseBody, User.class);
+                        continueToMainActivity(mUser);
+                    } catch (JsonParseException e) {
+                        e.printStackTrace();
+                    } catch (JsonMappingException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
 
-                                continueToMainActivity(mUser);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                @Override
+                public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                    error.printStackTrace();
+                    Log.e(tag, String.format("Received error response : %s", new String(responseBody)));
+                    try {
+                        String errMessage = mMapper.readTree(responseBody).get("message").asText();
+                        Log.e(tag, errMessage);
+                        if (errMessage.contains("Incorrect username or password")) {
+                            mPasswordView.setError(getString(R.string.error_incorrect_password));
+                            mPasswordView.requestFocus();
+                        } else {
+                            Toast.makeText(getApplicationContext(), getText(R.string.connection_err) + "\nerror code: " + statusCode, Toast.LENGTH_LONG).show();
                         }
-                    }, new Response.ErrorListener() {
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
 
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            mRequestRunning = false;
-                            showProgress(false);
-                            error.printStackTrace();
-                            if (error.networkResponse != null) {
-                                String response = new String(error.networkResponse.data);
-                                if (response.contains("Incorrect username or password")) {
-                                    mPasswordView.setError(getString(R.string.error_incorrect_password));
-                                    mPasswordView.requestFocus();
-                                } else {
-                                    Toast.makeText(getApplicationContext(), getText(R.string.connection_err) + "\nerror code: " + error.networkResponse.statusCode, Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        }
+                @Override
+                public void onFinish() {
+                    super.onFinish();
+                    mRequestRunning = false;
+                    showProgress(false);
+                }
+            });
 
-                    });
-            mRequestRunning = true;
-            mRequestQueue.add(request);
+//            StringRequest request = new StringRequest
+//                    (Request.Method.GET, url, new Response.Listener<String>() {
+//
+//                        @Override
+//                        public void onResponse(String response) {
+//                            mRequestRunning = false;
+//                            showProgress(false);
+//                            Log.d(tag, "received response: " + response);
+//                            try {
+//                                User mUser = mMapper.readValue(response, User.class);
+//
+//                                if (mStoreLoginSettingsCheckBox.isChecked()) {
+//                                    saveLoginSettings(mUser, mStoreLoginSettingsCheckBox.isChecked());
+//                                } else {
+//                                    saveLoginSettings(null, mStoreLoginSettingsCheckBox.isChecked());
+//                                }
+//
+//                                continueToMainActivity(mUser);
+//                            } catch (IOException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
+//                    }, new Response.ErrorListener() {
+//
+//                        @Override
+//                        public void onErrorResponse(VolleyError error) {
+//                            mRequestRunning = false;
+//                            showProgress(false);
+//                            error.printStackTrace();
+//                            if (error.networkResponse != null) {
+//                                String response = new String(error.networkResponse.data);
+//                                if (response.contains("Incorrect username or password")) {
+//                                    mPasswordView.setError(getString(R.string.error_incorrect_password));
+//                                    mPasswordView.requestFocus();
+//                                } else {
+//                                    Toast.makeText(getApplicationContext(), getText(R.string.connection_err) + "\nerror code: " + error.networkResponse.statusCode, Toast.LENGTH_LONG).show();
+//                                }
+//                            }
+//                        }
+//
+//                    });
+//            mRequestRunning = true;
+//            mRequestQueue.add(request);
         }
     }
 
