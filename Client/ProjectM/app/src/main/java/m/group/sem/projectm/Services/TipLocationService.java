@@ -1,92 +1,103 @@
 package m.group.sem.projectm.Services;
 
-import android.annotation.SuppressLint;
+import android.Manifest;
 import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
-import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationCallback;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationResult;
+import com.google.android.gms.location.LocationServices;
 
-public class TipLocationService extends Service {
+public class TipLocationService extends Service implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
-    private LocationListener locationListener;
-    private LocationManager locationManager;
-    private final IBinder mBinder = new TipLocationBinder();
+    private static final String tag = "LOCATION_SERVICE";
+    private final static int SECOND = 1000;
+    private GoogleApiClient googleApiClient;
+    private FusedLocationProviderClient provider;
+    private LocationRequest locationRequest;
+    private Intent locationIntent;
+    private LocationCallback locationCallback;
+    private Location newestLocation;
+
 
     @Override
     public void onCreate() {
         super.onCreate();
 
-        Log.i("LocationService", "onCreate : Service Created");
+        Log.i(tag , "onCreate : Service Created");
+        try {
+            locationIntent = new Intent("projectM.LOCATION_BROADCAST");
+            provider = LocationServices.getFusedLocationProviderClient(this);
 
-        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+            googleApiClient = new GoogleApiClient.Builder(this)
+                    .addApi(LocationServices.API)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .build();
 
-        locationListener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                // configure intent as appropriate and broadcast
-                Log.d("LocationService", "onLocationChanged : New location:" + location.getLatitude() + ", " + location.getLongitude());
-            }
+            locationRequest = LocationRequest.create()
+                    .setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
+                    .setInterval(SECOND * 10)
+                    .setFastestInterval(SECOND * 5);
 
-            @Override
-            public void onStatusChanged(String s, int i, Bundle bundle) {
+            locationCallback = new LocationCallback() {
+                @Override
+                public void onLocationResult(LocationResult locationResult) {
+                    newestLocation = locationResult.getLastLocation();
+                }
+            };
 
-            }
+            googleApiClient.connect();
 
-            @Override
-            public void onProviderEnabled(String s) {
-
-            }
-
-            @Override
-            public void onProviderDisabled(String s) {
-
-            }
-        };
-
+        } catch (SecurityException ex) {
+            ex.printStackTrace();
+        }
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-
-        Log.i("LocationService", "onStartCommand : Service Started");
-        //for starters I put it here. Subject to change, could also be done in onBind or onCreate
-        listenToLocation();
-
+        Log.i(tag , "onStartCommand : Service started");
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-
-        Log.d("LocationService", "onBind: Service Bind");
-
-        return mBinder;
+        Log.i(tag , "onBind : Service bind");
+        return null;
     }
 
-    public class TipLocationBinder extends Binder {
-        public TipLocationService getService() {
-            // Return this instance of LocalService so clients can call public methods
-            return TipLocationService.this;
-        }
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        Log.i(tag , "onConnected : Service connected");
+        requestUpdates();
     }
 
-    @SuppressLint("NewApi")
-    public void listenToLocation(){
-
-        // check for permissions
-        if ( checkSelfPermission(android.Manifest.permission.INTERNET) != PackageManager.PERMISSION_GRANTED ) {
+    private void requestUpdates() {
+        Log.i(tag, "requestUpdates : Checking permissions");
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            Log.i(tag, "requestUpdates : Permissions not granted");
             return;
         }
-        // this code won't execute IF permissions are not allowed
-        locationManager.requestLocationUpdates("gps", 5000, 0, locationListener);
-
+        Log.i(tag, "requestUpdates : Permissions granted");
+        provider.requestLocationUpdates(locationRequest, locationCallback, null);
     }
+
+    @Override
+    public void onConnectionSuspended(int i) {Log.i(tag , "onConnectionSuspended : Connection suspended");}
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {Log.i(tag , "onConnectionFailed : Connection failed");}
 }
