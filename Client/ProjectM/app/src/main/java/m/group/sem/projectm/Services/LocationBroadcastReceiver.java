@@ -6,7 +6,7 @@ import android.content.Intent;
 import android.util.Log;
 import android.widget.Toast;
 
-public class LocationBroadcastReceiver extends BroadcastReceiver{
+public abstract class LocationBroadcastReceiver extends BroadcastReceiver{
 
     private final static String tag = "BROADCAST_RECEIVER";
 
@@ -16,9 +16,8 @@ public class LocationBroadcastReceiver extends BroadcastReceiver{
         Log.e(tag, "onReceive : Location=" +
                 intent.getDoubleExtra("projectm.LOCATION_LATITUDE", 0) +", " +
                 intent.getDoubleExtra("projectm.LOCATION_LONGITUDE", 0));
-
-        // Override this method and add stuff to do
-        Toast.makeText(context,"Location= " + intent.getDoubleExtra("projectm.LOCATION_LATITUDE", 0) +", " +
-                intent.getDoubleExtra("projectm.LOCATION_LONGITUDE", 0),Toast.LENGTH_LONG).show();
+        onLocationReceived(intent);
     }
+
+    protected abstract void onLocationReceived(Intent intent);
 }

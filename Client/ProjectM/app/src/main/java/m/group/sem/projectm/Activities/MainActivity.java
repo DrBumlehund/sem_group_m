@@ -1,8 +1,6 @@
 package m.group.sem.projectm.Activities;
 
-import android.content.BroadcastReceiver;
 import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
@@ -44,9 +42,8 @@ public class MainActivity extends AppCompatActivity
 
     private static final String tag = "MAIN_ACTIVITY";
 
-    // TODO: remove this dummy data, whenever location data is available.
-    private double lat = 55.367397;
-    private double lon = 10.430401;
+    private double receivedLatitude;
+    private double receivedLongitude;
 
     private User mUser;
 
@@ -57,10 +54,9 @@ public class MainActivity extends AppCompatActivity
     private TextView mUsernameView;
     private TextView mUserIdView;
 
-    // Receiver variables
     private LocationBroadcastReceiver mReceiver;
-
     private Intent locationServiceIntent;
+
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
@@ -173,7 +169,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onMapReady(GoogleMap map) {
-        LatLng pos = new LatLng(lat, lon);
+        LatLng pos = new LatLng(receivedLatitude, receivedLongitude);
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, zoom));
         map.addMarker(new MarkerOptions()
                 .position(pos)
@@ -191,7 +187,7 @@ public class MainActivity extends AppCompatActivity
         Intent intent = new Intent(MainActivity.this, CreateReportActivity.class);
         intent.putExtra(getString(R.string.i_user), mUser);
         // TODO: figure out a better way of passing location to CreateReportActivity.
-        intent.putExtra(getString(R.string.i_location), new double[]{lat, lon});
+        intent.putExtra(getString(R.string.i_location), new double[]{receivedLatitude, receivedLongitude});
         startActivity(intent);
     }
 
@@ -235,7 +231,16 @@ public class MainActivity extends AppCompatActivity
 
     private void receiveLocation(){
         Log.i(tag, "receiveLocation : Create Receiver");
-        mReceiver = new LocationBroadcastReceiver();
+        mReceiver = new LocationBroadcastReceiver() {
+            @Override
+            protected void onLocationReceived(Intent intent) {
+
+                receivedLatitude = intent.getDoubleExtra("projectm.LOCATION_LATITUDE", 0);
+                receivedLongitude = intent.getDoubleExtra("projectm.LOCATION_LONGITUDE", 0);
+                Log.e(tag, "receiveLocation : " + receivedLatitude + ", " + receivedLongitude);
+
+            }
+        };
         Log.i(tag, "receiveLocation : Register Receiver");
         registerReceiver(mReceiver, new IntentFilter("projectM.LOCATION_BROADCAST"));
         locationServiceIntent = new Intent(this, TipLocationService.class);
