@@ -190,7 +190,7 @@ public class LoginActivity extends AppCompatActivity {
 
             String url = "http://51.254.127.173:8080/api/login?username=" + username + "&password=" + password;
 
-            mHttpClient.post(url, new AsyncHttpResponseHandler() {
+            mHttpClient.get(url, new AsyncHttpResponseHandler() {
 
                 @Override
                 public void onStart() {
@@ -201,7 +201,7 @@ public class LoginActivity extends AppCompatActivity {
 
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                    Log.d(tag, String.format("Status code %d received response : %s", statusCode, new String(responseBody)));
+                    Log.d(tag, String.format("Request Successful: status code %d received response : %s", statusCode, new String(responseBody)));
                     try {
                         User mUser = mMapper.readValue(responseBody, User.class);
                         continueToMainActivity(mUser);
