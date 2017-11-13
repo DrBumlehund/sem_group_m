@@ -75,7 +75,7 @@ public class TipLocationService extends Service implements GoogleApiClient.Conne
 
         Log.i(tag, "onCreate : Service Created");
         try {
-            locationIntent = new Intent(getString(R.string.location_broadcast));
+            locationIntent = new Intent(getString(R.string.action_location_broadcast));
             provider = LocationServices.getFusedLocationProviderClient(this);
 
             googleApiClient = new GoogleApiClient.Builder(this)

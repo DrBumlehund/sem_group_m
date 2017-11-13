@@ -17,18 +17,25 @@ import com.google.android.gms.location.ActivityRecognitionClient;
 import com.google.android.gms.tasks.Task;
 
 import m.group.sem.projectm.R;
-import m.group.sem.projectm.TipNotificationHandler;
 
 public class TipNotificationService extends Service {
 
-    private final BroadcastReceiver receiver = new BroadcastReceiver() {
+    private final BroadcastReceiver receiver = new LocationBroadcastReceiver() {
         @Override
-        public void onReceive(Context context, Intent intent) {
+        protected void onLocationReceived(Intent intent) {
             String action = intent.getAction();
-            if (action.equals(getString(R.string.location_broadcast))) {
-                TipNotificationHandler.getInstance().setLongitude(0);
-                TipNotificationHandler.getInstance().setLatitude(0);
-
+            Log.d("HANS", "received broadcast");
+            if (action.equals(getString(R.string.action_location_broadcast))) {
+                /** TODO: fix this crash issue :D
+                 *  I have some oddities, where uncommenting this causes
+                 *  the application to crash this we have to find some way of
+                 *  getting the location to the TipNotificationHandler
+                 *  I have narrowed it down to the singleton call, for the
+                 *  causation of the crash
+                 */
+//                double lat = intent.getDoubleExtra(getString(R.string.i_latitude), 0d);
+//                double lon = intent.getDoubleExtra(getString(R.string.i_longitude), 0d);
+//                TipNotificationHandler.getInstance().setLocation(lat, lon);
             }
         }
     };
@@ -57,15 +64,14 @@ public class TipNotificationService extends Service {
         ActivityRecognitionClient activityRecognitionClient = ActivityRecognition.getClient(this);
         Task task = activityRecognitionClient.requestActivityUpdates(5000L, pendingIntent);
 
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(getString(R.string.action_location_broadcast));
+        registerReceiver(receiver, new IntentFilter(getString(R.string.action_location_broadcast)));
+
+
         Log.d("Mine", "try to bind: ");
         Intent locationIntent = new Intent(this, TipLocationService.class);
         bindService(locationIntent, mConnection, Context.BIND_AUTO_CREATE);
-
-
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(getString(R.string.location_broadcast));
-        registerReceiver(receiver, filter);
-
 
         return Service.START_STICKY;
     }

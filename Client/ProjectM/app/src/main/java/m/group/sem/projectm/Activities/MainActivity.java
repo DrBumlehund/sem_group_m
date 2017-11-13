@@ -247,19 +247,18 @@ public class MainActivity extends AppCompatActivity
         mReceiver = new LocationBroadcastReceiver() {
             @Override
             protected void onLocationReceived(Intent intent) {
-
                 receivedLatitude = intent.getDoubleExtra(getString(R.string.i_latitude), 0);
                 receivedLongitude = intent.getDoubleExtra(getString(R.string.i_longitude), 0);
-                Log.e(tag, "receiveLocation : " + receivedLatitude + ", " + receivedLongitude);
+                Log.d(tag, "receivedLocation : " + receivedLatitude + ", " + receivedLongitude);
                 updateMap();
             }
         };
         Log.i(tag, "receiveLocation : Register Receiver");
-        registerReceiver(mReceiver, new IntentFilter(getString(R.string.location_broadcast)));
+        registerReceiver(mReceiver, new IntentFilter(getString(R.string.action_location_broadcast)));
         locationServiceIntent = new Intent(this, TipLocationService.class);
-        Log.i(tag, "receiveLocation: Starting Service");
+        Log.i(tag, "receiveLocation : Starting Service");
         startService(locationServiceIntent);
-        Log.i(tag, "receiveLocation: Binding service");
+        Log.i(tag, "receiveLocation : Binding service");
         bindService(locationServiceIntent, mConnection, BIND_NOT_FOREGROUND);
     }
 
@@ -273,7 +272,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(mReceiver, new IntentFilter(getString(R.string.location_broadcast)));
+        registerReceiver(mReceiver, new IntentFilter(getString(R.string.action_location_broadcast)));
     }
 }
 

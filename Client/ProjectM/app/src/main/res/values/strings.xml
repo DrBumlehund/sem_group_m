@@ -3,7 +3,7 @@
     <string name="app_name">Project M</string>
     <string name="api_url" translatable="false">http://51.254.127.173:8080/api/</string>
     <!-- broadcast keys -->
-    <string name="location_broadcast" translatable="false">projectM.LOCATION_BROADCAST</string>
+    <string name="action_location_broadcast" translatable="false">projectM.LOCATION_BROADCAST</string>
     <!-- intent keys -->
     <string name="i_user" translatable="false">USER</string>
     <string name="i_location" translatable="false">LOCATION</string>
