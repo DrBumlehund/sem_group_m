@@ -53,6 +53,7 @@ public class MainActivity extends AppCompatActivity
     // UI variables
     private TextView mUsernameView;
     private TextView mUserIdView;
+    private GoogleMap mMap = null;
 
     private LocationBroadcastReceiver mReceiver;
     private Intent locationServiceIntent;
@@ -171,14 +172,21 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onMapReady(GoogleMap map) {
-        LatLng pos = new LatLng(receivedLatitude, receivedLongitude);
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, zoom));
-        map.addMarker(new MarkerOptions()
-                .position(pos)
-                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.arrow))
-                .draggable(false)
-        );
+        mMap = map;
+        updateMap();
+    }
 
+    private void updateMap() {
+        if (mMap != null) {
+            mMap.clear();
+            LatLng pos = new LatLng(receivedLatitude, receivedLongitude);
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, zoom));
+            mMap.addMarker(new MarkerOptions()
+                    .position(pos)
+                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.arrow))
+                    .draggable(false)
+            );
+        }
     }
 
     private void goToSettings() {
@@ -245,7 +253,7 @@ public class MainActivity extends AppCompatActivity
                 receivedLatitude = intent.getDoubleExtra("projectm.LOCATION_LATITUDE", 0);
                 receivedLongitude = intent.getDoubleExtra("projectm.LOCATION_LONGITUDE", 0);
                 Log.e(tag, "receiveLocation : " + receivedLatitude + ", " + receivedLongitude);
-
+                updateMap();
             }
         };
         Log.i(tag, "receiveLocation : Register Receiver");
