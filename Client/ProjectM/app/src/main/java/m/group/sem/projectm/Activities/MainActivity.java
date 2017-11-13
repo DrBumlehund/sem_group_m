@@ -148,7 +148,6 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
@@ -161,7 +160,6 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_manage) {
             goToSettings();
         } else if (id == R.id.nav_sign_out) {
-            // sign out has been clicked
             signOut();
         }
 
@@ -250,14 +248,14 @@ public class MainActivity extends AppCompatActivity
             @Override
             protected void onLocationReceived(Intent intent) {
 
-                receivedLatitude = intent.getDoubleExtra("projectm.LOCATION_LATITUDE", 0);
-                receivedLongitude = intent.getDoubleExtra("projectm.LOCATION_LONGITUDE", 0);
+                receivedLatitude = intent.getDoubleExtra(getString(R.string.i_latitude), 0);
+                receivedLongitude = intent.getDoubleExtra(getString(R.string.i_longitude), 0);
                 Log.e(tag, "receiveLocation : " + receivedLatitude + ", " + receivedLongitude);
                 updateMap();
             }
         };
         Log.i(tag, "receiveLocation : Register Receiver");
-        registerReceiver(mReceiver, new IntentFilter("projectM.LOCATION_BROADCAST"));
+        registerReceiver(mReceiver, new IntentFilter(getString(R.string.location_broadcast)));
         locationServiceIntent = new Intent(this, TipLocationService.class);
         Log.i(tag, "receiveLocation: Starting Service");
         startService(locationServiceIntent);
@@ -275,7 +273,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(mReceiver, new IntentFilter("projectM.LOCATION_BROADCAST"));
+        registerReceiver(mReceiver, new IntentFilter(getString(R.string.location_broadcast)));
     }
 }
 

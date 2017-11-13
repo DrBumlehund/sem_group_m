@@ -11,6 +11,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -18,6 +19,8 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+
+import m.group.sem.projectm.R;
 
 public class TipLocationService extends Service implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -31,9 +34,9 @@ public class TipLocationService extends Service implements GoogleApiClient.Conne
     private Location newestLocation;
 
     //Method to chance precision of the location service
-    public void changeLocationRequest(int accuracy, int interval, int fastestInterval){
+    public void changeLocationRequest(int accuracy, int interval, int fastestInterval) {
 
-        try{
+        try {
             locationRequest.setInterval(interval);
             locationRequest.setFastestInterval(fastestInterval);
             switch (accuracy) {
@@ -70,9 +73,9 @@ public class TipLocationService extends Service implements GoogleApiClient.Conne
     public void onCreate() {
         super.onCreate();
 
-        Log.i(tag , "onCreate : Service Created");
+        Log.i(tag, "onCreate : Service Created");
         try {
-            locationIntent = new Intent("projectM.LOCATION_BROADCAST");
+            locationIntent = new Intent(getString(R.string.location_broadcast));
             provider = LocationServices.getFusedLocationProviderClient(this);
 
             googleApiClient = new GoogleApiClient.Builder(this)
@@ -91,12 +94,12 @@ public class TipLocationService extends Service implements GoogleApiClient.Conne
                 public void onLocationResult(LocationResult locationResult) {
                     newestLocation = locationResult.getLastLocation();
 
-                    locationIntent.putExtra("projectm.LOCATION_LATITUDE", newestLocation.getLatitude());
-                    locationIntent.putExtra("projectm.LOCATION_LONGITUDE", newestLocation.getLongitude());
+                    locationIntent.putExtra(getString(R.string.i_latitude), newestLocation.getLatitude());
+                    locationIntent.putExtra(getString(R.string.i_longitude), newestLocation.getLongitude());
 
                     Log.i(tag, "onLocationResult : New location:" +
-                            locationIntent.getDoubleExtra("projectm.LOCATION_LATITUDE", 0) +", " +
-                            locationIntent.getDoubleExtra("projectm.LOCATION_LONGITUDE", 0));
+                            locationIntent.getDoubleExtra(getString(R.string.i_latitude), 0) + ", " +
+                            locationIntent.getDoubleExtra(getString(R.string.i_longitude), 0));
 
                     sendBroadcast(locationIntent);
                 }
@@ -111,20 +114,20 @@ public class TipLocationService extends Service implements GoogleApiClient.Conne
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.i(tag , "onStartCommand : Service started");
+        Log.i(tag, "onStartCommand : Service started");
         return super.onStartCommand(intent, flags, startId);
     }
 
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        Log.i(tag , "onBind : Service bind");
+        Log.i(tag, "onBind : Service bind");
         return null;
     }
 
     @Override
     public void onConnected(@Nullable Bundle bundle) {
-        Log.i(tag , "onConnected : Service connected");
+        Log.i(tag, "onConnected : Service connected");
         requestUpdates();
     }
 
@@ -140,8 +143,12 @@ public class TipLocationService extends Service implements GoogleApiClient.Conne
     }
 
     @Override
-    public void onConnectionSuspended(int i) {Log.i(tag , "onConnectionSuspended : Connection suspended");}
+    public void onConnectionSuspended(int i) {
+        Log.i(tag, "onConnectionSuspended : Connection suspended");
+    }
 
     @Override
-    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {Log.i(tag , "onConnectionFailed : Connection failed");}
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+        Log.i(tag, "onConnectionFailed : Connection failed");
+    }
 }

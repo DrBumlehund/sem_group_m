@@ -1,16 +1,16 @@
 package m.group.sem.projectm;
 
+import android.annotation.TargetApi;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.health.TimerStat;
+import android.graphics.Color;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 
-import java.sql.Date;
-import java.sql.Time;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 
 import Model.Report;
@@ -25,23 +25,25 @@ import static android.content.Context.NOTIFICATION_SERVICE;
 
 public class TipNotificationHandler {
 
+    public final static int notificationId = 1;
     private static TipNotificationHandler instance;
+    double latitude;
+    double longitude;
     private double radius;
     private long lastReportUpdate = 0;
     // Every 2 hours
     private long reportUpdateInterval = 1000 * 60 * 60 * 2;
     private ArrayList<Report> reports = new ArrayList<>();
     private Context context;
-    public final static int notificationId = 1;
+
+    private TipNotificationHandler() {
+
+    }
 
     public static TipNotificationHandler getInstance() {
         if (instance == null)
             instance = new TipNotificationHandler();
         return instance;
-    }
-
-    private TipNotificationHandler () {
-
     }
 
     public void ActivityDetected(ActivityRecognitionContainer activityRecognitionContainer, Context context) {
@@ -51,25 +53,50 @@ public class TipNotificationHandler {
                 getReports();
                 lastReportUpdate = new java.util.Date().getTime();
             } else {
-                checkNearestReport(radius);
+                checkReportProximity();
             }
         }
     }
 
     private void getReports() {
         // TODO: Get reports here
-        //checkNearestReport(radius);
+        //checkReportProximity(radius);
     }
 
-    private void checkNearestReport(double radius) {
-        showNotification();
+    private void checkReportProximity() {
+        for (Report report : reports) {
+
+            showNotification(report);
+        }
     }
 
-    private void showNotification () {
+    @TargetApi(Build.VERSION_CODES.O)
+    private void showNotification(Report report) {
+
+        NotificationManager mNotificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        // The id of the channel.
+        String id = "notification_channel_1";
+        // The user-visible name of the channel.
+        CharSequence name = context.getString(R.string.notification_channel_name);
+        // The user-visible description of the channel.
+        String description = context.getString(R.string.notification_channel_desc);
+        int importance = NotificationManager.IMPORTANCE_HIGH;
+        NotificationChannel mChannel = new NotificationChannel(id, name, importance);
+        // Configure the notification channel.
+        mChannel.setDescription(description);
+        mChannel.enableLights(true);
+        // Sets the notification light color for notifications posted to this
+        // channel, if the device supports this feature.
+        mChannel.setLightColor(Color.RED);
+        mChannel.enableVibration(true);
+        mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+        mNotificationManager.createNotificationChannel(mChannel);
+
         NotificationCompat.Builder builder =
-                new NotificationCompat.Builder(context)
+                new NotificationCompat.Builder(context, id)
                         .setVisibility(Notification.VISIBILITY_PUBLIC)
-                        .setSmallIcon(R.drawable.abc_ic_menu_share_mtrl_alpha)
+                        .setSmallIcon(R.drawable.ic_stat_hvid_uden_tekst)
                         .setContentTitle("There's an issue in your area")
                         .setContentText("Can you confirm that: {report short description}");
 
@@ -81,7 +108,15 @@ public class TipNotificationHandler {
         builder.addAction(R.drawable.ic_menu_camera, "Disconfirm", yepPendingIntent);
         builder.addAction(R.drawable.ic_menu_send, "Comment", yepPendingIntent);
 
-        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+        mNotificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         mNotificationManager.notify(0, builder.build());
+    }
+
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 }

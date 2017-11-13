@@ -3,14 +3,10 @@ package m.group.sem.projectm.Activities;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
-import android.content.ComponentName;
-import android.content.Context;
 import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -39,7 +35,6 @@ import java.io.IOException;
 import Model.User;
 import m.group.sem.projectm.AccountHelper;
 import m.group.sem.projectm.R;
-import m.group.sem.projectm.Services.TipLocationService;
 import m.group.sem.projectm.Services.TipNotificationService;
 
 public class LoginActivity extends AppCompatActivity {
