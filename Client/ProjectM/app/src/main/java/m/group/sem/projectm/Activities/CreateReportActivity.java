@@ -28,6 +28,7 @@ import java.io.IOException;
 import Model.Report;
 import Model.User;
 import cz.msebera.android.httpclient.Header;
+import m.group.sem.projectm.Constants;
 import m.group.sem.projectm.R;
 
 public class CreateReportActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -126,7 +127,7 @@ public class CreateReportActivity extends AppCompatActivity implements OnMapRead
 
         String description = String.valueOf(mDescription.getText()).replaceAll(" ", "%20");
 
-        final String url = "http://51.254.127.173:8080/api/reports?latitude=" + mPosition.latitude + "&longitude=" + mPosition.longitude + "&comment=" + description + "&user-id=" + mUser.getId();
+        final String url = Constants.getBaseUrl() + "/reports?latitude=" + mPosition.latitude + "&longitude=" + mPosition.longitude + "&comment=" + description + "&user-id=" + mUser.getId();
 
         mHttpClient.post(url, new AsyncHttpResponseHandler() {
 
