@@ -7,22 +7,13 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Handler;
-import android.os.health.TimerStat;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.SyncHttpClient;
-
-import java.io.IOException;
-import java.sql.Date;
-import java.sql.Time;
-import java.sql.Timestamp;
-import java.util.ArrayList;
 
 import Model.Report;
 import cz.msebera.android.httpclient.Header;
@@ -49,14 +40,13 @@ public class TipNotificationHandler {
     private Context context;
     private double latitude = 0;
     private double longitude = 0;
+    // Async rest calls
+    private SyncHttpClient mHttpClient = new SyncHttpClient();
+    private ObjectMapper mMapper = new ObjectMapper();
 
     private TipNotificationHandler() {
 
     }
-
-    // Async rest calls
-    private SyncHttpClient mHttpClient = new SyncHttpClient();
-    private ObjectMapper mMapper = new ObjectMapper();
 
     public static TipNotificationHandler getInstance() {
         if (instance == null)
@@ -67,7 +57,7 @@ public class TipNotificationHandler {
     public void ActivityDetected(ActivityRecognitionContainer activityRecognitionContainer, Context context) {
         this.context = context;
         if (activityRecognitionContainer.isOnFoot()) {
-            if ( new java.util.Date().getTime() > lastReportUpdate + reportUpdateInterval) {
+            if (new java.util.Date().getTime() > lastReportUpdate + reportUpdateInterval) {
                 getReports();
                 lastReportUpdate = new java.util.Date().getTime();
             } else {
@@ -121,7 +111,7 @@ public class TipNotificationHandler {
     private void checkReportProximity() {
         Log.d(tag, "checkReportProximity");
 
-        if (reports.size() > 0) {
+        if (reports.length > 0) {
             for (Report report : reports) {
                 double distance = meterDistanceToMyLocation(report.getLatitude(), report.getLongitude());
                 Log.d(tag, String.format("distance to report %1$d : %1$s has been calculated to %2$d meters", report.getId(), report.getComment(), distance));

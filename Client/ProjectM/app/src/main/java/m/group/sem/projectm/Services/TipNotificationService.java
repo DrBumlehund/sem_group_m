@@ -16,6 +16,7 @@ import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.ActivityRecognitionClient;
 import com.google.android.gms.tasks.Task;
 
+import m.group.sem.projectm.BroadcastReceivers.LocationBroadcastReceiver;
 import m.group.sem.projectm.R;
 
 public class TipNotificationService extends Service {
@@ -33,8 +34,8 @@ public class TipNotificationService extends Service {
                  *  I have narrowed it down to the singleton call, for the
                  *  causation of the crash
                  */
-//                double lat = intent.getDoubleExtra(getString(R.string.i_latitude), 0d);
-//                double lon = intent.getDoubleExtra(getString(R.string.i_longitude), 0d);
+                double lat = intent.getDoubleExtra(getString(R.string.i_latitude), 0d);
+                double lon = intent.getDoubleExtra(getString(R.string.i_longitude), 0d);
 //                TipNotificationHandler.getInstance().setLocation(lat, lon);
             }
         }
