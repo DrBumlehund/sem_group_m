@@ -19,17 +19,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import java.io.IOException;
 
 import Model.User;
+import cz.msebera.android.httpclient.Header;
 import m.group.sem.projectm.AccountHelper;
 import m.group.sem.projectm.R;
 
@@ -43,7 +40,7 @@ public class CreateAccountActivity extends AppCompatActivity {
     private AccountHelper mAccountHelper;
 
     // request requestQueue
-    private RequestQueue mRequestQueue;
+    private AsyncHttpClient mHttpClient;
     private boolean mRequestRunning;
 
     // UI references.
@@ -63,7 +60,7 @@ public class CreateAccountActivity extends AppCompatActivity {
 
         mMapper = new ObjectMapper();
 
-        mRequestQueue = Volley.newRequestQueue(this);
+        mHttpClient = new AsyncHttpClient();
         mRequestRunning = false;
 
         // Set up the login form.
@@ -119,7 +116,7 @@ public class CreateAccountActivity extends AppCompatActivity {
         mPasswordView.setError(null);
 
         // Store values at the time of the login attempt.
-        String username = mUsernameView.getText().toString();
+        final String username = mUsernameView.getText().toString();
         String password = mPasswordView.getText().toString();
         String password2 = mPasswordView2.getText().toString();
 
@@ -163,42 +160,51 @@ public class CreateAccountActivity extends AppCompatActivity {
 
             String url = "http://51.254.127.173:8080/api/users?username=" + username + "&password=" + password;
 
-            StringRequest request = new StringRequest
-                    (Request.Method.GET, url, new Response.Listener<String>() {
+            mHttpClient.post(url, new AsyncHttpResponseHandler() {
 
-                        @Override
-                        public void onResponse(String response) {
-                            mRequestRunning = false;
-                            showProgress(false);
-                            Log.d(tag, "received response: " + response);
-                            try {
-                                User mUser = mMapper.readValue(response, User.class);
-                                continueToMainActivity(mUser);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                @Override
+                public void onStart() {
+                    super.onStart();
+                    mRequestRunning = true;
+                    showProgress(true);
+                }
+
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                    Log.d(tag, String.format("Request Successful: status code %d received response : %s", statusCode, new String(responseBody)));
+                    try {
+                        User mUser = mMapper.readValue(responseBody, User.class);
+                        continueToMainActivity(mUser);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                @Override
+                public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                    error.printStackTrace();
+                    Log.e(tag, String.format("Received error response : %s", new String(responseBody)));
+                    try {
+                        String errMessage = mMapper.readTree(responseBody).get("message").asText();
+                        Log.e(tag, errMessage);
+                        if (errMessage.contains(username)) {
+                            mUsernameView.setError(getString(R.string.create_username_taken));
+                            mUsernameView.requestFocus();
+                        } else {
+                            Toast.makeText(getApplicationContext(), getText(R.string.connection_err) + "\nerror code: " + statusCode, Toast.LENGTH_LONG).show();
                         }
-                    }, new Response.ErrorListener() {
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
 
-                        @Override
-                        public void onErrorResponse(VolleyError error) {
-                            mRequestRunning = false;
-                            showProgress(false);
-                            error.printStackTrace();
-                            if (error.networkResponse != null) {
-                                String response = new String(error.networkResponse.data);
-                                if (response.contains("com.mysql.jdbc.exceptions.jdbc4.MySQLIntegrityConstraintViolationException: Duplicate entry")) {
-                                    mUsernameView.setError(getString(R.string.create_username_taken));
-                                    mUsernameView.requestFocus();
-                                } else {
-                                    Toast.makeText(getApplicationContext(), getText(R.string.connection_err) + "\nerror code: " + error.networkResponse.statusCode, Toast.LENGTH_LONG).show();
-                                }
-                            }
-                        }
-
-                    });
-            mRequestRunning = true;
-            mRequestQueue.add(request);
+                @Override
+                public void onFinish() {
+                    super.onFinish();
+                    mRequestRunning = false;
+                    showProgress(false);
+                }
+            });
         }
     }
 

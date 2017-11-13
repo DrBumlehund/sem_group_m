@@ -12,12 +12,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -26,11 +20,14 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.loopj.android.http.AsyncHttpClient;
+import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import java.io.IOException;
 
 import Model.Report;
 import Model.User;
+import cz.msebera.android.httpclient.Header;
 import m.group.sem.projectm.R;
 
 public class CreateReportActivity extends AppCompatActivity implements OnMapReadyCallback {
@@ -55,7 +52,7 @@ public class CreateReportActivity extends AppCompatActivity implements OnMapRead
     private TextView mLonView;
 
     // request related stuff
-    private RequestQueue mRequestQueue;
+    private AsyncHttpClient mHttpClient;
     private boolean mRequestRunning;
     private ObjectMapper mMapper;
 
@@ -87,7 +84,7 @@ public class CreateReportActivity extends AppCompatActivity implements OnMapRead
             }
         });
 
-        mRequestQueue = Volley.newRequestQueue(this);
+        mHttpClient = new AsyncHttpClient();
         mRequestRunning = false;
         mMapper = new ObjectMapper();
 
@@ -131,41 +128,54 @@ public class CreateReportActivity extends AppCompatActivity implements OnMapRead
 
         final String url = "http://51.254.127.173:8080/api/reports?latitude=" + mPosition.latitude + "&longitude=" + mPosition.longitude + "&comment=" + description + "&user-id=" + mUser.getId();
 
-        StringRequest request = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                mRequestRunning = false;
-                showProgress(false);
+        mHttpClient.post(url, new AsyncHttpResponseHandler() {
 
-                Log.i(tag, "Received response: " + response);
+            @Override
+            public void onStart() {
+                super.onStart();
+                mRequestRunning = true;
+                showProgress(true);
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                Log.d(tag, String.format("Request Successful: status code %d received response : %s", statusCode, new String(responseBody)));
                 try {
-                    Report report = mMapper.readValue(response, Report.class);
+                    Report report = mMapper.readValue(responseBody, Report.class);
                     if (report != null) {
-                        Intent intent = new Intent(CreateReportActivity.this, MainActivity.class);
-                        intent.putExtra(getString(R.string.i_user), mUser);
-                        startActivity(intent);
+                        continueToMainActivity(mUser);
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
-        }, new Response.ErrorListener() {
+
             @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e(tag, "Error in network call with url: " + url);
-                mRequestRunning = false;
-                showProgress(false);
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 error.printStackTrace();
-                if (error.networkResponse != null) {
-                    Toast.makeText(getApplicationContext(), String.format("Networking error, error code %d", error.networkResponse.statusCode), Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), getText(R.string.connection_err) + "\nerror code: " + statusCode, Toast.LENGTH_LONG).show();
+                Log.e(tag, String.format("Received error response : %s", new String(responseBody)));
+                try {
+                    String errMessage = mMapper.readTree(responseBody).get("message").asText();
+                    Log.e(tag, errMessage);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
+
+            @Override
+            public void onFinish() {
+                super.onFinish();
+                mRequestRunning = false;
+                showProgress(false);
+            }
         });
-        mRequestRunning = true;
-        showProgress(true);
-        mRequestQueue.add(request);
+    }
 
-
+    private void continueToMainActivity(User user) {
+        Intent intent = new Intent(CreateReportActivity.this, MainActivity.class);
+        intent.putExtra(getString(R.string.i_user), user);
+        startActivity(intent);
     }
 
     private boolean isValidDesc() {
