@@ -53,23 +53,6 @@ public class TipNotificationService extends Service {
         public void onServiceConnected(ComponentName className, IBinder service) {
             Log.d("Mine", "connected: ");
 
-            try {
-                // We've bound to LocalService, cast the IBinder and get LocalService instance
-                Log.d("Mine", "onServiceConnected: " + service.getClass());
-                TipLocationService.TipLocationBinder binder = (TipLocationService.TipLocationBinder) service;
-                mService = binder.getService();
-                mBound = true;
-
-                mService.exampleCallbackImplementation(new TipLocationService.ExampleCallbackInterface() {
-                    @Override
-                    public void newLocationReceived(double someeVar) {
-                        Log.d("Mine", "newLocationReceived: " + someeVar);
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.d("Mine", "onServiceConnected: " + e.getMessage());
-            }
         }
 
         @Override

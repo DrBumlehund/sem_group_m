@@ -60,37 +60,6 @@ public class LoginActivity extends AppCompatActivity {
 
     // object mapper
     private ObjectMapper mMapper;
-    private ServiceConnection mConnection = new ServiceConnection() {
-
-        public TipLocationService mService;
-
-        @Override
-        public void onServiceConnected(ComponentName className, IBinder service) {
-            Log.d("Mine", "connected activity: ");
-
-            try {
-                // We've bound to LocalService, cast the IBinder and get LocalService instance
-                Log.d("Mine", "onServiceConnected activity: " + service.getClass());
-                TipLocationService.TipLocationBinder binder = (TipLocationService.TipLocationBinder) service;
-                mService = binder.getService();
-
-                mService.exampleCallbackImplementation(new TipLocationService.ExampleCallbackInterface() {
-                    @Override
-                    public void newLocationReceived(double someeVar) {
-                        Log.d("Mine", "newLocationReceived activity: " + someeVar);
-                    }
-                });
-            } catch (Exception e) {
-                e.printStackTrace();
-                Log.d("Mine", "onServiceConnected activity: " + e.getMessage());
-            }
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName arg0) {
-            Log.d("Mine", "disconnected activity: ");
-        }
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,8 +69,7 @@ public class LoginActivity extends AppCompatActivity {
         Intent intent = new Intent(this, TipNotificationService.class);
         startService(intent);
         Log.d("Mine", "try to bind from activity: ");
-        Intent locationIntent = new Intent(this, TipLocationService.class);
-        bindService(locationIntent, mConnection, Context.BIND_AUTO_CREATE);
+
 
         boolean b = getIntent().hasExtra(getString(R.string.i_sign_out));
         if (b) {
@@ -111,7 +79,6 @@ public class LoginActivity extends AppCompatActivity {
         mMapper = new ObjectMapper();
 
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(getString(R.string.sp_key), MODE_PRIVATE);
-
         if (!b) {
             String serializedUser = sharedPref.getString(getString(R.string.sp_user_login), null);
             if (serializedUser != null) {
