@@ -111,17 +111,22 @@ public class LoginActivity extends AppCompatActivity {
         mMapper = new ObjectMapper();
 
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(getString(R.string.sp_key), MODE_PRIVATE);
-        String serializedUser = sharedPref.getString(getString(R.string.sp_user_login), null);
-        if (serializedUser != null) {
-            try {
-                User mUser = mMapper.readValue(serializedUser, User.class);
 
-                if (mUser != null) {
-                    continueToMainActivity(mUser);
+        if (!b) {
+            String serializedUser = sharedPref.getString(getString(R.string.sp_user_login), null);
+            if (serializedUser != null) {
+                try {
+                    User mUser = mMapper.readValue(serializedUser, User.class);
+                    if (mUser != null) {
+                        Log.d(tag, "Able to auto-login!");
+                        continueToMainActivity(mUser);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+        } else {
+            Log.d(tag, "I was signed out, don't even wanna try to auto-login");
         }
 
         mRequestQueue = Volley.newRequestQueue(this);
@@ -274,7 +279,7 @@ public class LoginActivity extends AppCompatActivity {
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(getString(R.string.sp_key), MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
         try {
-            editor.putString(getString(R.string.sp_user_login), mMapper.writeValueAsString(user));
+            editor.putString(getString(R.string.sp_user_login), user != null ? mMapper.writeValueAsString(user) : null);
             editor.putBoolean(getString(R.string.sp_user_login_checked), checked);
         } catch (JsonProcessingException e) {
             e.printStackTrace();

@@ -40,4 +40,6 @@
     <string name="create_r_location">Location</string>
     <string name="create_r_submit">Submit Report</string>
     <string name="create_r_desc_size_err">The description must be between %1$d and %2$d characters long</string>
+    <!-- Strings for the notifications -->
+
 </resources>
