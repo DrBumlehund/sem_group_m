@@ -239,50 +239,6 @@ public class LoginActivity extends AppCompatActivity {
                     showProgress(false);
                 }
             });
-
-//            StringRequest request = new StringRequest
-//                    (Request.Method.GET, url, new Response.Listener<String>() {
-//
-//                        @Override
-//                        public void onResponse(String response) {
-//                            mRequestRunning = false;
-//                            showProgress(false);
-//                            Log.d(tag, "received response: " + response);
-//                            try {
-//                                User mUser = mMapper.readValue(response, User.class);
-//
-//                                if (mStoreLoginSettingsCheckBox.isChecked()) {
-//                                    saveLoginSettings(mUser, mStoreLoginSettingsCheckBox.isChecked());
-//                                } else {
-//                                    saveLoginSettings(null, mStoreLoginSettingsCheckBox.isChecked());
-//                                }
-//
-//                                continueToMainActivity(mUser);
-//                            } catch (IOException e) {
-//                                e.printStackTrace();
-//                            }
-//                        }
-//                    }, new Response.ErrorListener() {
-//
-//                        @Override
-//                        public void onErrorResponse(VolleyError error) {
-//                            mRequestRunning = false;
-//                            showProgress(false);
-//                            error.printStackTrace();
-//                            if (error.networkResponse != null) {
-//                                String response = new String(error.networkResponse.data);
-//                                if (response.contains("Incorrect username or password")) {
-//                                    mPasswordView.setError(getString(R.string.error_incorrect_password));
-//                                    mPasswordView.requestFocus();
-//                                } else {
-//                                    Toast.makeText(getApplicationContext(), getText(R.string.connection_err) + "\nerror code: " + error.networkResponse.statusCode, Toast.LENGTH_LONG).show();
-//                                }
-//                            }
-//                        }
-//
-//                    });
-//            mRequestRunning = true;
-//            mRequestQueue.add(request);
         }
     }
 
