@@ -30,6 +30,41 @@ public class TipLocationService extends Service implements GoogleApiClient.Conne
     private LocationCallback locationCallback;
     private Location newestLocation;
 
+    //Method to chance precision of the location service
+    public void changeLocationRequest(int accuracy, int interval, int fastestInterval){
+
+        try{
+            locationRequest.setInterval(interval);
+            locationRequest.setFastestInterval(fastestInterval);
+            switch (accuracy) {
+                case 0:
+                    // No locations will be returned unless a different client has requested location
+                    // updates in which case this request will act as a passive listener to those locations.
+                    locationRequest.setPriority(LocationRequest.PRIORITY_NO_POWER);
+                    break;
+                case 1:
+                    // City level accuracy is considered to be about 10km accuracy. Using a coarse accuracy
+                    // such as this often consumes less power.
+                    locationRequest.setPriority(LocationRequest.PRIORITY_LOW_POWER);
+                    break;
+                case 2:
+                    // Block level accuracy is considered to be about 100 meter accuracy. Using a coarse
+                    // accuracy such as this often consumes less power.
+                    locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+                    break;
+                case 3:
+                    //This will return the finest location available.
+                    locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+                default:
+                    Log.e(tag, "changeLocationRequest : Incorrect accuracy parameter");
+                    break;
+            }
+        } catch (SecurityException ex) {
+            ex.printStackTrace();
+        }
+        //Start updating location with new request
+        requestUpdates();
+    }
 
     @Override
     public void onCreate() {
