@@ -1,9 +1,17 @@
 package m.group.sem.projectm.Activities;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.ServiceConnection;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -26,15 +34,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import Model.User;
 import m.group.sem.projectm.R;
+import m.group.sem.projectm.Services.LocationBroadcastReceiver;
+import m.group.sem.projectm.Services.TipLocationService;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
     private static final String tag = "MAIN_ACTIVITY";
 
-    // TODO: remove this dummy data, whenever location data is available.
-    private double lat = 55.367397;
-    private double lon = 10.430401;
+    private double receivedLatitude;
+    private double receivedLongitude;
 
     private User mUser;
 
@@ -45,9 +54,27 @@ public class MainActivity extends AppCompatActivity
     private TextView mUsernameView;
     private TextView mUserIdView;
 
+    private LocationBroadcastReceiver mReceiver;
+    private Intent locationServiceIntent;
+
+    private ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            //The system calls this to deliver the IBinder returned by the service's onBind() method. Our returns null. What happens now?
+            Log.i(tag, "onServiceConnected: Service Connected");
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        checkPermissions();
+
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -142,7 +169,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onMapReady(GoogleMap map) {
-        LatLng pos = new LatLng(lat, lon);
+        LatLng pos = new LatLng(receivedLatitude, receivedLongitude);
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, zoom));
         map.addMarker(new MarkerOptions()
                 .position(pos)
@@ -160,7 +187,7 @@ public class MainActivity extends AppCompatActivity
         Intent intent = new Intent(MainActivity.this, CreateReportActivity.class);
         intent.putExtra(getString(R.string.i_user), mUser);
         // TODO: figure out a better way of passing location to CreateReportActivity.
-        intent.putExtra(getString(R.string.i_location), new double[]{lat, lon});
+        intent.putExtra(getString(R.string.i_location), new double[]{receivedLatitude, receivedLongitude});
         startActivity(intent);
     }
 
@@ -170,4 +197,70 @@ public class MainActivity extends AppCompatActivity
         intent.putExtra(getString(R.string.i_sign_out), true);
         startActivity(intent);
     }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        switch (requestCode){
+            case 10:
+                Log.i(tag, "onRequestPermissionsResult : Permissions granted");
+                receiveLocation();
+                break;
+            default:
+                Log.i(tag, "onRequestPermissionsResult : Permissions request canceled");
+                break;
+        }
+    }
+
+    private void checkPermissions(){
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(new String[]{
+                                android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                                android.Manifest.permission.INTERNET}
+                        ,10);
+                return;
+            }
+            Log.i(tag, "checkPermissions : Permissions not granted");
+
+        }
+        //TODO: implement some button on mainactivity to resync/recheck permission to start location service
+        receiveLocation();
+    }
+
+    private void receiveLocation(){
+        Log.i(tag, "receiveLocation : Create Receiver");
+        mReceiver = new LocationBroadcastReceiver() {
+            @Override
+            protected void onLocationReceived(Intent intent) {
+
+                receivedLatitude = intent.getDoubleExtra("projectm.LOCATION_LATITUDE", 0);
+                receivedLongitude = intent.getDoubleExtra("projectm.LOCATION_LONGITUDE", 0);
+                Log.e(tag, "receiveLocation : " + receivedLatitude + ", " + receivedLongitude);
+
+            }
+        };
+        Log.i(tag, "receiveLocation : Register Receiver");
+        registerReceiver(mReceiver, new IntentFilter("projectM.LOCATION_BROADCAST"));
+        locationServiceIntent = new Intent(this, TipLocationService.class);
+        Log.i(tag, "receiveLocation: Starting Service");
+        startService(locationServiceIntent);
+        Log.i(tag, "receiveLocation: Binding service");
+        bindService(locationServiceIntent, mConnection, BIND_NOT_FOREGROUND);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unbindService(mConnection);
+        unregisterReceiver(mReceiver);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(mReceiver, new IntentFilter("projectM.LOCATION_BROADCAST"));
+    }
 }
+
