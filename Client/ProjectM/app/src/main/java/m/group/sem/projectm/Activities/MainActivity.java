@@ -4,6 +4,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,10 +33,16 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.IOException;
+
+import Model.Report;
 import Model.User;
+import m.group.sem.projectm.BroadcastReceivers.ReportsBroadcastReceiver;
+import m.group.sem.projectm.Constants;
 import m.group.sem.projectm.R;
-import m.group.sem.projectm.Services.LocationBroadcastReceiver;
+import m.group.sem.projectm.BroadcastReceivers.LocationBroadcastReceiver;
 import m.group.sem.projectm.Services.TipLocationService;
+import m.group.sem.projectm.Utilities;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
@@ -69,6 +76,7 @@ public class MainActivity extends AppCompatActivity
         public void onServiceDisconnected(ComponentName componentName) {
         }
     };
+    private Report[] mReports = new Report[0];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,6 +114,19 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        // Get saved reports, if any
+        SharedPreferences prefs = getSharedPreferences(getString(R.string.app_name), MODE_PRIVATE);
+        String reportsSerialized = prefs.getString(Constants.REPORTS_ONLY_COORDINATES, null);
+        if (reportsSerialized != null && !reportsSerialized.isEmpty()) {
+            try {
+                mReports = (Report[])Utilities.fromString(reportsSerialized);
+            } catch (IOException | ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // Register for new reports
+        registerReceiver(mReportsReceiver, new IntentFilter("projectM.REPORTS_BROADCAST"));
     }
 
     @Override
@@ -261,6 +282,13 @@ public class MainActivity extends AppCompatActivity
         Log.i(tag, "receiveLocation : Binding service");
         bindService(locationServiceIntent, mConnection, BIND_NOT_FOREGROUND);
     }
+
+    private ReportsBroadcastReceiver mReportsReceiver = new ReportsBroadcastReceiver() {
+        @Override
+        protected void onReportsReceived(Report[] reports) {
+            mReports = reports;
+        }
+    };
 
     @Override
     protected void onDestroy() {
