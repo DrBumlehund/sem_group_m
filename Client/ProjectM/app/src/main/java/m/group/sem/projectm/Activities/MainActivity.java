@@ -155,6 +155,8 @@ public class MainActivity extends AppCompatActivity
 
         if (id == R.id.nav_create_report) {
             goToCreateReport();
+        } else if ((id == R.id.nav_show_leaderboard)) {
+            goToLeaderboard();
         } else if (id == R.id.nav_manage) {
             goToSettings();
         } else if (id == R.id.nav_sign_out) {
@@ -183,6 +185,11 @@ public class MainActivity extends AppCompatActivity
         Toast.makeText(getApplicationContext(), "Settings, what settings?", Toast.LENGTH_SHORT).show();
     }
 
+    private void goToLeaderboard() {
+        Toast.makeText(getApplicationContext(), "Leaderboard, what leaderboard?", Toast.LENGTH_SHORT).show();
+    }
+
+
     private void goToCreateReport() {
         Intent intent = new Intent(MainActivity.this, CreateReportActivity.class);
         intent.putExtra(getString(R.string.i_user), mUser);
@@ -200,7 +207,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        switch (requestCode){
+        switch (requestCode) {
             case 10:
                 Log.i(tag, "onRequestPermissionsResult : Permissions granted");
                 receiveLocation();
@@ -211,7 +218,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private void checkPermissions(){
+    private void checkPermissions() {
         if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
                 && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -219,7 +226,7 @@ public class MainActivity extends AppCompatActivity
                                 android.Manifest.permission.ACCESS_COARSE_LOCATION,
                                 android.Manifest.permission.ACCESS_FINE_LOCATION,
                                 android.Manifest.permission.INTERNET}
-                        ,10);
+                        , 10);
                 return;
             }
             Log.i(tag, "checkPermissions : Permissions not granted");
@@ -229,7 +236,7 @@ public class MainActivity extends AppCompatActivity
         receiveLocation();
     }
 
-    private void receiveLocation(){
+    private void receiveLocation() {
         Log.i(tag, "receiveLocation : Create Receiver");
         mReceiver = new LocationBroadcastReceiver() {
             @Override

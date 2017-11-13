@@ -9,6 +9,10 @@
             android:icon="@mipmap/plus_b"
             android:title="@string/nav_create_r" />
         <item
+            android:id="@+id/nav_show_leaderboard"
+            android:icon="@mipmap/leaderboard"
+            android:title="@string/nav_leaderboard" />
+        <item
             android:id="@+id/nav_manage"
             android:icon="@drawable/ic_menu_manage"
             android:title="@string/action_settings" />

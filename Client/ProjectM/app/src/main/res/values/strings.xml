@@ -33,6 +33,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_sign_out">Sign Out</string>
     <string name="nav_create_r">Create Report</string>
+    <string name="nav_leaderboard">Leaderboard</string>
     <string name="action_settings">Settings</string>
     <string name="nav_user_id">User Id: %d</string>
     <!-- Strings for CreateReportActivity -->
