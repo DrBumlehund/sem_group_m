@@ -28,6 +28,7 @@ import java.io.IOException;
 import Model.User;
 import cz.msebera.android.httpclient.Header;
 import m.group.sem.projectm.AccountHelper;
+import m.group.sem.projectm.Constants;
 import m.group.sem.projectm.R;
 
 /**
@@ -158,7 +159,7 @@ public class CreateAccountActivity extends AppCompatActivity {
 
             password = mAccountHelper.hashPassword(password);
 
-            String url = "http://51.254.127.173:8080/api/users?username=" + username + "&password=" + password;
+            String url = Constants.getBaseUrl() + "/users?username=" + username + "&password=" + password;
 
             mHttpClient.post(url, new AsyncHttpResponseHandler() {
 

@@ -31,6 +31,7 @@ import java.io.IOException;
 import Model.User;
 import cz.msebera.android.httpclient.Header;
 import m.group.sem.projectm.AccountHelper;
+import m.group.sem.projectm.Constants;
 import m.group.sem.projectm.R;
 import m.group.sem.projectm.Services.TipNotificationService;
 
@@ -186,7 +187,7 @@ public class LoginActivity extends AppCompatActivity {
             // hash password
             password = mAccountHelper.hashPassword(password);
 
-            String url = "http://51.254.127.173:8080/api/login?username=" + username + "&password=" + password;
+            String url = Constants.getBaseUrl() + "/login?username=" + username + "&password=" + password;
 
             mHttpClient.get(url, new AsyncHttpResponseHandler() {
 
