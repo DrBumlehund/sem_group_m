@@ -2,11 +2,13 @@ package m.group.sem.projectm;
 
 import android.annotation.TargetApi;
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -32,7 +34,7 @@ public class TipNotificationHandler {
     public final static int notificationId = 1;
     private final static String tag = "TipNotificationHandler";
     private static TipNotificationHandler instance;
-    private double radius = 100;
+    private double radius = 1000000000;
     private long lastReportUpdate = 0;
     // Every 2 hours
     private long reportUpdateInterval = 1000;
@@ -114,7 +116,7 @@ public class TipNotificationHandler {
         if (reports.length > 0) {
             for (Report report : reports) {
                 double distance = meterDistanceToMyLocation(report.getLatitude(), report.getLongitude());
-                Log.d(tag, String.format("distance to report %1$d : %1$s has been calculated to %2$d meters", report.getId(), report.getComment(), distance));
+                Log.d(tag, String.format("distance to report %d : %1$s has been calculated to %f meters", report.getId(), report.getComment(), distance));
                 if (distance < radius) {
                     showNotification(report);
                 }
@@ -125,25 +127,25 @@ public class TipNotificationHandler {
     @TargetApi(Build.VERSION_CODES.O)
     private void showNotification(Report report) {
 
-//        NotificationManager mNotificationManager =
-//                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-//        // The id of the channel.
+        NotificationManager mNotificationManager =
+                (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        // The id of the channel.
         String id = "notification_channel_1";
-//        // The user-visible name of the channel.
-//        CharSequence name = context.getString(R.string.notification_channel_name);
-//        // The user-visible description of the channel.
-//        String description = context.getString(R.string.notification_channel_desc);
-//        int importance = NotificationManager.IMPORTANCE_HIGH;
-//        NotificationChannel mChannel = new NotificationChannel(id, name, importance);
-//        // Configure the notification channel.
-//        mChannel.setDescription(description);
-//        mChannel.enableLights(true);
-//        // Sets the notification light color for notifications posted to this
-//        // channel, if the device supports this feature.
-//        mChannel.setLightColor(Color.RED);
-//        mChannel.enableVibration(true);
-//        mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
-//        mNotificationManager.createNotificationChannel(mChannel);
+        // The user-visible name of the channel.
+        CharSequence name = context.getString(R.string.notification_channel_name);
+        // The user-visible description of the channel.
+        String description = context.getString(R.string.notification_channel_desc);
+        int importance = NotificationManager.IMPORTANCE_HIGH;
+        NotificationChannel mChannel = new NotificationChannel(id, name, importance);
+        // Configure the notification channel.
+        mChannel.setDescription(description);
+        mChannel.enableLights(true);
+        // Sets the notification light color for notifications posted to this
+        // channel, if the device supports this feature.
+        mChannel.setLightColor(Color.RED);
+        mChannel.enableVibration(true);
+        mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
+        mNotificationManager.createNotificationChannel(mChannel);
 
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(context, id)
@@ -160,12 +162,12 @@ public class TipNotificationHandler {
         builder.addAction(R.drawable.ic_menu_camera, "Deny", yepPendingIntent);
         builder.addAction(R.drawable.ic_menu_send, "Comment", yepPendingIntent);
 
-        NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+        mNotificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         mNotificationManager.notify(0, builder.build());
     }
 
     public void setLocation(double latitude, double longitude) {
-        Log.d(tag, String.format("Location updated to : %1$d, %2$d", latitude, longitude));
+        Log.d(tag, String.format("Location updated to : %1$f, %2$f", latitude, longitude));
         this.latitude = latitude;
         this.longitude = longitude;
     }

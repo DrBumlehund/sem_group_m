@@ -202,6 +202,11 @@ public class LoginActivity extends AppCompatActivity {
                     Log.d(tag, String.format("Request Successful: status code %d received response : %s", statusCode, new String(responseBody)));
                     try {
                         User mUser = mMapper.readValue(responseBody, User.class);
+                        if (mStoreLoginSettingsCheckBox.isChecked()) {
+                            saveLoginSettings(mUser, true);
+                        } else {
+                            saveLoginSettings(null, false);
+                        }
                         continueToMainActivity(mUser);
                     } catch (IOException e) {
                         e.printStackTrace();

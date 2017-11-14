@@ -18,6 +18,7 @@ import com.google.android.gms.tasks.Task;
 
 import m.group.sem.projectm.BroadcastReceivers.LocationBroadcastReceiver;
 import m.group.sem.projectm.R;
+import m.group.sem.projectm.TipNotificationHandler;
 
 public class TipNotificationService extends Service {
 
@@ -25,18 +26,14 @@ public class TipNotificationService extends Service {
         @Override
         protected void onLocationReceived(Intent intent) {
             String action = intent.getAction();
-            Log.d("HANS", "received broadcast");
             if (action.equals(getString(R.string.action_location_broadcast))) {
-                /** TODO: fix this crash issue :D
-                 *  I have some oddities, where uncommenting this causes
-                 *  the application to crash this we have to find some way of
-                 *  getting the location to the TipNotificationHandler
-                 *  I have narrowed it down to the singleton call, for the
-                 *  causation of the crash
-                 */
-                double lat = intent.getDoubleExtra(getString(R.string.i_latitude), 0d);
-                double lon = intent.getDoubleExtra(getString(R.string.i_longitude), 0d);
-//                TipNotificationHandler.getInstance().setLocation(lat, lon);
+                double lat = intent.getDoubleExtra(getString(R.string.i_latitude), 0);
+                double lon = intent.getDoubleExtra(getString(R.string.i_longitude), 0);
+                try {
+                    TipNotificationHandler.getInstance().setLocation(lat, lon);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
     };
@@ -72,7 +69,9 @@ public class TipNotificationService extends Service {
 
         Log.d("Mine", "try to bind: ");
         Intent locationIntent = new Intent(this, TipLocationService.class);
+        // startService(locationIntent);
         bindService(locationIntent, mConnection, Context.BIND_AUTO_CREATE);
+
 
         return Service.START_STICKY;
     }
@@ -81,6 +80,7 @@ public class TipNotificationService extends Service {
     public void onDestroy() {
         super.onDestroy();
         unbindService(mConnection);
+        unregisterReceiver(receiver);
         mBound = false;
     }
 
