@@ -50,4 +50,6 @@
     <string name="notification_channel_desc">This channel is used for notifying you about near by reports</string>
     <!-- Strings for about -->
     <string name="about">This is a page for storing information about the application, I guess…</string>
+    <string name="last_known_long">last_known_long</string>
+    <string name="last_known_lat">last_known_lat</string>
 </resources>

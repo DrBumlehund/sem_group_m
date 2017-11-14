@@ -3,6 +3,7 @@ package m.group.sem.projectm.Services;
 import android.Manifest;
 import android.app.Service;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
@@ -21,6 +22,7 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 
 import m.group.sem.projectm.R;
+import m.group.sem.projectm.Utilities;
 
 public class TipLocationService extends Service implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
 
@@ -96,6 +98,13 @@ public class TipLocationService extends Service implements GoogleApiClient.Conne
 
                     locationIntent.putExtra(getString(R.string.i_latitude), newestLocation.getLatitude());
                     locationIntent.putExtra(getString(R.string.i_longitude), newestLocation.getLongitude());
+
+                    // Save to shared prefs - will be used as a last known location in case of activity restart
+                    SharedPreferences prefs = getSharedPreferences(getString(R.string.app_name), MODE_PRIVATE);
+                    SharedPreferences.Editor edit = prefs.edit();
+                    edit = Utilities.putDouble(edit, getString(R.string.last_known_lat), newestLocation.getLatitude());
+                    edit = Utilities.putDouble(edit, getString(R.string.last_known_long), newestLocation.getLongitude());
+                    edit.apply();
 
                     Log.i(tag, "onLocationResult : New location:" +
                             locationIntent.getDoubleExtra(getString(R.string.i_latitude), 0) + ", " +

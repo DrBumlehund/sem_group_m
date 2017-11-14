@@ -31,6 +31,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
@@ -103,7 +104,7 @@ public class MainActivity extends AppCompatActivity
         mUser = (User) getIntent().getSerializableExtra(getString(R.string.i_user));
 
         Log.e(tag, "Received user: " + mUser.toString());
-        zoom = 13;
+        zoom = 15;
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
@@ -117,6 +118,9 @@ public class MainActivity extends AppCompatActivity
         // Get saved reports, if any
         SharedPreferences prefs = getSharedPreferences(getString(R.string.app_name), MODE_PRIVATE);
         String reportsSerialized = prefs.getString(Constants.REPORTS_ONLY_COORDINATES, null);
+        receivedLatitude = Utilities.getDouble(prefs,getString(R.string.last_known_lat), 0);
+        receivedLongitude = Utilities.getDouble(prefs,getString(R.string.last_known_long), 0);
+
         if (reportsSerialized != null && !reportsSerialized.isEmpty()) {
             try {
                 mReports = (Report[])Utilities.fromString(reportsSerialized);
@@ -124,9 +128,6 @@ public class MainActivity extends AppCompatActivity
                 e.printStackTrace();
             }
         }
-
-        // Register for new reports
-        registerReceiver(mReportsReceiver, new IntentFilter("projectM.REPORTS_BROADCAST"));
     }
 
     @Override
@@ -192,7 +193,35 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                return onMarkerClicked(marker);
+            }
+        });
         updateMap();
+    }
+
+    private boolean onMarkerClicked(Marker marker) {
+        Object tag = marker.getTag();
+        try {
+            int reportId = (int) tag;
+            Report report = null;
+            for (Report _report : mReports) {
+                if (_report.getId() == reportId){
+                    report = _report;
+                    break;
+                }
+            }
+            if (report == null) {
+                throw new Exception("No report found with id " + reportId);
+            }
+            Log.d("Mine", "onMarkerClicked: " + report.getComment());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     private void updateMap() {
@@ -205,6 +234,15 @@ public class MainActivity extends AppCompatActivity
                     .icon(BitmapDescriptorFactory.fromResource(R.mipmap.arrow))
                     .draggable(false)
             );
+            for (Report report : mReports) {
+                Log.d("Mine", "report with id: " + report.getId() + " coordinates: " + report.getLatitude() + ": " + report.getLongitude());
+                Marker marker = mMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(report.getLatitude(), report.getLongitude()))
+                        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.arrow))
+                        .title(report.getComment())
+                );
+                marker.setTag(report.getId());
+            }
         }
     }
 
@@ -287,6 +325,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected void onReportsReceived(Report[] reports) {
             mReports = reports;
+            updateMap();
         }
     };
 
@@ -295,12 +334,15 @@ public class MainActivity extends AppCompatActivity
         super.onDestroy();
         unbindService(mConnection);
         unregisterReceiver(mReceiver);
+        unregisterReceiver(mReportsReceiver);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         registerReceiver(mReceiver, new IntentFilter(getString(R.string.action_location_broadcast)));
+        // Register for new reports
+        registerReceiver(mReportsReceiver, new IntentFilter("projectM.REPORTS_BROADCAST"));
     }
 }
 

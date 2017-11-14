@@ -120,8 +120,8 @@ public class DatabaseFacade {
 			ArrayList<Report> reports = new ArrayList<Report>();
 	        while (result.next()) {
 	        	int id = result.getInt("id");
-	        	double latitude = result.getInt("latitude");
-	        	double longitude = result.getInt("longitude");
+	        	double latitude = result.getDouble("latitude");
+	        	double longitude = result.getDouble("longitude");
 	        	
 	        	Report report = new Report();
 	        	report.setLongitude(longitude);
@@ -152,8 +152,8 @@ public class DatabaseFacade {
 			ArrayList<Report> reports = new ArrayList<Report>();
 	        while (result.next()) {
 	        	int id = result.getInt("id");
-	        	double latitude = result.getInt("latitude");
-	        	double longitude = result.getInt("longitude");
+	        	double latitude = result.getDouble("latitude");
+	        	double longitude = result.getDouble("longitude");
 	        	String comment = result.getString("comment");
 	        	int userId = result.getInt("id_user");
 	        	String username = result.getString("username");

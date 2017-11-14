@@ -1,5 +1,6 @@
 package m.group.sem.projectm;
 
+import android.content.SharedPreferences;
 import android.util.Base64;
 
 import java.io.ByteArrayInputStream;
@@ -28,5 +29,13 @@ public class Utilities {
         oos.writeObject(o);
         oos.close();
         return Base64.encodeToString(baos.toByteArray(), Base64.DEFAULT);
+    }
+
+    public static SharedPreferences.Editor putDouble(final SharedPreferences.Editor edit, final String key, final double value) {
+        return edit.putLong(key, Double.doubleToRawLongBits(value));
+    }
+
+    public static double getDouble(final SharedPreferences prefs, final String key, final double defaultValue) {
+        return Double.longBitsToDouble(prefs.getLong(key, Double.doubleToLongBits(defaultValue)));
     }
 }
