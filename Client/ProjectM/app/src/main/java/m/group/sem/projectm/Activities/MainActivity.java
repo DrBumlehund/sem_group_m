@@ -35,6 +35,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
+import java.util.HashMap;
 
 import Model.Report;
 import Model.User;
@@ -54,9 +55,12 @@ public class MainActivity extends AppCompatActivity
     private double receivedLongitude;
 
     private User mUser;
+    private Report[] mReports = new Report[0];
 
     // map variables
     private float zoom;
+    private Marker currentLocationMarker;
+    private HashMap<Marker, Report> reportMarkers = new HashMap<>();
 
     // UI variables
     private TextView mUsernameView;
@@ -77,7 +81,6 @@ public class MainActivity extends AppCompatActivity
         public void onServiceDisconnected(ComponentName componentName) {
         }
     };
-    private Report[] mReports = new Report[0];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -199,11 +202,19 @@ public class MainActivity extends AppCompatActivity
                 return onMarkerClicked(marker);
             }
         });
-        updateMap();
+
+        LatLng pos = new LatLng(receivedLatitude, receivedLongitude);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, zoom));
+        updateMapLocation();
+        updateMapReports();
     }
 
     private boolean onMarkerClicked(Marker marker) {
         Object tag = marker.getTag();
+        if (!(tag instanceof Integer)){
+            // This marker does not have an integer in its tag. Probably not a report then.
+            return false;
+        }
         try {
             int reportId = (int) tag;
             Report report = null;
@@ -224,24 +235,35 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void updateMap() {
+    private void updateMapLocation() {
         if (mMap != null) {
-            mMap.clear();
             LatLng pos = new LatLng(receivedLatitude, receivedLongitude);
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, zoom));
-            mMap.addMarker(new MarkerOptions()
+
+            if (currentLocationMarker != null) {
+                currentLocationMarker.remove();
+            }
+            currentLocationMarker = mMap.addMarker(new MarkerOptions()
                     .position(pos)
                     .icon(BitmapDescriptorFactory.fromResource(R.mipmap.arrow))
                     .draggable(false)
             );
+        }
+    }
+
+    private void updateMapReports() {
+        if (mMap != null) {
+            for (Marker marker : reportMarkers.keySet()) {
+                marker.remove();
+            }
+            reportMarkers.clear();
             for (Report report : mReports) {
-                Log.d("Mine", "report with id: " + report.getId() + " coordinates: " + report.getLatitude() + ": " + report.getLongitude());
                 Marker marker = mMap.addMarker(new MarkerOptions()
                         .position(new LatLng(report.getLatitude(), report.getLongitude()))
-                        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.arrow))
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.maps_marker_x30))
                         .title(report.getComment())
                 );
                 marker.setTag(report.getId());
+                reportMarkers.put(marker, report);
             }
         }
     }
@@ -309,7 +331,7 @@ public class MainActivity extends AppCompatActivity
                 receivedLatitude = intent.getDoubleExtra(getString(R.string.i_latitude), 0);
                 receivedLongitude = intent.getDoubleExtra(getString(R.string.i_longitude), 0);
                 Log.d(tag, "receivedLocation : " + receivedLatitude + ", " + receivedLongitude);
-                updateMap();
+                updateMapLocation();
             }
         };
         Log.i(tag, "receiveLocation : Register Receiver");
@@ -325,7 +347,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected void onReportsReceived(Report[] reports) {
             mReports = reports;
-            updateMap();
+            updateMapReports();
         }
     };
 
