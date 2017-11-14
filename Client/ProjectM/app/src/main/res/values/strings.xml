@@ -32,7 +32,7 @@
     <string name="create_pwd_no_match">The passwords did not match</string>
     <string name="create_username_taken">That username is already in use</string>
     <!-- Strings for MainActivity -->
-    <string name="title_activity_main_drawer">Home?</string>
+    <string name="title_activity_main_drawer">Give a tip</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_sign_out">Sign Out</string>
@@ -52,4 +52,9 @@
     <string name="about">This is a page for storing information about the application, I guess…</string>
     <string name="last_known_long">last_known_long</string>
     <string name="last_known_lat">last_known_lat</string>
+    <string name="title_activity_drawer">DrawerActivity</string>
+    <string name="reports_map">Reports map</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

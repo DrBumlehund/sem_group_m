@@ -69,9 +69,8 @@ public class TipNotificationService extends Service {
 
         Log.d("Mine", "try to bind: ");
         Intent locationIntent = new Intent(this, TipLocationService.class);
-        // startService(locationIntent);
-        bindService(locationIntent, mConnection, Context.BIND_AUTO_CREATE);
-
+        startService(locationIntent);
+        //bindService(locationIntent, mConnection, Context.BIND_AUTO_CREATE);
 
         return Service.START_STICKY;
     }

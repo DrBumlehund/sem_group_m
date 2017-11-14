@@ -1,7 +1,9 @@
 package m.group.sem.projectm.Services;
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -20,6 +22,8 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+
+import java.util.List;
 
 import m.group.sem.projectm.R;
 import m.group.sem.projectm.Utilities;
@@ -115,7 +119,6 @@ public class TipLocationService extends Service implements GoogleApiClient.Conne
             };
 
             googleApiClient.connect();
-
         } catch (SecurityException ex) {
             ex.printStackTrace();
         }
@@ -138,6 +141,15 @@ public class TipLocationService extends Service implements GoogleApiClient.Conne
     public void onConnected(@Nullable Bundle bundle) {
         Log.i(tag, "onConnected : Service connected");
         requestUpdates();
+    }
+
+    // You can use this method to tell if an activity is in the foreground. Might be a good method
+    // to use when we want to manage the battery consumption
+    public boolean isForeground(String myPackage) {
+        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        List<ActivityManager.RunningTaskInfo> runningTaskInfo = manager.getRunningTasks(1);
+        ComponentName componentInfo = runningTaskInfo.get(0).topActivity;
+        return componentInfo.getPackageName().equals(myPackage);
     }
 
     private void requestUpdates() {

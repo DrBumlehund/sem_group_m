@@ -40,13 +40,13 @@
         <service
             android:name=".Services.TipLocationService"
             android:enabled="true"
-            android:process=":my_process">
-        </service>
+            android:process=":my_process"></service>
         <service
             android:name=".Services.TipNotificationService"
             android:enabled="true"
             android:exported="false"
             android:process=":my_process" />
+
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -58,7 +58,18 @@
             android:name=".Activities.MainActivity"
             android:label="@string/title_activity_main_drawer"
             android:theme="@style/AppTheme" />
-        <activity android:name=".Activities.CreateReportActivity"></activity>
+        <activity android:name=".Activities.CreateReportActivity"
+            android:parentActivityName=".Activities.MainActivity"/>
+        <activity
+            android:name=".Activities.DrawerActivity"
+            android:label="@string/title_activity_drawer"
+            android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

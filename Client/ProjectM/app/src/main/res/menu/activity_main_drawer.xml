@@ -5,6 +5,10 @@
 
     <group android:checkableBehavior="single">
         <item
+            android:id="@+id/nav_main"
+            android:icon="@mipmap/logo"
+            android:title="@string/reports_map" />
+        <item
             android:id="@+id/nav_create_report"
             android:icon="@mipmap/plus_b"
             android:title="@string/nav_create_r" />
