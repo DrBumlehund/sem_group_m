@@ -11,7 +11,8 @@ public class ActivityRecognitionContainer implements Serializable {
     public String timestamp;
 
     public boolean isOnFoot() {
-        return type == ActivityType.ON_FOOT || type == ActivityType.RUNNING || type == ActivityType.WALKING;
+        // TODO REMOVE STILL, THIS IS ONLY FOR TESTING PURPOSES!
+        return type == ActivityType.ON_FOOT || type == ActivityType.RUNNING || type == ActivityType.WALKING || type == ActivityType.STILL;
     }
 
     public enum ActivityType {

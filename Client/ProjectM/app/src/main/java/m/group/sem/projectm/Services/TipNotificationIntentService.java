@@ -14,6 +14,7 @@ import m.group.sem.projectm.TipNotificationHandler;
 
 public class TipNotificationIntentService extends IntentService {
 
+
     public TipNotificationIntentService() {
         super("TipNotificationIntentService");
     }
@@ -29,7 +30,7 @@ public class TipNotificationIntentService extends IntentService {
             int type = result.getMostProbableActivity().getType();
             int activityConfidence = result.getMostProbableActivity().getConfidence();
 
-            Log.i("Mine", getType(type));
+            Log.i(String.valueOf(this.getClass()), getType(type));
 
             ActivityRecognitionContainer activityRecognitionContainer = new ActivityRecognitionContainer();
             activityRecognitionContainer.type = ActivityRecognitionContainer.ActivityType.values()[type];

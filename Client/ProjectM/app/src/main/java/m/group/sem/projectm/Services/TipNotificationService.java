@@ -43,13 +43,13 @@ public class TipNotificationService extends Service {
 
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {
-            Log.d("Mine", "connected: ");
+            Log.d(String.valueOf(this.getClass()), "connected: ");
 
         }
 
         @Override
         public void onServiceDisconnected(ComponentName arg0) {
-            Log.d("Mine", "disconnected: ");
+            Log.d(String.valueOf(this.getClass()), "disconnected: ");
             mBound = false;
         }
     };
@@ -67,7 +67,7 @@ public class TipNotificationService extends Service {
         registerReceiver(receiver, new IntentFilter(getString(R.string.action_location_broadcast)));
 
 
-        Log.d("Mine", "try to bind: ");
+        Log.d(String.valueOf(this.getClass()), "try to bind: ");
         Intent locationIntent = new Intent(this, TipLocationService.class);
         //startService(locationIntent);
         bindService(locationIntent, mConnection, Context.BIND_AUTO_CREATE);
