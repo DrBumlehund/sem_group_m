@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -60,6 +61,7 @@ public class ReportsMapFragment extends Fragment implements OnMapReadyCallback {
     private double receivedLongitude;
     private Report[] mReports = new Report[0];
     private User mUser;
+    private BottomSheetBehavior<View> mBottomSheetBehavior;
 
     public ReportsMapFragment() {
     }
@@ -79,6 +81,7 @@ public class ReportsMapFragment extends Fragment implements OnMapReadyCallback {
             mUser = (User) getArguments().getSerializable(USER_PARAM);
         }
 
+
         checkPermissions();
 
         // Get saved reports, if any
@@ -94,6 +97,7 @@ public class ReportsMapFragment extends Fragment implements OnMapReadyCallback {
                 e.printStackTrace();
             }
         }
+
     }
 
     @Override
@@ -103,11 +107,28 @@ public class ReportsMapFragment extends Fragment implements OnMapReadyCallback {
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        FloatingActionButton fab = view.findViewById(R.id.fab);
+        final FloatingActionButton fab = view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 goToCreateReport();
+            }
+        });
+
+        // Setup the bottom sheet
+        View bottomSheet = view.findViewById(R.id.bottom_sheet);
+        mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        mBottomSheetBehavior.setPeekHeight(120);
+
+        mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                fab.animate().scaleX(1 - slideOffset).scaleY(1 - slideOffset).setDuration(0).start();
             }
         });
 

@@ -1,5 +1,6 @@
 package m.group.sem.projectm.Activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -16,6 +17,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.IOException;
 
 import Model.User;
 import m.group.sem.projectm.Fragments.ReportsMapFragment;
@@ -43,6 +46,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         mUser = (User) getIntent().getSerializableExtra(getString(R.string.i_user));
+        SharedPreferences sharedPref = getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor edit = sharedPref.edit();
+        try {
+            edit.putString(getString(R.string.i_user), Utilities.toString(mUser));
+            edit.commit();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
