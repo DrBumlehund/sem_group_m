@@ -37,10 +37,10 @@ import java.io.IOException;
 
 import Model.Report;
 import Model.User;
+import m.group.sem.projectm.BroadcastReceivers.LocationBroadcastReceiver;
 import m.group.sem.projectm.BroadcastReceivers.ReportsBroadcastReceiver;
 import m.group.sem.projectm.Constants;
 import m.group.sem.projectm.R;
-import m.group.sem.projectm.BroadcastReceivers.LocationBroadcastReceiver;
 import m.group.sem.projectm.Services.TipLocationService;
 import m.group.sem.projectm.Utilities;
 
@@ -77,6 +77,12 @@ public class MainActivity extends AppCompatActivity
         }
     };
     private Report[] mReports = new Report[0];
+    private ReportsBroadcastReceiver mReportsReceiver = new ReportsBroadcastReceiver() {
+        @Override
+        protected void onReportsReceived(Report[] reports) {
+            mReports = reports;
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,7 +125,7 @@ public class MainActivity extends AppCompatActivity
         String reportsSerialized = prefs.getString(Constants.REPORTS_ONLY_COORDINATES, null);
         if (reportsSerialized != null && !reportsSerialized.isEmpty()) {
             try {
-                mReports = (Report[])Utilities.fromString(reportsSerialized);
+                mReports = (Report[]) Utilities.fromString(reportsSerialized);
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
@@ -209,18 +215,17 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void goToSettings() {
-        Toast.makeText(getApplicationContext(), "Settings, what settings?", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+        startActivity(intent);
     }
 
     private void goToLeaderboard() {
         Toast.makeText(getApplicationContext(), "Leaderboard, what leaderboard?", Toast.LENGTH_SHORT).show();
     }
 
-
     private void goToCreateReport() {
         Intent intent = new Intent(MainActivity.this, CreateReportActivity.class);
         intent.putExtra(getString(R.string.i_user), mUser);
-        // TODO: figure out a better way of passing location to CreateReportActivity.
         intent.putExtra(getString(R.string.i_location), new double[]{receivedLatitude, receivedLongitude});
         startActivity(intent);
     }
@@ -282,13 +287,6 @@ public class MainActivity extends AppCompatActivity
         Log.i(tag, "receiveLocation : Binding service");
         bindService(locationServiceIntent, mConnection, BIND_NOT_FOREGROUND);
     }
-
-    private ReportsBroadcastReceiver mReportsReceiver = new ReportsBroadcastReceiver() {
-        @Override
-        protected void onReportsReceived(Report[] reports) {
-            mReports = reports;
-        }
-    };
 
     @Override
     protected void onDestroy() {

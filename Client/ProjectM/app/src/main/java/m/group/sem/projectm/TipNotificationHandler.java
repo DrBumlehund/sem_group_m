@@ -34,7 +34,7 @@ public class TipNotificationHandler {
     public final static int notificationId = 1;
     private final static String tag = "TipNotificationHandler";
     private static TipNotificationHandler instance;
-    private double radius = 1000000000;
+    private double radius;
     private long lastReportUpdate = 0;
     // Every 2 hours
     private long reportUpdateInterval = 1000;
@@ -58,6 +58,10 @@ public class TipNotificationHandler {
 
     public void ActivityDetected(ActivityRecognitionContainer activityRecognitionContainer, Context context) {
         this.context = context;
+        if (radius < 0) {
+            SharedPreferences preferences = context.getSharedPreferences(context.getString(R.string.sp_key), MODE_PRIVATE);
+            radius = preferences.getInt(context.getString(R.string.sp_set_distance), context.getResources().getInteger(R.integer.set_dist_def));
+        }
         if (activityRecognitionContainer.isOnFoot()) {
             if (new java.util.Date().getTime() > lastReportUpdate + reportUpdateInterval) {
                 getReports();
