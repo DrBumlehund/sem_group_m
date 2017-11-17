@@ -26,7 +26,7 @@ public class VotesController {
 	}
 	
 	@RequestMapping(value = "/votes", params = {"report-id", "vote", "user-id"})
-	public Vote addVote (@RequestParam(value="report-id") int reportId, @RequestParam(value="vote") boolean vote, @RequestParam(value="userId") int userId) {
+	public Vote addVote (@RequestParam(value="report-id") int reportId, @RequestParam(value="vote") boolean vote, @RequestParam(value="user-id") int userId) {
 		return databaseFacade.addVote(reportId, vote, userId);
 	}
 }

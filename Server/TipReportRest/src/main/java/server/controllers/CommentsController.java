@@ -26,7 +26,7 @@ public class CommentsController {
 	}
 
 	@RequestMapping(value = "/comments", params = {"report-id", "comment", "user-id"})
-	public UserComment addComment (@RequestParam(value="report-id") int reportId, @RequestParam(value="comment") String comment, @RequestParam(value="userId") int userId) {
+	public UserComment addComment (@RequestParam(value="report-id") int reportId, @RequestParam(value="comment") String comment, @RequestParam(value="user-id") int userId) {
 		return databaseFacade.addComment(reportId, comment, userId);
 	}
 }
