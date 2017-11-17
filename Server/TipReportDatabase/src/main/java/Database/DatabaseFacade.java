@@ -310,11 +310,12 @@ public class DatabaseFacade {
 	public Vote addVote(int reportId, boolean upvote, int userId) {
 		try (Connection connection = DriverManager.getConnection(getDB_URL(),USER,PASS)){
 			String sql = "INSERT INTO vote_report (id_user, id_report, upvote) VALUES (?, ?, ?)" + 
-					" ON DUPLICATE KEY UPDATE (upvote=VALUES(upvote));";
+					" ON DUPLICATE KEY UPDATE upvote=VALUES(upvote);";
 			PreparedStatement statement = connection.prepareStatement(sql);
 			statement.setInt(1, userId);
 			statement.setInt(2, reportId);
 			statement.setBoolean(3, upvote);
+			//statement.setInt(3, upvote == true ? 1 : 0);
 			int affectedRows  = statement.executeUpdate();
 
 			if (affectedRows == 0) {
