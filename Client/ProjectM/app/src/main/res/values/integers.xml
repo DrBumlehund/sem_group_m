@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Integers for settings -->
+    <integer name="set_dist_min">100</integer>
+    <integer name="set_dist_def">300</integer>
+    <integer name="set_dist_max">800</integer>
+</resources>

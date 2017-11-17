@@ -2,10 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="m.group.sem.projectm">
 
-    <!-- To auto-complete the email text field in the login form with the user's emails -->
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
-    <uses-permission android:name="android.permission.READ_PROFILE" />
-    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <!-- Permissions -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -18,16 +15,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <!-- Login Activity -->
         <activity
             android:name=".Activities.LoginActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- Create Account Activity -->
         <activity
             android:name=".Activities.CreateAccountActivity"
             android:label="@string/app_name">
@@ -35,31 +33,24 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="m.group.sem.projectm.Activities.LoginActivity" />
         </activity>
-
-        <service android:name=".Services.TipNotificationIntentService" />
-        <service
-            android:name=".Services.TipLocationService"
-            android:enabled="true"
-            android:process=":my_process"></service>
-        <service
-            android:name=".Services.TipNotificationService"
-            android:enabled="true"
-            android:exported="false"
-            android:process=":my_process" />
-
+        <!-- Main Activity -->
+        <activity
+            android:name=".Activities.MainActivity"
+            android:label="@string/title_activity_main_drawer"
+            android:theme="@style/AppTheme" />
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCKB5_T5rMwOqkZQsDY4Humn909EI0GOH8" />
-
+        <!-- Create Report Activity -->
+        <activity android:name=".Activities.CreateReportActivity" />
+        <!-- Settings Activity -->
         <activity
-            android:name=".Activities.MainActivity"
-            android:label="@string/title_activity_main_drawer"
-            android:theme="@style/AppTheme" />
-        <activity android:name=".Activities.CreateReportActivity"
-            android:parentActivityName=".Activities.MainActivity"/>
+            android:name=".Activities.SettingsActivity"
+            android:parentActivityName=".Activities.MainActivity" />
+        <!-- Drawer Activity -->
         <activity
             android:name=".Activities.DrawerActivity"
             android:label="@string/title_activity_drawer"
@@ -70,6 +61,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- Services -->
+        <service android:name=".Services.TipNotificationIntentService" />
+        <service
+            android:name=".Services.TipLocationService"
+            android:enabled="true"
+            android:process=":my_process" />
+        <service
+            android:name=".Services.TipNotificationService"
+            android:enabled="true"
+            android:exported="false"
+            android:process=":my_process" />
     </application>
 
 </manifest>

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Project M</string>
     <string name="prompt_email">Email</string>
     <string name="prompt_password">Kodeord</string>
     <string name="action_sign_in">Log ind</string>
@@ -27,4 +26,8 @@
     <string name="create_r_location">Placering</string>
     <string name="create_r_submit">Indsænd rapport</string>
     <string name="create_r_desc_size_err">Beskrivelsen skal være mellem %1$d og %2$d bogstaver lang</string>
+    <string name="title_activity_settings">Indstillinger</string>
+    <string name="set_distance">Radius hvorri du vil modtage notifikationer</string>
+    <string name="nav_leaderboard">Highscore</string>
+    <string name="set_distance_err">Distancen skal være mellem %1$d og %2$d meter…</string>
 </resources>

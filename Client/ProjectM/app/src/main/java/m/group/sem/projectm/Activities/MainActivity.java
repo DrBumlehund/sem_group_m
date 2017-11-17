@@ -19,7 +19,11 @@ import android.widget.Toast;
 
 import Model.User;
 import m.group.sem.projectm.Fragments.ReportsMapFragment;
+import m.group.sem.projectm.BroadcastReceivers.LocationBroadcastReceiver;
+import m.group.sem.projectm.BroadcastReceivers.ReportsBroadcastReceiver;
+import m.group.sem.projectm.Constants;
 import m.group.sem.projectm.R;
+import m.group.sem.projectm.Services.TipLocationService;
 import m.group.sem.projectm.Utilities;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -123,7 +127,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void goToSettings() {
-        Toast.makeText(getApplicationContext(), "Settings, what settings?", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+        startActivity(intent);
     }
 
     private void goToLeaderboard() {

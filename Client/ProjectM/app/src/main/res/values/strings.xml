@@ -1,7 +1,6 @@
 <resources>
     <!-- general -->
-    <string name="app_name">Project M</string>
-    <string name="api_url" translatable="false">http://51.254.127.173:8080/api/</string>
+    <string name="app_name" translatable="false">H.C. Andersen Simulator 2017</string>
     <!-- broadcast keys -->
     <string name="action_location_broadcast" translatable="false">projectM.LOCATION_BROADCAST</string>
     <!-- intent keys -->
@@ -14,6 +13,7 @@
     <string name="sp_key" translatable="false">PROJECT_M_SEM</string>
     <string name="sp_user_login" translatable="false">USER_LOGIN</string>
     <string name="sp_user_login_checked" translatable="false">USER_LOGIN_CHECKED</string>
+    <string name="sp_set_distance" translatable="false">SET_SETTINGS_DISTANCE</string>
     <!-- Strings related to login -->
     <string name="prompt_email">Username</string>
     <string name="prompt_password">Password</string>
@@ -37,7 +37,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_sign_out">Sign Out</string>
     <string name="nav_create_r">Create Report</string>
-    <string name="nav_leaderboard">Leaderboard</string>
+    <string name="nav_leaderboard">Highscore</string>
     <string name="action_settings">Settings</string>
     <string name="nav_user_id">User Id: %d</string>
     <!-- Strings for CreateReportActivity -->
@@ -46,10 +46,15 @@
     <string name="create_r_submit">Submit Report</string>
     <string name="create_r_desc_size_err">The description must be between %1$d and %2$d characters long</string>
     <!-- Strings for the notifications -->
-    <string name="notification_channel_name">Report proximity channel</string>
-    <string name="notification_channel_desc">This channel is used for notifying you about near by reports</string>
+    <string name="notification_channel_name" translatable="false">Report proximity channel</string>
+    <string name="notification_channel_desc" translatable="false">This channel is used for notifying you about near by reports</string>
     <!-- Strings for about -->
-    <string name="about">This is a page for storing information about the application, I guess…</string>
+    <string name="about" translatable="false">This is a page for storing information about the application, I guess…</string>
+    <!-- Strings related to Settings -->
+    <string name="title_activity_settings">Settings</string>
+    <string name="set_distance">The radius, in which you will receive notifications</string>
+    <string name="set_dist_val" translatable="false">%d m</string>
+    <string name="set_distance_err">The distance has to be between %1$d and %2$d meters…</string>
     <string name="last_known_long">last_known_long</string>
     <string name="last_known_lat">last_known_lat</string>
     <string name="title_activity_drawer">DrawerActivity</string>
