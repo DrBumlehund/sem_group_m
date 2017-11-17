@@ -46,6 +46,11 @@
     <string name="create_r_submit">Submit Report</string>
     <string name="create_r_desc_size_err">The description must be between %1$d and %2$d characters long</string>
     <!-- Strings for the notifications -->
+    <string name="notification_title">There is an issue near you!</string>
+    <string name="notification_content_text">Can you confirm that: %s</string>
+    <string name="notification_confirm">Confirm</string>
+    <string name="notification_deny">Deny</string>
+    <string name="notification_comment">Comment</string>
     <string name="notification_channel_name" translatable="false">Report proximity channel</string>
     <string name="notification_channel_desc" translatable="false">This channel is used for notifying you about near by reports</string>
     <!-- Strings for about -->
@@ -55,9 +60,9 @@
     <string name="set_distance">The radius, in which you will receive notifications</string>
     <string name="set_dist_val" translatable="false">%d m</string>
     <string name="set_distance_err">The distance has to be between %1$d and %2$d meters…</string>
-    <string name="last_known_long">last_known_long</string>
-    <string name="last_known_lat">last_known_lat</string>
-    <string name="title_activity_drawer">DrawerActivity</string>
+    <string name="last_known_long" translatable="false">last_known_long</string>
+    <string name="last_known_lat" translatable="false">last_known_lat</string>
+    <string name="title_activity_drawer" translatable="false">DrawerActivity</string>
     <string name="reports_map">Reports map</string>
 
     <!-- TODO: Remove or change this placeholder text -->

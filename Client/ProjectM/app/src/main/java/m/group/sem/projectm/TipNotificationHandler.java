@@ -15,6 +15,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.SyncHttpClient;
 
+import java.util.Date;
+
 import Model.Report;
 import cz.msebera.android.httpclient.Header;
 import m.group.sem.projectm.Services.ActivityRecognitionContainer;
@@ -31,11 +33,13 @@ public class TipNotificationHandler {
 
     public final static int notificationId = 1;
     private final static String tag = "TipNotificationHandler";
+    private static String contribKey = "CONTRIBUTED";
+    private static String notificationTimeKey = "TIME";
     private static TipNotificationHandler instance;
     private double radius = -1;
     private long lastReportUpdate = 0;
-    // Every 2 hours
-    private long reportUpdateInterval = 10000;
+    private long reportUpdateInterval;
+    private long notificationInterval;
     private Report[] reports = new Report[0];
     private Context context;
     private double latitude = 0;
@@ -45,7 +49,8 @@ public class TipNotificationHandler {
     private ObjectMapper mMapper = new ObjectMapper();
 
     private TipNotificationHandler() {
-
+        reportUpdateInterval = 2L * 60L * 60L * 1000L; // 2 hours
+        notificationInterval = 30L * 24L * 60L * 60L * 1000L; // thirty days in milliseconds
     }
 
     public static TipNotificationHandler getInstance() {
@@ -68,8 +73,9 @@ public class TipNotificationHandler {
                 checkReportProximity();
             }
         }
-        // TODO REMOVE THIS TEST SHITE
+        // TODO REMOVE THIS TEST STUFF
         Report report = new Report();
+        report.setId(13327);
         report.setComment("hey there ma dood");
         showNotification(report);
     }
@@ -118,11 +124,10 @@ public class TipNotificationHandler {
 
     private void checkReportProximity() {
         Log.d(tag, "checkReportProximity");
-
         if (reports.length > 0) {
             for (Report report : reports) {
                 double distance = meterDistanceToMyLocation(report.getLatitude(), report.getLongitude());
-                Log.d(tag, String.format("distance to report %d : %1$s has been calculated to %f meters", report.getId(), report.getComment(), distance));
+                Log.d(tag, String.format("distance to report %d : %s has been calculated to %f meters", report.getId(), report.getComment(), distance));
                 if (distance < radius) {
                     showNotification(report);
                 }
@@ -131,10 +136,39 @@ public class TipNotificationHandler {
     }
 
     //    @TargetApi(Build.VERSION_CODES.O)
-    private void showNotification(Report report) {
+    private boolean showNotification(Report report) {
+        SharedPreferences sp = context.getSharedPreferences(context.getString(R.string.sp_key), MODE_PRIVATE);
+
+        Long timeSinceLastTimeThisReportWasNotified = sp.getLong(String.valueOf(report.getId() + notificationTimeKey), Long.MIN_VALUE);
+        Long time = new Date().getTime();
+
+        if (sp.getBoolean(String.valueOf(report.getId() + contribKey), false)) {
+            // TODO: Save boolean for user contribution;
+            // the user has contributed to the report
+            return false;
+        }
+
+        if (timeSinceLastTimeThisReportWasNotified != Long.MIN_VALUE) {
+
+            if (timeSinceLastTimeThisReportWasNotified < time) {
+                // Notification has been shown,
+                // and we don't want to keep showing the same notification to the user
+                Log.d(tag, String.format("timeLast: %d - timeNow: %d = %d, condition < %d = %b", timeSinceLastTimeThisReportWasNotified, time, time - timeSinceLastTimeThisReportWasNotified, notificationInterval, time - timeSinceLastTimeThisReportWasNotified < notificationInterval));
+                // Unless the notification is older than notificationInterval
+                if (time - timeSinceLastTimeThisReportWasNotified < notificationInterval) {
+                    // The notification has been notified within the last month
+                    return false;
+                }
+            }
+
+        } else {
+            Log.d(tag, "timeSinceLastTimeThisReportWasNotified was equals to Long.MIN_VALUE, report was never shown before");
+        }
+
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         // The id of the channel.
         String id = "notification_channel_1";
+
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             // The user-visible name of the channel.
             CharSequence name = context.getString(R.string.notification_channel_name);
@@ -157,19 +191,26 @@ public class TipNotificationHandler {
                 new NotificationCompat.Builder(context, id)
                         .setVisibility(Notification.VISIBILITY_PUBLIC)
                         .setSmallIcon(R.drawable.ic_stat_hvid_uden_tekst)
-                        .setContentTitle("There's an issue in your area")
-                        .setContentText(String.format("Can you confirm that: %s", report.getComment()));
+                        .setContentTitle(context.getString(R.string.notification_title))
+                        .setContentText(String.format(context.getString(R.string.notification_content_text), report.getComment()));
 
         Intent yepIntent = new Intent(context, TipNotificationIntentService.class);
         yepIntent.putExtra("foo", true);
         yepIntent.putExtra("bar", "more info");
         PendingIntent yepPendingIntent = PendingIntent.getService(context, notificationId, yepIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-        builder.addAction(R.drawable.ic_menu_gallery, "Confirm", yepPendingIntent);
-        builder.addAction(R.drawable.ic_menu_camera, "Deny", yepPendingIntent);
-        builder.addAction(R.drawable.ic_menu_send, "Comment", yepPendingIntent);
+        builder.addAction(R.drawable.ic_menu_gallery, context.getString(R.string.notification_confirm), yepPendingIntent);
+        builder.addAction(R.drawable.ic_menu_camera, context.getString(R.string.notification_deny), yepPendingIntent);
+        builder.addAction(R.drawable.ic_menu_send, context.getString(R.string.notification_comment), yepPendingIntent);
 
         mNotificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         mNotificationManager.notify(0, builder.build());
+
+        SharedPreferences.Editor spEditor = sp.edit();
+
+        spEditor.putLong(String.valueOf(report.getId() + notificationTimeKey), time);
+
+        spEditor.apply();
+        return true;
     }
 
     public void setLocation(double latitude, double longitude) {

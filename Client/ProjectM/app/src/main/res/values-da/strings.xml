@@ -30,4 +30,13 @@
     <string name="set_distance">Radius hvorri du vil modtage notifikationer</string>
     <string name="nav_leaderboard">Highscore</string>
     <string name="set_distance_err">Distancen skal være mellem %1$d og %2$d meter…</string>
+    <string name="notification_title">Der er en rapport i nærheden</string>
+    <string name="notification_content_text">Kan du bekræfte at: %s</string>
+    <string name="reports_map">Rapport ort</string>
+    <string name="hello_blank_fragment">Hej blanke fragment</string>
+    <string name="getting_report">Henter raport...</string>
+    <string name="comment">Kommenter</string>
+    <string name="notification_confirm">Bekræft</string>
+    <string name="notification_deny">Benægt eller Afkræft</string>
+    <string name="notification_comment">Kommenter</string>
 </resources>
