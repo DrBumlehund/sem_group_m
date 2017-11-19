@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,9 +25,12 @@ import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 
 import Model.Report;
 import Model.User;
+import Model.UserComment;
 import Model.Vote;
 import cz.msebera.android.httpclient.Header;
 import m.group.sem.projectm.Constants;
@@ -45,6 +49,7 @@ public class ViewReportFragment extends Fragment {
     private AsyncHttpClient mHttpClient = new AsyncHttpClient();
     private ObjectMapper mMapper = new ObjectMapper();
     private boolean isVoting = false;
+    private boolean isCommenting = false;
 
     public ViewReportFragment() {
         // Required empty public constructor
@@ -123,6 +128,14 @@ public class ViewReportFragment extends Fragment {
                 saveVote(false);
             }
         });
+
+        mCommentInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                return saveComment(textView.getText().toString());
+            }
+        });
+
         // Test code
 //        Vote userVote = new Vote();
 //        userVote.setUpvote(true);
@@ -132,6 +145,48 @@ public class ViewReportFragment extends Fragment {
         setReport(report);
         /// Test code
         return view;
+    }
+
+    private boolean saveComment(String comment) {
+        boolean valid = validateComment(comment);
+        if (!valid || isCommenting) {
+            return false;
+        }
+
+        disableComment();
+        String url = Constants.getBaseUrl() + String.format("/comments?report-id=%1$s&vote=%2$s&user-id=%3$s", mReport.getId(), comment, mUser.getId());
+        mHttpClient.post(url, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                UserComment userComment = null;
+                try {
+                    userComment = mMapper.readValue(responseBody, UserComment.class);
+
+                    mReport.getUserComments().add(userComment);
+                    setReport(mReport);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getContext(), "Failed to save comment!", Toast.LENGTH_SHORT).show();
+                } finally {
+                    enableComment();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                Toast.makeText(getContext(), "Failed to save comment!", Toast.LENGTH_SHORT).show();
+                enableComment();
+            }
+        });
+
+        return true;
+    }
+
+    private boolean validateComment(String comment) {
+        if (comment == null || comment.isEmpty()){
+            return false;
+        } // Harsh language? Some other requirements? This logic should be both server and client side
+        return true;
     }
 
     private void saveVote (final boolean upvote) {
@@ -144,6 +199,15 @@ public class ViewReportFragment extends Fragment {
                     Vote vote = null;
                     try {
                         vote = mMapper.readValue(responseBody, Vote.class);
+
+                        ArrayList<Vote> loopyCachyVotes = new ArrayList<>();
+                        Collections.copy(loopyCachyVotes, mReport.getVotes());
+                        for (Vote userVote : loopyCachyVotes) {
+                            if (userVote.getUserId() == mUser.getId()) {
+                                mReport.getVotes().remove(userVote);
+                            }
+                        }
+
                         mReport.getVotes().add(vote);
                         setReport(mReport);
                     } catch (IOException e) {
@@ -173,6 +237,16 @@ public class ViewReportFragment extends Fragment {
         mUpvote.setEnabled(true);
         mDownvote.setEnabled(true);
         isVoting = false;
+    }
+
+    private void disableComment() {
+        mCommentInput.setEnabled(false);
+        isCommenting = true;
+    }
+
+    private void enableComment() {
+        mCommentInput.setEnabled(true);
+        isCommenting = false;
     }
 
 
