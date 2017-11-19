@@ -248,6 +248,7 @@ public class LoginActivity extends AppCompatActivity {
         try {
             editor.putString(getString(R.string.sp_user_login), user != null ? mMapper.writeValueAsString(user) : null);
             editor.putBoolean(getString(R.string.sp_user_login_checked), checked);
+            editor.remove(getString(R.string.i_user));
         } catch (JsonProcessingException e) {
             e.printStackTrace();
         }

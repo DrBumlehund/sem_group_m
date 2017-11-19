@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -60,6 +61,8 @@ public class ReportsMapFragment extends Fragment implements OnMapReadyCallback {
     private double receivedLongitude;
     private Report[] mReports = new Report[0];
     private User mUser;
+    private BottomSheetBehavior<View> mBottomSheetBehavior;
+    private ViewReportFragment mViewReportFragment;
 
     public ReportsMapFragment() {
     }
@@ -79,6 +82,7 @@ public class ReportsMapFragment extends Fragment implements OnMapReadyCallback {
             mUser = (User) getArguments().getSerializable(USER_PARAM);
         }
 
+
         checkPermissions();
 
         // Get saved reports, if any
@@ -94,6 +98,7 @@ public class ReportsMapFragment extends Fragment implements OnMapReadyCallback {
                 e.printStackTrace();
             }
         }
+
     }
 
     @Override
@@ -101,13 +106,34 @@ public class ReportsMapFragment extends Fragment implements OnMapReadyCallback {
         View view = inflater.inflate(R.layout.fragment_reports_map, container, false);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+        mViewReportFragment = (ViewReportFragment) getChildFragmentManager().findFragmentById(R.id.view_report);
         mapFragment.getMapAsync(this);
 
-        FloatingActionButton fab = view.findViewById(R.id.fab);
+
+        final FloatingActionButton fab = view.findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 goToCreateReport();
+            }
+        });
+
+        // Setup the bottom sheet
+        View bottomSheet = view.findViewById(R.id.bottom_sheet);
+        mBottomSheetBehavior = BottomSheetBehavior.from(bottomSheet);
+        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+
+        mBottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+                if (slideOffset < 0) {
+                    slideOffset = 0;
+                }
+                fab.animate().scaleX(1 - slideOffset).scaleY(1 - slideOffset).setDuration(0).start();
             }
         });
 
@@ -124,11 +150,31 @@ public class ReportsMapFragment extends Fragment implements OnMapReadyCallback {
                 return onMarkerClicked(marker);
             }
         });
+        mMap.setOnCameraMoveStartedListener(new GoogleMap.OnCameraMoveStartedListener() {
+            @Override
+            public void onCameraMoveStarted(int i) {
+                mapInteraction();
+            }
+        });
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                mapInteraction();
+            }
+        });
 
         LatLng pos = new LatLng(receivedLatitude, receivedLongitude);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(pos, zoom));
         updateMapLocation();
         updateMapReports();
+    }
+
+    private void mapInteraction() {
+        if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_COLLAPSED) {
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_HIDDEN);
+        } else if (mBottomSheetBehavior.getState() == BottomSheetBehavior.STATE_EXPANDED) {
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        }
     }
 
     private boolean onMarkerClicked(Marker marker) {
@@ -149,7 +195,9 @@ public class ReportsMapFragment extends Fragment implements OnMapReadyCallback {
             if (report == null) {
                 throw new Exception("No report found with id " + reportId);
             }
-            Log.d("Mine", "onMarkerClicked: " + report.getComment());
+
+            mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+            mViewReportFragment.setReport(report, false);
         } catch (Exception e) {
             e.printStackTrace();
             return false;
