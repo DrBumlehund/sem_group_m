@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -33,6 +34,7 @@ import Model.User;
 import Model.UserComment;
 import Model.Vote;
 import cz.msebera.android.httpclient.Header;
+import m.group.sem.projectm.Adapters.ReportCommentsAdapter;
 import m.group.sem.projectm.Constants;
 import m.group.sem.projectm.R;
 import m.group.sem.projectm.Utilities;
@@ -50,6 +52,9 @@ public class ViewReportFragment extends Fragment {
     private ObjectMapper mMapper = new ObjectMapper();
     private boolean isVoting = false;
     private boolean isCommenting = false;
+    private RecyclerView mCommentsRecycler;
+    private ReportCommentsAdapter mAdapter;
+    private ImageButton mSendComment;
 
     public ViewReportFragment() {
         // Required empty public constructor
@@ -85,6 +90,9 @@ public class ViewReportFragment extends Fragment {
         mCommentInput.setText("");
         mVoteNumber.setText(voteNumber + "");
         mDescription.setText(report.getComment());
+
+        mAdapter = new ReportCommentsAdapter(mReport.getUserComments());
+        mCommentsRecycler.setAdapter(mAdapter);
     }
 
     @Override
@@ -113,8 +121,10 @@ public class ViewReportFragment extends Fragment {
         mCommentInput = (EditText) view.findViewById(R.id.comment_input);
         mUpvote = (ImageButton) view.findViewById(R.id.upvote);
         mDownvote = (ImageButton) view.findViewById(R.id.downvote);
+        mSendComment = (ImageButton) view.findViewById(R.id.send_comment);
         mVoteNumber = (TextView) view.findViewById(R.id.vote_number);
         mDescription = (TextView) view.findViewById(R.id.description);
+        mCommentsRecycler = (RecyclerView) view.findViewById(R.id.commentsRecycler);
 
         mUpvote.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,6 +145,12 @@ public class ViewReportFragment extends Fragment {
                 return saveComment(textView.getText().toString());
             }
         });
+        mSendComment.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveComment(mCommentInput.getText().toString());
+            }
+        });
 
         // Test code
 //        Vote userVote = new Vote();
@@ -142,6 +158,7 @@ public class ViewReportFragment extends Fragment {
 //        userVote.setUserId(mUser.getId());
         Report report = new Report();
         report.setId(1);
+        report.setComment("There was an issue when I turned the corner on whatever street!");
         setReport(report);
         /// Test code
         return view;
@@ -154,16 +171,18 @@ public class ViewReportFragment extends Fragment {
         }
 
         disableComment();
-        String url = Constants.getBaseUrl() + String.format("/comments?report-id=%1$s&vote=%2$s&user-id=%3$s", mReport.getId(), comment, mUser.getId());
+        String url = Constants.getBaseUrl() + String.format("/comments?report-id=%1$s&comment=%2$s&user-id=%3$s", mReport.getId(), comment, mUser.getId());
         mHttpClient.post(url, new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 UserComment userComment = null;
                 try {
                     userComment = mMapper.readValue(responseBody, UserComment.class);
+                    userComment.setUsername(mUser.getUsername());
 
                     mReport.getUserComments().add(userComment);
-                    setReport(mReport);
+                    mAdapter.notifyItemInserted(mReport.getUserComments().size() - 1);
+                    mCommentInput.setText("");
                 } catch (IOException e) {
                     e.printStackTrace();
                     Toast.makeText(getContext(), "Failed to save comment!", Toast.LENGTH_SHORT).show();
@@ -200,8 +219,7 @@ public class ViewReportFragment extends Fragment {
                     try {
                         vote = mMapper.readValue(responseBody, Vote.class);
 
-                        ArrayList<Vote> loopyCachyVotes = new ArrayList<>();
-                        Collections.copy(loopyCachyVotes, mReport.getVotes());
+                        ArrayList<Vote> loopyCachyVotes = new ArrayList<>(mReport.getVotes());
                         for (Vote userVote : loopyCachyVotes) {
                             if (userVote.getUserId() == mUser.getId()) {
                                 mReport.getVotes().remove(userVote);
@@ -209,7 +227,20 @@ public class ViewReportFragment extends Fragment {
                         }
 
                         mReport.getVotes().add(vote);
-                        setReport(mReport);
+
+                        if (upvote) {
+                            mUpvote.setColorFilter(ContextCompat.getColor(getContext(), R.color.colorAccent));
+                            mDownvote.setColorFilter(ContextCompat.getColor(getContext(), R.color.black));
+                        } else {
+                            mUpvote.setColorFilter(ContextCompat.getColor(getContext(), R.color.black));
+                            mDownvote.setColorFilter(ContextCompat.getColor(getContext(), R.color.colorAccent));
+                        }
+
+                        int voteNumber = 0;
+                        for (Vote _vote : mReport.getVotes()) {
+                            voteNumber += vote.isUpvote() ? 1 : -1;
+                        }
+                        mVoteNumber.setText(voteNumber + "");
                     } catch (IOException e) {
                         e.printStackTrace();
                         Toast.makeText(getContext(), "Failed to save vote!", Toast.LENGTH_SHORT).show();
@@ -241,11 +272,13 @@ public class ViewReportFragment extends Fragment {
 
     private void disableComment() {
         mCommentInput.setEnabled(false);
+        mSendComment.setEnabled(false);
         isCommenting = true;
     }
 
     private void enableComment() {
         mCommentInput.setEnabled(true);
+        mSendComment.setEnabled(true);
         isCommenting = false;
     }
 

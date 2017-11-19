@@ -9,4 +9,5 @@
     <color name="foreground_material_light">#20be55</color>
     <color name="lightGrey">#efefef</color>
     <color name="black">#000000</color>
+    <color name="white">#ffffff</color>
 </resources>

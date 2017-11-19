@@ -296,7 +296,7 @@ public class DatabaseFacade {
 	            	userComment.setId(generatedKeys.getInt(1));
 	            }
 	            else {
-	                throw new SQLException("Create user failed, no ID obtained.");
+	                throw new SQLException("Create comment failed, no ID obtained.");
 	            }
 	        }
 	        
