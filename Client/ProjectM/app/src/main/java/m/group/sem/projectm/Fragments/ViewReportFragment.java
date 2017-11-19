@@ -65,7 +65,36 @@ public class ViewReportFragment extends Fragment {
         return fragment;
     }
 
-    public void setReport(Report report) {
+    public void setReport(Report report, Boolean containsDetails) {
+        setReport(report);
+        if (!containsDetails) {
+            // TODO: start spinner or let the user know we're fetching details
+            fetchReportDetail(report.getId());
+        }
+    }
+
+    private void fetchReportDetail(int reportId) {
+        String url = Constants.getBaseUrl() + String.format("/reports?report-id=%1$s", reportId);
+        mHttpClient.post(url, new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                try {
+                    Report report = mMapper.readValue(responseBody, Report.class);
+                    setReport(report);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    Toast.makeText(getContext(), "Failed to get report details!", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                Toast.makeText(getContext(), "Failed to get report details!", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void setReport(Report report) {
         mReport = report;
         ArrayList<Vote> votes = report.getVotes();
         Vote userVote = null;
