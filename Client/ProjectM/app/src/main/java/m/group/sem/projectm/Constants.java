@@ -11,7 +11,7 @@ public class Constants {
     // https://developer.android.com/studio/run/emulator-networking.html
     public static final String BASE_LOCALHOST_URL = "http://10.0.2.2:8080/api";
     public static final String REPORTS_ONLY_COORDINATES = "reportsOnlyCoordinates";
-    private static final boolean USE_LOCAL_HOST = true;
+    private static final boolean USE_LOCAL_HOST = false;
 
     public static final String getBaseUrl () {
         if (Constants.USE_LOCAL_HOST) {
