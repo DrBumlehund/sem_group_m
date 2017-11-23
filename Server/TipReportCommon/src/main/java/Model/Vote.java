@@ -31,4 +31,19 @@ public class Vote implements Serializable {
     public void setUpvote(boolean upvote) {
         this.upvote = upvote;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Vote vote = (Vote) o;
+
+        return userId == vote.userId;
+    }
+
+    @Override
+    public int hashCode() {
+        return userId;
+    }
 }
