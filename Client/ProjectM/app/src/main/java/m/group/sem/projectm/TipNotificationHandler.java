@@ -4,6 +4,7 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.RemoteInput;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,7 +21,7 @@ import java.util.Date;
 import Model.Report;
 import cz.msebera.android.httpclient.Header;
 import m.group.sem.projectm.Services.ActivityRecognitionContainer;
-import m.group.sem.projectm.Services.TipNotificationIntentService;
+import m.group.sem.projectm.Services.TipNotificationAnswerService;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.content.Context.NOTIFICATION_SERVICE;
@@ -75,7 +76,7 @@ public class TipNotificationHandler {
         }
         // TODO REMOVE THIS TEST STUFF
         Report report = new Report();
-        report.setId(13327);
+        report.setId(163327);
         report.setComment("hey there ma dood");
         showNotification(report);
     }
@@ -170,12 +171,14 @@ public class TipNotificationHandler {
         String id = "notification_channel_1";
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+
             // The user-visible name of the channel.
             CharSequence name = context.getString(R.string.notification_channel_name);
             // The user-visible description of the channel.
             String description = context.getString(R.string.notification_channel_desc);
             int importance = NotificationManager.IMPORTANCE_HIGH;
-            NotificationChannel mChannel = new NotificationChannel(id, name, importance);
+            NotificationChannel mChannel = null;
+            mChannel = new NotificationChannel(id, name, importance);
             // Configure the notification channel.
             mChannel.setDescription(description);
             mChannel.enableLights(true);
@@ -194,13 +197,45 @@ public class TipNotificationHandler {
                         .setContentTitle(context.getString(R.string.notification_title))
                         .setContentText(String.format(context.getString(R.string.notification_content_text), report.getComment()));
 
-        Intent yepIntent = new Intent(context, TipNotificationIntentService.class);
-        yepIntent.putExtra("foo", true);
-        yepIntent.putExtra("bar", "more info");
-        PendingIntent yepPendingIntent = PendingIntent.getService(context, notificationId, yepIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-        builder.addAction(R.drawable.ic_menu_gallery, context.getString(R.string.notification_confirm), yepPendingIntent);
-        builder.addAction(R.drawable.ic_menu_camera, context.getString(R.string.notification_deny), yepPendingIntent);
-        builder.addAction(R.drawable.ic_menu_send, context.getString(R.string.notification_comment), yepPendingIntent);
+        // Create Intent for confirm vote
+        Intent confirmIntent = new Intent(context, TipNotificationAnswerService.class);
+        confirmIntent.putExtra(context.getString(R.string.i_notification_vote), true);
+        PendingIntent confirmPendingIntent = PendingIntent.getService(context, notificationId, confirmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        builder.addAction(R.drawable.ic_menu_gallery, context.getString(R.string.notification_confirm), confirmPendingIntent);
+
+        // create Intent for deny vote
+        Intent denyIntent = new Intent(context, TipNotificationAnswerService.class);
+        denyIntent.putExtra(context.getString(R.string.i_notification_vote), false);
+        PendingIntent denyPendingIntent = PendingIntent.getService(context, notificationId, denyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        builder.addAction(R.drawable.ic_menu_camera, context.getString(R.string.notification_deny), denyPendingIntent);
+
+        // create Intent for comment
+        Intent comment2Intent = new Intent(context, TipNotificationAnswerService.class);
+        PendingIntent comment2PendingIntent = PendingIntent.getService(context, notificationId, comment2Intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT_WATCH) {
+            RemoteInput remoteInput = new RemoteInput.Builder(context.getString(R.string.i_notification_comment))
+                    .setLabel(context.getString(R.string.notification_comment))
+                    .build();
+
+            Notification.Action action =
+                    new Notification.Action.Builder(R.drawable.ic_menu_send, context.getString(R.string.notification_comment), comment2PendingIntent)
+                            .addRemoteInput(remoteInput)
+                            .build();
+
+
+//            builder.addAction(action);
+        } else {
+            // create Intent for comment
+            Intent commentIntent = new Intent(context, TipNotificationAnswerService.class);
+            commentIntent.putExtra(context.getString(R.string.i_notification_comment), "hek");
+            PendingIntent commentPendingIntent = PendingIntent.getService(context, notificationId, commentIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+            builder.addAction(R.drawable.ic_menu_send, context.getString(R.string.notification_comment), commentPendingIntent);
+        }
+
 
         mNotificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         mNotificationManager.notify(0, builder.build());

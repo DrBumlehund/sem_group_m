@@ -9,6 +9,9 @@
     <string name="i_sign_out" translatable="false">SIGN_OUT</string>
     <string name="i_latitude" translatable="false">LATITUDE</string>
     <string name="i_longitude" translatable="false">LONGITUDE</string>
+    <string name="i_notification_report_id" translatable="false">NOTIFICATION_REPORT_ID</string>
+    <string name="i_notification_comment" translatable="false">NOTIFICATION_COMMENT</string>
+    <string name="i_notification_vote" translatable="false">NOTIFICATION_VOTE</string>
     <!-- shared preferences -->
     <string name="sp_key" translatable="false">PROJECT_M_SEM</string>
     <string name="sp_user_login" translatable="false">USER_LOGIN</string>
