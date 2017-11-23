@@ -65,8 +65,13 @@
             android:exported="false"
             android:process=":my_process" />
         <service
-            android:name=".Services.TipNotificationAnswerService"
-            android:exported="false"></service>
+            android:name=".Services.TipNotificationCommentService"
+            android:enabled="true"
+            android:exported="false" />
+        <service
+            android:name=".Services.TipNotificationVoteService"
+            android:enabled="true"
+            android:exported="false" />
     </application>
 
 </manifest>

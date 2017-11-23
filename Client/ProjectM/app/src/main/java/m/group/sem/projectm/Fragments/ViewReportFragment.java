@@ -20,14 +20,9 @@ import android.widget.Toast;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
-import com.loopj.android.http.SyncHttpClient;
-
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 
 import Model.Report;
 import Model.User;
@@ -147,13 +142,13 @@ public class ViewReportFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_view_report, container, false);
-        mCommentInput = (EditText) view.findViewById(R.id.comment_input);
-        mUpvote = (ImageButton) view.findViewById(R.id.upvote);
-        mDownvote = (ImageButton) view.findViewById(R.id.downvote);
-        mSendComment = (ImageButton) view.findViewById(R.id.send_comment);
-        mVoteNumber = (TextView) view.findViewById(R.id.vote_number);
-        mDescription = (TextView) view.findViewById(R.id.description);
-        mCommentsRecycler = (RecyclerView) view.findViewById(R.id.commentsRecycler);
+        mCommentInput = view.findViewById(R.id.comment_input);
+        mUpvote = view.findViewById(R.id.upvote);
+        mDownvote = view.findViewById(R.id.downvote);
+        mSendComment = view.findViewById(R.id.send_comment);
+        mVoteNumber = view.findViewById(R.id.vote_number);
+        mDescription = view.findViewById(R.id.description);
+        mCommentsRecycler = view.findViewById(R.id.commentsRecycler);
 
         mUpvote.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -231,10 +226,7 @@ public class ViewReportFragment extends Fragment {
     }
 
     private boolean validateComment(String comment) {
-        if (comment == null || comment.isEmpty()){
-            return false;
-        } // Harsh language? Some other requirements? This logic should be both server and client side
-        return true;
+        return !(comment == null || comment.isEmpty());
     }
 
     private void saveVote (final boolean upvote) {

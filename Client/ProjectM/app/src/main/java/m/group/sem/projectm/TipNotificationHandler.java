@@ -4,12 +4,12 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.RemoteInput;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.RemoteInput;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,11 +17,13 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.SyncHttpClient;
 
 import java.util.Date;
+import java.util.Random;
 
 import Model.Report;
 import cz.msebera.android.httpclient.Header;
 import m.group.sem.projectm.Services.ActivityRecognitionContainer;
-import m.group.sem.projectm.Services.TipNotificationAnswerService;
+import m.group.sem.projectm.Services.TipNotificationCommentService;
+import m.group.sem.projectm.Services.TipNotificationVoteService;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.content.Context.NOTIFICATION_SERVICE;
@@ -63,8 +65,8 @@ public class TipNotificationHandler {
     public void ActivityDetected(ActivityRecognitionContainer activityRecognitionContainer, Context context) {
         this.context = context;
         if (radius < 0) {
-            SharedPreferences preferences = context.getSharedPreferences(context.getString(R.string.sp_key), MODE_PRIVATE);
-            radius = preferences.getInt(context.getString(R.string.sp_set_distance), context.getResources().getInteger(R.integer.set_dist_def));
+            SharedPreferences preferences = context.getSharedPreferences(getString(R.string.sp_key), MODE_PRIVATE);
+            radius = preferences.getInt(getString(R.string.sp_set_distance), getInteger(R.integer.set_dist_def));
         }
         if (activityRecognitionContainer.isOnFoot()) {
             if (new java.util.Date().getTime() > lastReportUpdate + reportUpdateInterval) {
@@ -76,7 +78,7 @@ public class TipNotificationHandler {
         }
         // TODO REMOVE THIS TEST STUFF
         Report report = new Report();
-        report.setId(163327);
+        report.setId(new Random().nextInt());
         report.setComment("hey there ma dood");
         showNotification(report);
     }
@@ -99,7 +101,7 @@ public class TipNotificationHandler {
                         context.sendBroadcast(intent);
 
                         // Save new reports to shared preferences - these can be read from activities
-                        SharedPreferences prefs = context.getSharedPreferences(context.getString(R.string.app_name), MODE_PRIVATE);
+                        SharedPreferences prefs = context.getSharedPreferences(getString(R.string.app_name), MODE_PRIVATE);
                         SharedPreferences.Editor edit = prefs.edit();
                         edit.putString(Constants.REPORTS_ONLY_COORDINATES, reportsSerialized);
                         edit.apply();
@@ -136,11 +138,10 @@ public class TipNotificationHandler {
         }
     }
 
-    //    @TargetApi(Build.VERSION_CODES.O)
     private boolean showNotification(Report report) {
-        SharedPreferences sp = context.getSharedPreferences(context.getString(R.string.sp_key), MODE_PRIVATE);
+        SharedPreferences sp = context.getSharedPreferences(getString(R.string.sp_key), MODE_PRIVATE);
 
-        Long timeSinceLastTimeThisReportWasNotified = sp.getLong(String.valueOf(report.getId() + notificationTimeKey), Long.MIN_VALUE);
+        Long lastTimeThisReportWasNotified = sp.getLong(String.valueOf(report.getId() + notificationTimeKey), Long.MIN_VALUE);
         Long time = new Date().getTime();
 
         if (sp.getBoolean(String.valueOf(report.getId() + contribKey), false)) {
@@ -149,21 +150,21 @@ public class TipNotificationHandler {
             return false;
         }
 
-        if (timeSinceLastTimeThisReportWasNotified != Long.MIN_VALUE) {
+        if (lastTimeThisReportWasNotified != Long.MIN_VALUE) {
 
-            if (timeSinceLastTimeThisReportWasNotified < time) {
+            if (lastTimeThisReportWasNotified < time) {
                 // Notification has been shown,
                 // and we don't want to keep showing the same notification to the user
-                Log.d(tag, String.format("timeLast: %d - timeNow: %d = %d, condition < %d = %b", timeSinceLastTimeThisReportWasNotified, time, time - timeSinceLastTimeThisReportWasNotified, notificationInterval, time - timeSinceLastTimeThisReportWasNotified < notificationInterval));
+                Log.d(tag, String.format("timeLast: %d - timeNow: %d = %d, condition < %d = %b", lastTimeThisReportWasNotified, time, time - lastTimeThisReportWasNotified, notificationInterval, time - lastTimeThisReportWasNotified < notificationInterval));
                 // Unless the notification is older than notificationInterval
-                if (time - timeSinceLastTimeThisReportWasNotified < notificationInterval) {
+                if (time - lastTimeThisReportWasNotified < notificationInterval) {
                     // The notification has been notified within the last month
                     return false;
                 }
             }
 
         } else {
-            Log.d(tag, "timeSinceLastTimeThisReportWasNotified was equals to Long.MIN_VALUE, report was never shown before");
+            Log.d(tag, "lastTimeThisReportWasNotified was equals to Long.MIN_VALUE, report was never shown before");
         }
 
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -173,9 +174,9 @@ public class TipNotificationHandler {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
 
             // The user-visible name of the channel.
-            CharSequence name = context.getString(R.string.notification_channel_name);
+            CharSequence name = getString(R.string.notification_channel_name);
             // The user-visible description of the channel.
-            String description = context.getString(R.string.notification_channel_desc);
+            String description = getString(R.string.notification_channel_desc);
             int importance = NotificationManager.IMPORTANCE_HIGH;
             NotificationChannel mChannel = null;
             mChannel = new NotificationChannel(id, name, importance);
@@ -187,57 +188,70 @@ public class TipNotificationHandler {
             mChannel.setLightColor(Color.RED);
             mChannel.enableVibration(true);
             mChannel.setVibrationPattern(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400});
-            mNotificationManager.createNotificationChannel(mChannel);
+            if (mNotificationManager != null) {
+                mNotificationManager.createNotificationChannel(mChannel);
+            }
         }
 
         NotificationCompat.Builder builder =
                 new NotificationCompat.Builder(context, id)
                         .setVisibility(Notification.VISIBILITY_PUBLIC)
+                        .setGroup(getString(R.string.notification_channel_name))
                         .setSmallIcon(R.drawable.ic_stat_hvid_uden_tekst)
-                        .setContentTitle(context.getString(R.string.notification_title))
-                        .setContentText(String.format(context.getString(R.string.notification_content_text), report.getComment()));
+                        .setVibrate(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400})
+                        .setContentTitle(getString(R.string.notification_title))
+                        .setContentText(String.format(getString(R.string.notification_content_text), report.getComment()));
 
         // Create Intent for confirm vote
-        Intent confirmIntent = new Intent(context, TipNotificationAnswerService.class);
-        confirmIntent.putExtra(context.getString(R.string.i_notification_vote), true);
-        PendingIntent confirmPendingIntent = PendingIntent.getService(context, notificationId, confirmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent confirmIntent = new Intent(context, TipNotificationVoteService.class);
+        confirmIntent.putExtra(getString(R.string.i_notification_vote), true);
+        confirmIntent.setAction(getString(R.string.notification_vote));
+        confirmIntent.putExtra(getString(R.string.i_notification_report_id), report.getId());
+        PendingIntent confirmPendingIntent = PendingIntent.getService(context, R.string.notification_confirm, confirmIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        builder.addAction(R.drawable.ic_menu_gallery, context.getString(R.string.notification_confirm), confirmPendingIntent);
+        NotificationCompat.Action actionConfirm =
+                new NotificationCompat.Action.Builder(R.drawable.ic_menu_gallery, getString(R.string.notification_confirm), confirmPendingIntent)
+                        .build();
+
+        builder.addAction(actionConfirm);
 
         // create Intent for deny vote
-        Intent denyIntent = new Intent(context, TipNotificationAnswerService.class);
-        denyIntent.putExtra(context.getString(R.string.i_notification_vote), false);
-        PendingIntent denyPendingIntent = PendingIntent.getService(context, notificationId, denyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent denyIntent = new Intent(context, TipNotificationVoteService.class);
+        denyIntent.putExtra(getString(R.string.i_notification_vote), false);
+        denyIntent.setAction(getString(R.string.notification_vote));
+        denyIntent.putExtra(getString(R.string.i_notification_report_id), report.getId());
+        PendingIntent denyPendingIntent = PendingIntent.getService(context, R.string.notification_deny, denyIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        builder.addAction(R.drawable.ic_menu_camera, context.getString(R.string.notification_deny), denyPendingIntent);
+//        builder.addAction(R.drawable.ic_menu_camera, getString(R.string.notification_deny), denyPendingIntent);
+
+        NotificationCompat.Action actionDeny =
+                new NotificationCompat.Action.Builder(R.drawable.ic_menu_camera, getString(R.string.notification_deny), denyPendingIntent)
+                        .build();
+
+        builder.addAction(actionDeny);
 
         // create Intent for comment
-        Intent comment2Intent = new Intent(context, TipNotificationAnswerService.class);
-        PendingIntent comment2PendingIntent = PendingIntent.getService(context, notificationId, comment2Intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        Intent commentIntent = new Intent(context, TipNotificationCommentService.class);
+        commentIntent.putExtra(getString(R.string.i_notification_report_id), report.getId());
+        commentIntent.putExtra(getString(R.string.i_notification_comment_boolean), true);
+        commentIntent.setAction(getString(R.string.notification_comment));
+        PendingIntent commentPendingIntent = PendingIntent.getService(context, R.string.notification_comment, commentIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT_WATCH) {
-            RemoteInput remoteInput = new RemoteInput.Builder(context.getString(R.string.i_notification_comment))
-                    .setLabel(context.getString(R.string.notification_comment))
-                    .build();
+        RemoteInput remoteInput = new RemoteInput.Builder(getString(R.string.i_notification_comment))
+                .setLabel(getString(R.string.notification_comment))
+                .build();
 
-            Notification.Action action =
-                    new Notification.Action.Builder(R.drawable.ic_menu_send, context.getString(R.string.notification_comment), comment2PendingIntent)
-                            .addRemoteInput(remoteInput)
-                            .build();
+        NotificationCompat.Action action =
+                new NotificationCompat.Action.Builder(R.drawable.ic_menu_send, getString(R.string.notification_comment), commentPendingIntent)
+                        .addRemoteInput(remoteInput)
+                        .build();
 
-
-//            builder.addAction(action);
-        } else {
-            // create Intent for comment
-            Intent commentIntent = new Intent(context, TipNotificationAnswerService.class);
-            commentIntent.putExtra(context.getString(R.string.i_notification_comment), "hek");
-            PendingIntent commentPendingIntent = PendingIntent.getService(context, notificationId, commentIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-
-            builder.addAction(R.drawable.ic_menu_send, context.getString(R.string.notification_comment), commentPendingIntent);
-        }
-
+        builder.addAction(action);
 
         mNotificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+        // The id = 0 prevents multiple notifications to appear,
+        // it will only show one in the drawer at a time,
+        // but will still notify whenever a new notification appears
         mNotificationManager.notify(0, builder.build());
 
         SharedPreferences.Editor spEditor = sp.edit();
@@ -268,5 +282,13 @@ public class TipNotificationHandler {
         double tt = Math.acos(t1 + t2 + t3);
 
         return 6366000 * tt;
+    }
+
+    private String getString(int id) {
+        return context != null ? context.getString(id) : null;
+    }
+
+    private int getInteger(int id) {
+        return context != null ? context.getResources().getInteger(id) : 0;
     }
 }

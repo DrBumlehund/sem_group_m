@@ -11,6 +11,7 @@
     <string name="i_longitude" translatable="false">LONGITUDE</string>
     <string name="i_notification_report_id" translatable="false">NOTIFICATION_REPORT_ID</string>
     <string name="i_notification_comment" translatable="false">NOTIFICATION_COMMENT</string>
+    <string name="i_notification_comment_boolean" translatable="false">IS_NOTIFICATION_COMMENT</string>
     <string name="i_notification_vote" translatable="false">NOTIFICATION_VOTE</string>
     <!-- shared preferences -->
     <string name="sp_key" translatable="false">PROJECT_M_SEM</string>
@@ -54,6 +55,7 @@
     <string name="notification_confirm">Confirm</string>
     <string name="notification_deny">Deny</string>
     <string name="notification_comment">Comment</string>
+    <string name="notification_vote" translatable="false">Comment</string>
     <string name="notification_channel_name" translatable="false">Report proximity channel</string>
     <string name="notification_channel_desc" translatable="false">This channel is used for notifying you about near by reports</string>
     <!-- Strings for about -->
