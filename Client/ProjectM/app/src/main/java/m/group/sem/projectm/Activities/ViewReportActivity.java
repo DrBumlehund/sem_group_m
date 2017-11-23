@@ -1,14 +1,8 @@
 package m.group.sem.projectm.Activities;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.widget.Toast;
-
-import java.io.Serializable;
 
 import Model.Report;
 import m.group.sem.projectm.Fragments.ViewReportFragment;
@@ -22,10 +16,12 @@ public class ViewReportActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_view_report);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mReport = (Report) savedInstanceState.getSerializable(getString(R.string.i_report));
+        mReport = (Report) this.getIntent().getExtras().getSerializable(getString(R.string.i_report));
+
+//        Toast.makeText(getApplicationContext(), "received report id : " + mReport.getId(), Toast.LENGTH_SHORT).show(); // Test toast
 
         ViewReportFragment viewReportFragment = (ViewReportFragment) getSupportFragmentManager().findFragmentById(R.id.view_report_fragment);
         viewReportFragment.setReport(mReport, false);

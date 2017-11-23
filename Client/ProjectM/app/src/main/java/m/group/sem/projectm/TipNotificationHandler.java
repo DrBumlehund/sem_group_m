@@ -8,8 +8,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.RemoteInput;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,10 +19,10 @@ import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.SyncHttpClient;
 
 import java.util.Date;
-import java.util.Random;
 
 import Model.Report;
 import cz.msebera.android.httpclient.Header;
+import m.group.sem.projectm.Activities.ViewReportActivity;
 import m.group.sem.projectm.Services.ActivityRecognitionContainer;
 import m.group.sem.projectm.Services.TipNotificationCommentService;
 import m.group.sem.projectm.Services.TipNotificationVoteService;
@@ -53,7 +55,8 @@ public class TipNotificationHandler {
 
     private TipNotificationHandler() {
         reportUpdateInterval = 2L * 60L * 60L * 1000L; // 2 hours
-        notificationInterval = 30L * 24L * 60L * 60L * 1000L; // thirty days in milliseconds
+//        notificationInterval = 30L * 24L * 60L * 60L * 1000L; // thirty days in milliseconds
+        notificationInterval = 20L * 1000L; // thirty days in milliseconds
     }
 
     public static TipNotificationHandler getInstance() {
@@ -78,7 +81,7 @@ public class TipNotificationHandler {
         }
         // TODO REMOVE THIS TEST STUFF
         Report report = new Report();
-        report.setId(new Random().nextInt());
+        report.setId(1);
         report.setComment("hey there ma dood");
         showNotification(report);
     }
@@ -247,6 +250,20 @@ public class TipNotificationHandler {
                         .build();
 
         builder.addAction(action);
+
+
+        Intent contentIntent = new Intent(context, ViewReportActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putSerializable(getString(R.string.i_report), report);
+        contentIntent.putExtras(bundle);
+
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(context);
+        stackBuilder.addParentStack(ViewReportActivity.class);
+        stackBuilder.addNextIntent(contentIntent);
+
+        PendingIntent contentPendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        builder.setContentIntent(contentPendingIntent);
 
         mNotificationManager = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
         // The id = 0 prevents multiple notifications to appear,
