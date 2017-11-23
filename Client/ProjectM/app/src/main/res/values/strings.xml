@@ -74,4 +74,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="getting_report">Getting report...</string>
     <string name="comment">Comment</string>
+    <string name="title_activity_view_report">ViewReportActivity</string>
+    <string name="i_report">report</string>
 </resources>

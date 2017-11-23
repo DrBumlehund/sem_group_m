@@ -72,6 +72,11 @@
             android:name=".Services.TipNotificationVoteService"
             android:enabled="true"
             android:exported="false" />
+        <activity
+            android:name=".Activities.ViewReportActivity"
+            android:label="@string/title_activity_view_report"
+            android:parentActivityName=".Activities.MainActivity"
+            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>
