@@ -2,6 +2,8 @@ package m.group.sem.projectm.Services;
 
 import java.io.Serializable;
 
+import m.group.sem.projectm.BuildConfig;
+
 /**
  * Created by Simon on 08-11-2017.
  */
@@ -12,7 +14,11 @@ public class ActivityRecognitionContainer implements Serializable {
 
     public boolean isOnFoot() {
         // TODO REMOVE STILL, THIS IS ONLY FOR TESTING PURPOSES!
-        return type == ActivityType.ON_FOOT || type == ActivityType.RUNNING || type == ActivityType.WALKING || type == ActivityType.STILL;
+        if (BuildConfig.DEBUG) {
+            // Because f**k activity recognition when we are testing.
+            return true;
+        }
+        return type == ActivityType.ON_FOOT || type == ActivityType.RUNNING || type == ActivityType.WALKING;
     }
 
     public enum ActivityType {
