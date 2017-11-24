@@ -18,7 +18,7 @@ import com.google.android.gms.tasks.Task;
 
 import m.group.sem.projectm.BroadcastReceivers.LocationBroadcastReceiver;
 import m.group.sem.projectm.R;
-import m.group.sem.projectm.TipNotificationHandler;
+import m.group.sem.projectm.TipDistanceHandler;
 
 public class TipNotificationService extends Service {
 
@@ -30,7 +30,7 @@ public class TipNotificationService extends Service {
                 double lat = intent.getDoubleExtra(getString(R.string.i_latitude), 0);
                 double lon = intent.getDoubleExtra(getString(R.string.i_longitude), 0);
                 try {
-                    TipNotificationHandler.getInstance().setLocation(lat, lon);
+                    TipDistanceHandler.getInstance().setLocation(lat, lon);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

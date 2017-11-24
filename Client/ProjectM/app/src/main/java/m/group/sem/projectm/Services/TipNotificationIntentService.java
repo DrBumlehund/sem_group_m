@@ -10,7 +10,7 @@ import com.google.android.gms.location.DetectedActivity;
 
 import java.util.Date;
 
-import m.group.sem.projectm.TipNotificationHandler;
+import m.group.sem.projectm.TipDistanceHandler;
 
 public class TipNotificationIntentService extends IntentService {
 
@@ -37,7 +37,7 @@ public class TipNotificationIntentService extends IntentService {
             activityRecognitionContainer.confidence = activityConfidence;
             activityRecognitionContainer.timestamp = new Date().toString();
 
-            TipNotificationHandler.getInstance().ActivityDetected(activityRecognitionContainer, this);
+            TipDistanceHandler.getInstance().ActivityDetected(activityRecognitionContainer, this);
         }
     }
 
