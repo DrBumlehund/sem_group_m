@@ -68,7 +68,7 @@ public class ViewReportFragment extends Fragment {
         }
     }
 
-    private void fetchReportDetail(int reportId) {
+    private void fetchReportDetail(final int reportId) {
         String url = Constants.getBaseUrl() + String.format("/reports?report-id=%1$s", reportId);
         mHttpClient.post(url, new AsyncHttpResponseHandler() {
             @Override
@@ -78,13 +78,13 @@ public class ViewReportFragment extends Fragment {
                     setReport(report);
                 } catch (IOException e) {
                     e.printStackTrace();
-                    Toast.makeText(getContext(), "Failed to get report details!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Failed to get report details! for report id : " + reportId, Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-                Toast.makeText(getContext(), "Failed to get report details!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Failed to get report details! for report id : " + reportId, Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -229,7 +229,7 @@ public class ViewReportFragment extends Fragment {
         return !(comment == null || comment.isEmpty());
     }
 
-    private void saveVote (final boolean upvote) {
+    private void saveVote(final boolean upvote) {
         if (isVoting == false) {
             disableVote();
             String url = Constants.getBaseUrl() + String.format("/votes?report-id=%1$s&vote=%2$s&user-id=%3$s", mReport.getId(), upvote, mUser.getId());

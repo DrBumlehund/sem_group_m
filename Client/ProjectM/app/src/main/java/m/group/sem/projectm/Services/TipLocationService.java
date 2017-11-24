@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
@@ -134,7 +135,7 @@ public class TipLocationService extends Service implements GoogleApiClient.Conne
     @Override
     public IBinder onBind(Intent intent) {
         Log.i(tag, "onBind : Service bind");
-        return null;
+        return new LocalBinder();
     }
 
     @Override
@@ -171,5 +172,16 @@ public class TipLocationService extends Service implements GoogleApiClient.Conne
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
         Log.i(tag, "onConnectionFailed : Connection failed");
+    }
+
+    public int getPrecision() {
+        return locationRequest.getPriority();
+    }
+
+    public class LocalBinder extends Binder {
+        TipLocationService getService() {
+            // Return this instance of LocalService so clients can call public methods
+            return TipLocationService.this;
+        }
     }
 }

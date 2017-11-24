@@ -3,6 +3,9 @@ package m.group.sem.projectm;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -36,6 +39,7 @@ public class TipDistanceHandler {
     // Async rest calls
     private SyncHttpClient mHttpClient = new SyncHttpClient();
     private ObjectMapper mMapper = new ObjectMapper();
+    private Handler handler;
 
     private TipDistanceHandler() {
         reportUpdateInterval = 2L * 60L * 60L * 1000L; // 2 hours
@@ -108,14 +112,37 @@ public class TipDistanceHandler {
 
     private void checkReportProximity() {
         Log.d(tag, "checkReportProximity");
+
+        boolean notificationTriggered = false;
+        boolean increasePrecision = false;
+
         if (reports.length > 0) {
             for (Report report : reports) {
                 double distance = meterDistanceToMyLocation(report.getLatitude(), report.getLongitude());
-                Log.d(tag, String.format("distance to report %d : %s has been calculated to %f meters", report.getId(), report.getComment(), distance));
-                if (distance < notificationRadius) {
-                    boolean b = TipNotificationHandler.getInstance().showNotification(report, context);
+                Log.d(tag, String.format("distance to report %d : %s has been calculated to %f meters, report coordinates = [%f, %f]", report.getId(), report.getComment(), distance, report.getLatitude(), report.getLongitude()));
+                if (distance < precisionRadius) {
+                    if (!increasePrecision) {
+                        // to ensure that it won't change from true to false,
+                        // as we have to increase the precision if at least
+                        // one report is within the precision range.
+                        increasePrecision = true;
+                    }
+                    if (distance < notificationRadius) {
+                        if (!notificationTriggered) {
+                            // to ensure that only one notification is fired pr. check
+                            // (so that you don't get 10 notifications in 2 seconds if you are within range).
+                            notificationTriggered = TipNotificationHandler.getInstance().showNotification(report, context);
+                        }
+                    }
                 }
             }
+        }
+        if (hasHandler()) {
+            Bundle b = new Bundle();
+            b.getBoolean(Constants.PRECISION, increasePrecision);
+            Message msg = new Message();
+            msg.setData(b);
+            handler.dispatchMessage(msg);
         }
     }
 
@@ -127,19 +154,52 @@ public class TipDistanceHandler {
     }
 
     private double meterDistanceToMyLocation(double lat, double lon) {
-        float pk = (float) (180.f / Math.PI);
+//        float pk = (float) (180.f / Math.PI);
+//
+//        double a1 = latitude / pk;
+//        double a2 = longitude / pk;
+//        double b1 = lat / pk;
+//        double b2 = lon / pk;
+//
+//        double t1 = Math.cos(a1) * Math.cos(a2) * Math.cos(b1) * Math.cos(b2);
+//        double t2 = Math.cos(a1) * Math.sin(a2) * Math.cos(b1) * Math.sin(b2);
+//        double t3 = Math.sin(a1) * Math.sin(b1);
+//        double tt = Math.acos(t1 + t2 + t3);
+//
+//        return 6366000 * tt;
 
-        double a1 = latitude / pk;
-        double a2 = longitude / pk;
-        double b1 = lat / pk;
-        double b2 = lon / pk;
+//        return Math.sqrt(Math.pow((latitude - lat), 2) + Math.pow((longitude - lon), 2));
 
-        double t1 = Math.cos(a1) * Math.cos(a2) * Math.cos(b1) * Math.cos(b2);
-        double t2 = Math.cos(a1) * Math.sin(a2) * Math.cos(b1) * Math.sin(b2);
-        double t3 = Math.sin(a1) * Math.sin(b1);
-        double tt = Math.acos(t1 + t2 + t3);
+//        double earthRadius = 3958.75;
+//
+//        double dLat = Math.toRadians(lat - latitude);
+//        double dLng = Math.toRadians(lon - longitude);
+//        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+//                Math.cos(Math.toRadians(longitude)) * Math.cos(Math.toRadians(latitude)) *
+//                        Math.sin(dLng / 2) * Math.sin(dLng / 2);
+//        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+//        double dist = earthRadius * c;
+//
+//        return dist;
 
-        return 6366000 * tt;
+        double theta = longitude - lon;
+        double dist = Math.sin(deg2rad(latitude))
+                * Math.sin(deg2rad(lat))
+                + Math.cos(deg2rad(latitude))
+                * Math.cos(deg2rad(lat))
+                * Math.cos(deg2rad(theta));
+        dist = Math.acos(dist);
+        dist = rad2deg(dist);
+        dist = dist * 60 * 1.1515;
+        return (dist);
+    }
+
+    private double deg2rad(double deg) {
+        return (deg * Math.PI / 180.0);
+    }
+
+    private double rad2deg(double rad) {
+        return (rad * 180.0 / Math.PI);
     }
 
     private String getString(int id) {
@@ -148,5 +208,13 @@ public class TipDistanceHandler {
 
     private int getInteger(int id) {
         return context != null ? context.getResources().getInteger(id) : 0;
+    }
+
+    public void setHandler(Handler handler) {
+        this.handler = handler;
+    }
+
+    public boolean hasHandler() {
+        return handler != null;
     }
 }
