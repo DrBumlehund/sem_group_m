@@ -28,7 +28,7 @@ import static android.content.Context.NOTIFICATION_SERVICE;
  * Created by drbum on 24-Nov-17.
  */
 
-class TipNotificationHandler {
+public class TipNotificationHandler {
 
     private final static String tag = "TipNotificationHandler";
     private static final TipNotificationHandler ourInstance = new TipNotificationHandler();
