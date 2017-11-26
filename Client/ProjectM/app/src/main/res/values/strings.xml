@@ -1,6 +1,6 @@
 <resources>
     <!-- general -->
-    <string name="app_name" translatable="false">H.C. Andersen Simulator 2017</string>
+    <string name="app_name">Give a Tip</string>
     <!-- broadcast keys -->
     <string name="action_location_broadcast" translatable="false">projectM.LOCATION_BROADCAST</string>
     <!-- intent keys -->
@@ -74,6 +74,6 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="getting_report">Getting report...</string>
     <string name="comment">Comment</string>
-    <string name="title_activity_view_report">ViewReportActivity</string>
-    <string name="i_report">report</string>
+    <string name="title_activity_view_report" translatable="false">ViewReportActivity</string>
+    <string name="i_report" translatable="false">report</string>
 </resources>

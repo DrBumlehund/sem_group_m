@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void goToCreateReport() {
-        SharedPreferences prefs = getSharedPreferences(getString(R.string.app_name), MODE_PRIVATE);
+        SharedPreferences prefs = getSharedPreferences(getString(R.string.sp_key), MODE_PRIVATE);
         double lastKnownLatitude = Utilities.getDouble(prefs, getString(R.string.last_known_lat), 0);
         double lastKnownLongitude = Utilities.getDouble(prefs, getString(R.string.last_known_long), 0);
 

@@ -14,11 +14,7 @@ public class ActivityRecognitionContainer implements Serializable {
 
     public boolean isOnFoot() {
         // TODO REMOVE STILL, THIS IS ONLY FOR TESTING PURPOSES!
-        if (BuildConfig.DEBUG) {
-            // Because f**k activity recognition when we are testing.
-            return true;
-        }
-        return type == ActivityType.ON_FOOT || type == ActivityType.RUNNING || type == ActivityType.WALKING;
+        return type == ActivityType.ON_FOOT || type == ActivityType.RUNNING || type == ActivityType.WALKING || (type == ActivityType.STILL && BuildConfig.DEBUG);
     }
 
     public enum ActivityType {

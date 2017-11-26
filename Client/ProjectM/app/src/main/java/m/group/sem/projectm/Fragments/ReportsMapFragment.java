@@ -1,15 +1,12 @@
 package m.group.sem.projectm.Fragments;
 
 
-import android.content.ComponentName;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
@@ -35,15 +32,12 @@ import java.util.HashMap;
 import Model.Report;
 import Model.User;
 import m.group.sem.projectm.Activities.CreateReportActivity;
-import m.group.sem.projectm.Activities.MainActivity;
 import m.group.sem.projectm.BroadcastReceivers.LocationBroadcastReceiver;
 import m.group.sem.projectm.BroadcastReceivers.ReportsBroadcastReceiver;
 import m.group.sem.projectm.Constants;
 import m.group.sem.projectm.R;
-import m.group.sem.projectm.Services.TipLocationService;
 import m.group.sem.projectm.Utilities;
 
-import static android.content.Context.BIND_NOT_FOREGROUND;
 import static android.content.Context.MODE_PRIVATE;
 
 public class ReportsMapFragment extends Fragment implements OnMapReadyCallback {
@@ -63,6 +57,22 @@ public class ReportsMapFragment extends Fragment implements OnMapReadyCallback {
     private User mUser;
     private BottomSheetBehavior<View> mBottomSheetBehavior;
     private ViewReportFragment mViewReportFragment;
+    private ReportsBroadcastReceiver mReportsReceiver = new ReportsBroadcastReceiver() {
+        @Override
+        protected void onReportsReceived(Report[] reports) {
+            mReports = reports;
+            updateMapReports();
+        }
+    };
+    private LocationBroadcastReceiver mReceiver = new LocationBroadcastReceiver() {
+        @Override
+        protected void onLocationReceived(Intent intent) {
+            receivedLatitude = intent.getDoubleExtra(getString(R.string.i_latitude), 0);
+            receivedLongitude = intent.getDoubleExtra(getString(R.string.i_longitude), 0);
+            Log.d(tag, "receivedLocation : " + receivedLatitude + ", " + receivedLongitude);
+            updateMapLocation();
+        }
+    };
 
     public ReportsMapFragment() {
     }
@@ -86,7 +96,7 @@ public class ReportsMapFragment extends Fragment implements OnMapReadyCallback {
         checkPermissions();
 
         // Get saved reports, if any
-        SharedPreferences prefs = getContext().getSharedPreferences(getString(R.string.app_name), MODE_PRIVATE);
+        SharedPreferences prefs = getContext().getSharedPreferences(getString(R.string.sp_key), MODE_PRIVATE);
         String reportsSerialized = prefs.getString(Constants.REPORTS_ONLY_COORDINATES, null);
         receivedLatitude = Utilities.getDouble(prefs,getString(R.string.last_known_lat), 0);
         receivedLongitude = Utilities.getDouble(prefs,getString(R.string.last_known_long), 0);
@@ -139,7 +149,6 @@ public class ReportsMapFragment extends Fragment implements OnMapReadyCallback {
 
         return view;
     }
-
 
     @Override
     public void onMapReady(GoogleMap map) {
@@ -266,24 +275,6 @@ public class ReportsMapFragment extends Fragment implements OnMapReadyCallback {
         }
         //TODO: implement some button on mainactivity to resync/recheck permission to start location service
     }
-
-    private ReportsBroadcastReceiver mReportsReceiver = new ReportsBroadcastReceiver() {
-        @Override
-        protected void onReportsReceived(Report[] reports) {
-            mReports = reports;
-            updateMapReports();
-        }
-    };
-
-    private LocationBroadcastReceiver mReceiver = new LocationBroadcastReceiver() {
-        @Override
-        protected void onLocationReceived(Intent intent) {
-            receivedLatitude = intent.getDoubleExtra(getString(R.string.i_latitude), 0);
-            receivedLongitude = intent.getDoubleExtra(getString(R.string.i_longitude), 0);
-            Log.d(tag, "receivedLocation : " + receivedLatitude + ", " + receivedLongitude);
-            updateMapLocation();
-        }
-    };
 
     private void goToCreateReport() {
         Intent intent = new Intent(getContext(), CreateReportActivity.class);

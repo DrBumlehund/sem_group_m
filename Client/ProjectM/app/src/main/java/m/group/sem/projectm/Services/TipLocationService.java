@@ -105,7 +105,7 @@ public class TipLocationService extends Service implements GoogleApiClient.Conne
                     locationIntent.putExtra(getString(R.string.i_longitude), newestLocation.getLongitude());
 
                     // Save to shared prefs - will be used as a last known location in case of activity restart
-                    SharedPreferences prefs = getSharedPreferences(getString(R.string.app_name), MODE_PRIVATE);
+                    SharedPreferences prefs = getSharedPreferences(getString(R.string.sp_key), MODE_PRIVATE);
                     SharedPreferences.Editor edit = prefs.edit();
                     edit = Utilities.putDouble(edit, getString(R.string.last_known_lat), newestLocation.getLatitude());
                     edit = Utilities.putDouble(edit, getString(R.string.last_known_long), newestLocation.getLongitude());
@@ -178,8 +178,12 @@ public class TipLocationService extends Service implements GoogleApiClient.Conne
         return locationRequest.getPriority();
     }
 
+    public Location getNewestLocation() {
+        return newestLocation;
+    }
+
     public class LocalBinder extends Binder {
-        TipLocationService getService() {
+        public TipLocationService getService() {
             // Return this instance of LocalService so clients can call public methods
             return TipLocationService.this;
         }

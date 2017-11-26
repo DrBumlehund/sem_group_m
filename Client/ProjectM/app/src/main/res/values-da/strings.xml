@@ -39,4 +39,5 @@
     <string name="notification_confirm">Bekræft</string>
     <string name="notification_deny">Benægt eller Afkræft</string>
     <string name="notification_comment">Kommenter</string>
+    <string name="app_name">Giv et Tip</string>
 </resources>

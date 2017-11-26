@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
+import android.location.Location;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,26 +32,29 @@ public class TipNotificationService extends Service {
     private final static String tag = "TipNotificationService";
     private TipLocationService mService;
     private boolean mBound;
+
     @SuppressLint("HandlerLeak")
     Handler locationPrecisionHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             Bundle reply = msg.getData();
             if (mBound) {
-                if (reply.getBoolean(Constants.PRECISION)) {
+                boolean increase = reply.getBoolean(Constants.PRECISION);
+                if (increase) {
                     if (mService.getPrecision() != LocationRequest.PRIORITY_HIGH_ACCURACY) {
                         Log.d(String.valueOf(this.getClass()), "INCREASING LOCATION PRECISION");
-                        mService.changeLocationRequest(LocationRequest.PRIORITY_HIGH_ACCURACY, 0, 0);
+                        mService.changeLocationRequest(3, 10000, 5000);
                     }
                 } else {
                     if (mService.getPrecision() != LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY) {
                         Log.d(String.valueOf(this.getClass()), "DECREASING LOCATION PRECISION TO PRESERVE POWER");
-                        mService.changeLocationRequest(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY, 0, 0);
+                        mService.changeLocationRequest(2, 10000, 5000);
                     }
                 }
             }
         }
     };
+
     private final BroadcastReceiver receiver = new LocationBroadcastReceiver() {
         @Override
         protected void onLocationReceived(Intent intent) {
@@ -59,11 +63,16 @@ public class TipNotificationService extends Service {
                 Log.d(tag, "Received Location from LocationService");
                 double lat = intent.getDoubleExtra(getString(R.string.i_latitude), 0);
                 double lon = intent.getDoubleExtra(getString(R.string.i_longitude), 0);
-                try {
-                    TipDistanceHandler.getInstance().setLocation(lat, lon);
-                } catch (Exception e) {
-                    e.printStackTrace();
+
+                if (mBound) {
+                    TipDistanceHandler.getInstance().setLocation(mService.getNewestLocation());
+                } else {
+                    Location location = new Location(String.valueOf(TipNotificationService.class));
+                    location.setLatitude(lat);
+                    location.setLongitude(lon);
+                    TipDistanceHandler.getInstance().setLocation(location);
                 }
+
                 if (!TipDistanceHandler.getInstance().hasHandler()) {
                     TipDistanceHandler.getInstance().setHandler(locationPrecisionHandler);
                     Log.d(tag, "Successfully tried to add MessageHandler to LocationPrecisionHandler");
@@ -73,6 +82,7 @@ public class TipNotificationService extends Service {
             }
         }
     };
+
     private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName className, IBinder service) {

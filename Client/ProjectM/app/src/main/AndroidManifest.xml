@@ -54,7 +54,11 @@
             android:name=".Activities.SettingsActivity"
             android:parentActivityName=".Activities.MainActivity" />
         <!-- Services -->
-        <service android:name=".Services.TipNotificationIntentService" />
+        <service
+            android:name=".Services.TipNotificationIntentService"
+            android:enabled="true"
+            android:exported="false"
+            android:process=":my_process" />
         <service
             android:name=".Services.TipLocationService"
             android:enabled="true"
@@ -72,11 +76,12 @@
             android:name=".Services.TipNotificationVoteService"
             android:enabled="true"
             android:exported="false" />
+
         <activity
             android:name=".Activities.ViewReportActivity"
             android:label="@string/title_activity_view_report"
             android:parentActivityName=".Activities.MainActivity"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
     </application>
 
 </manifest>

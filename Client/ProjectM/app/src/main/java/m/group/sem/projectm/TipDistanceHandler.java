@@ -3,6 +3,7 @@ package m.group.sem.projectm;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -24,7 +25,6 @@ import static android.content.Context.MODE_PRIVATE;
 
 public class TipDistanceHandler {
 
-    public final static int notificationId = 1;
     private final static String tag = "TipDistanceHandler";
     private static TipDistanceHandler instance;
     private double notificationRadius = -1;
@@ -34,12 +34,12 @@ public class TipDistanceHandler {
 
     private Report[] reports = new Report[0];
     private Context context;
-    private double latitude = 0;
-    private double longitude = 0;
     // Async rest calls
     private SyncHttpClient mHttpClient = new SyncHttpClient();
     private ObjectMapper mMapper = new ObjectMapper();
     private Handler handler;
+
+    private Location location;
 
     private TipDistanceHandler() {
         reportUpdateInterval = 2L * 60L * 60L * 1000L; // 2 hours
@@ -86,7 +86,7 @@ public class TipDistanceHandler {
                         context.sendBroadcast(intent);
 
                         // Save new reports to shared preferences - these can be read from activities
-                        SharedPreferences prefs = context.getSharedPreferences(getString(R.string.app_name), MODE_PRIVATE);
+                        SharedPreferences prefs = context.getSharedPreferences(getString(R.string.sp_key), MODE_PRIVATE);
                         SharedPreferences.Editor edit = prefs.edit();
                         edit.putString(Constants.REPORTS_ONLY_COORDINATES, reportsSerialized);
                         edit.apply();
@@ -107,7 +107,6 @@ public class TipDistanceHandler {
             }
         });
         // TODO: Get reports here
-        //checkReportProximity(notificationRadius);
     }
 
     private void checkReportProximity() {
@@ -118,7 +117,7 @@ public class TipDistanceHandler {
 
         if (reports.length > 0) {
             for (Report report : reports) {
-                double distance = meterDistanceToMyLocation(report.getLatitude(), report.getLongitude());
+                float distance = meterDistanceToMyLocation(report);
                 Log.d(tag, String.format("distance to report %d : %s has been calculated to %f meters, report coordinates = [%f, %f]", report.getId(), report.getComment(), distance, report.getLatitude(), report.getLongitude()));
                 if (distance < precisionRadius) {
                     if (!increasePrecision) {
@@ -139,59 +138,46 @@ public class TipDistanceHandler {
         }
         if (hasHandler()) {
             Bundle b = new Bundle();
-            b.getBoolean(Constants.PRECISION, increasePrecision);
+            b.putBoolean(Constants.PRECISION, increasePrecision);
             Message msg = new Message();
             msg.setData(b);
             handler.dispatchMessage(msg);
         }
+
     }
 
 
-    public void setLocation(double latitude, double longitude) {
-        Log.d(tag, String.format("Location updated to : %1$f, %2$f", latitude, longitude));
-        this.latitude = latitude;
-        this.longitude = longitude;
+    public void setLocation(Location location) {
+        this.location = location;
+        Log.d(tag, String.format("Location updated to : %1$f, %2$f", this.location.getLatitude(), this.location.getLongitude()));
     }
 
-    private double meterDistanceToMyLocation(double lat, double lon) {
-//        float pk = (float) (180.f / Math.PI);
-//
-//        double a1 = latitude / pk;
-//        double a2 = longitude / pk;
-//        double b1 = lat / pk;
-//        double b2 = lon / pk;
-//
-//        double t1 = Math.cos(a1) * Math.cos(a2) * Math.cos(b1) * Math.cos(b2);
-//        double t2 = Math.cos(a1) * Math.sin(a2) * Math.cos(b1) * Math.sin(b2);
-//        double t3 = Math.sin(a1) * Math.sin(b1);
-//        double tt = Math.acos(t1 + t2 + t3);
-//
-//        return 6366000 * tt;
+    private float meterDistanceToMyLocation(Report report) {
+        float dist;
 
-//        return Math.sqrt(Math.pow((latitude - lat), 2) + Math.pow((longitude - lon), 2));
+        // check if we actually have a location, else we need to use the last known location
+        if (location != null) {
+            Location reportLocation = new Location(report.getComment());
+            reportLocation.setLatitude(report.getLatitude());
+            reportLocation.setLongitude(report.getLongitude());
+            dist = this.location.distanceTo(reportLocation);
+        } else {
+            // calculate distance to the last known location
+            SharedPreferences prefs = context.getSharedPreferences(getString(R.string.sp_key), MODE_PRIVATE);
+            double latitude = Utilities.getDouble(prefs, getString(R.string.last_known_lat), 0);
+            double longitude = Utilities.getDouble(prefs, getString(R.string.last_known_long), 0);
 
-//        double earthRadius = 3958.75;
-//
-//        double dLat = Math.toRadians(lat - latitude);
-//        double dLng = Math.toRadians(lon - longitude);
-//        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-//                Math.cos(Math.toRadians(longitude)) * Math.cos(Math.toRadians(latitude)) *
-//                        Math.sin(dLng / 2) * Math.sin(dLng / 2);
-//        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-//        double dist = earthRadius * c;
-//
-//        return dist;
-
-        double theta = longitude - lon;
-        double dist = Math.sin(deg2rad(latitude))
-                * Math.sin(deg2rad(lat))
-                + Math.cos(deg2rad(latitude))
-                * Math.cos(deg2rad(lat))
-                * Math.cos(deg2rad(theta));
-        dist = Math.acos(dist);
-        dist = rad2deg(dist);
-        dist = dist * 60 * 1.1515;
-        return (dist);
+            double theta = longitude - report.getLongitude();
+            dist = (float) (Math.sin(deg2rad(latitude))
+                    * Math.sin(deg2rad(report.getLatitude()))
+                    + Math.cos(deg2rad(latitude))
+                    * Math.cos(deg2rad(report.getLatitude()))
+                    * Math.cos(deg2rad(theta)));
+            dist = (float) Math.acos(dist);
+            dist = (float) rad2deg(dist);
+            dist = (float) (dist * 60 * 1.1515);
+        }
+        return dist;
     }
 
     private double deg2rad(double deg) {
