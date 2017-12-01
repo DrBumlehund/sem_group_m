@@ -55,7 +55,7 @@ public class TipNotificationCommentService extends IntentService {
         int reportId = intent.getIntExtra(getString(R.string.i_notification_report_id), 0);
 
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.cancel(reportId);
+        mNotificationManager.cancel(Constants.NOTIFICATION_ID);
 
         Bundle b = RemoteInput.getResultsFromIntent(intent);
         String comment = b != null ? (String) b.getCharSequence(getString(R.string.i_notification_comment)) : "Comment Unavailable";

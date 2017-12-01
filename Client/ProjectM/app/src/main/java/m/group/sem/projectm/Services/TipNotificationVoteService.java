@@ -53,7 +53,7 @@ public class TipNotificationVoteService extends IntentService {
         int reportId = intent.getIntExtra(getString(R.string.i_notification_report_id), 0);
 
         NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        mNotificationManager.cancel(reportId);
+        mNotificationManager.cancel(Constants.NOTIFICATION_ID);
 
         boolean vote = intent.getBooleanExtra(getString(R.string.i_notification_vote), false);
         final String url = Constants.getBaseUrl() + String.format("/votes?report-id=%1$s&vote=%2$s&user-id=%3$s", reportId, vote, mUser.getId());

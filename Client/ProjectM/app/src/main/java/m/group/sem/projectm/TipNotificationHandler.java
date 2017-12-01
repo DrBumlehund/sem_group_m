@@ -45,8 +45,7 @@ public class TipNotificationHandler {
 
     private TipNotificationHandler() {
 
-        notificationInterval = 30L * 24L * 60L * 60L * 1000L; // thirty days in milliseconds
-//        notificationInterval = 20L * 1000L; // thirty days in milliseconds
+        notificationInterval = BuildConfig.DEBUG ? 30L * 1000L : 30L * 24L * 60L * 60L * 1000L; // thirty seconds if debug days if not, in milliseconds
     }
 
     static TipNotificationHandler getInstance() {
@@ -103,7 +102,7 @@ public class TipNotificationHandler {
         return true;
     }
 
-    private void dispatchNotification (Report report, Context context) {
+    private void dispatchNotification(Report report, Context context) {
 
         SharedPreferences sp = context.getSharedPreferences(context.getString(R.string.sp_key), MODE_PRIVATE);
 
@@ -209,7 +208,7 @@ public class TipNotificationHandler {
         // The id = 0 prevents multiple notifications to appear,
         // it will only show one in the drawer at a time,
         // but will still notify whenever a new notification appears
-        mNotificationManager.notify(report.getId(), builder.build());
+        mNotificationManager.notify(Constants.NOTIFICATION_ID, builder.build());
 
         SharedPreferences.Editor spEditor = sp.edit();
 

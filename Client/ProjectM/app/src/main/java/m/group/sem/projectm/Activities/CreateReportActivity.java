@@ -3,6 +3,7 @@ package m.group.sem.projectm.Activities;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -23,12 +24,15 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 
 import Model.Report;
 import Model.User;
 import cz.msebera.android.httpclient.Header;
 import m.group.sem.projectm.Constants;
 import m.group.sem.projectm.R;
+import m.group.sem.projectm.Utilities;
 
 public class CreateReportActivity extends AppCompatActivity implements OnMapReadyCallback {
 
@@ -142,10 +146,30 @@ public class CreateReportActivity extends AppCompatActivity implements OnMapRead
                 Log.d(tag, String.format("Request Successful: status code %d received response : %s", statusCode, new String(responseBody)));
                 try {
                     Report report = mMapper.readValue(responseBody, Report.class);
+
+                    SharedPreferences sp = getSharedPreferences(getString(R.string.sp_key), MODE_PRIVATE);
+                    SharedPreferences.Editor edit = sp.edit();
+                    String serializedReports = sp.getString(Constants.REPORTS_ONLY_COORDINATES, null);
+
+                    Report[] reports = (Report[]) Utilities.fromString(serializedReports);
+
+                    ArrayList<Report> reportsAl = new ArrayList<>(Arrays.asList(reports));
+                    reportsAl.add(report);
+
+                    reports = reportsAl.toArray(new Report[reportsAl.size()]);
+
+                    edit.putString(Constants.REPORTS_ONLY_COORDINATES, Utilities.toString(reports));
+
+                    edit.apply();
+
+                    Log.e(tag, String.format("we now have %d reports", reports.length));
+
                     if (report != null) {
                         continueToMainActivity(mUser);
                     }
                 } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (ClassNotFoundException e) {
                     e.printStackTrace();
                 }
             }
