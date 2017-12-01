@@ -82,6 +82,13 @@
             android:label="@string/title_activity_view_report"
             android:parentActivityName=".Activities.MainActivity"
             android:theme="@style/AppTheme" />
+        <activity
+            android:name=".Activities.LeaderboardshipActivity"
+            android:parentActivityName=".Activities.MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".Activities.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

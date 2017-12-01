@@ -138,7 +138,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void goToLeaderboard() {
-        Toast.makeText(getApplicationContext(), "Leaderboard, what leaderboard?", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(MainActivity.this, LeaderboardshipActivity.class);
+        startActivity(intent);
+        //Toast.makeText(getApplicationContext(), "Leaderboard, what leaderboard?", Toast.LENGTH_SHORT).show();
     }
 
     private void goToCreateReport() {
