@@ -83,14 +83,14 @@ public class TipNotificationHandler {
         }
 
 
-        mHttpClient.get(Constants.getBaseUrl() + "/api/reports?report-id=" + report.getId(), new AsyncHttpResponseHandler() {
+        mHttpClient.get(Constants.getBaseUrl() + "/reports?report-id=" + report.getId(), new AsyncHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 try {
                     Report report = mMapper.readValue(responseBody, Report.class);
                     dispatchNotification(report, context);
                 } catch (Exception e) {
-
+                    Log.e(this.getClass().toString(), "Failed to get report details: " + e);
                 }
             }
 
