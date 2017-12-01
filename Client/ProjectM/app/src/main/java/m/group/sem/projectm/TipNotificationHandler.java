@@ -14,9 +14,14 @@ import android.support.v4.app.RemoteInput;
 import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.loopj.android.http.AsyncHttpResponseHandler;
+import com.loopj.android.http.SyncHttpClient;
+
 import java.util.Date;
 
 import Model.Report;
+import cz.msebera.android.httpclient.Header;
 import m.group.sem.projectm.Activities.ViewReportActivity;
 import m.group.sem.projectm.Services.TipNotificationCommentService;
 import m.group.sem.projectm.Services.TipNotificationVoteService;
@@ -35,6 +40,8 @@ public class TipNotificationHandler {
     private static String contribKey = "CONTRIBUTED";
     private static String notificationTimeKey = "TIME";
     private long notificationInterval;
+    private SyncHttpClient mHttpClient = new SyncHttpClient();
+    private ObjectMapper mMapper = new ObjectMapper();
 
     private TipNotificationHandler() {
 
@@ -46,7 +53,7 @@ public class TipNotificationHandler {
         return ourInstance;
     }
 
-    protected boolean showNotification(Report report, Context context) {
+    protected boolean showNotification(Report report, final Context context) {
         SharedPreferences sp = context.getSharedPreferences(context.getString(R.string.sp_key), MODE_PRIVATE);
 
         Long lastTimeThisReportWasNotified = sp.getLong(String.valueOf(report.getId() + notificationTimeKey), Long.MIN_VALUE);
@@ -74,6 +81,34 @@ public class TipNotificationHandler {
         } else {
             Log.d(tag, "lastTimeThisReportWasNotified was equals to Long.MIN_VALUE, report was never shown before");
         }
+
+
+        mHttpClient.get(Constants.getBaseUrl() + "/api/reports?report-id=" + report.getId(), new AsyncHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                try {
+                    Report report = mMapper.readValue(responseBody, Report.class);
+                    dispatchNotification(report, context);
+                } catch (Exception e) {
+
+                }
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                Log.e(this.getClass().toString(), "Failed to get report details before displaying notification: " + error.toString());
+            }
+        });
+
+        return true;
+    }
+
+    private void dispatchNotification (Report report, Context context) {
+
+        SharedPreferences sp = context.getSharedPreferences(context.getString(R.string.sp_key), MODE_PRIVATE);
+
+        Long lastTimeThisReportWasNotified = sp.getLong(String.valueOf(report.getId() + notificationTimeKey), Long.MIN_VALUE);
+        Long time = new Date().getTime();
 
         NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         // The id of the channel.
@@ -181,6 +216,5 @@ public class TipNotificationHandler {
         spEditor.putLong(String.valueOf(report.getId() + notificationTimeKey), time);
 
         spEditor.apply();
-        return true;
     }
 }
