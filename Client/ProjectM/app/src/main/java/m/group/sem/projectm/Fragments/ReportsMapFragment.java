@@ -300,6 +300,7 @@ public class ReportsMapFragment extends Fragment implements OnMapReadyCallback {
         getContext().registerReceiver(mReceiver, new IntentFilter(getString(R.string.action_location_broadcast)));
         // Register for new reports
         getContext().registerReceiver(mReportsReceiver, new IntentFilter("projectM.REPORTS_BROADCAST"));
+        updateMapReports();
     }
 
 
