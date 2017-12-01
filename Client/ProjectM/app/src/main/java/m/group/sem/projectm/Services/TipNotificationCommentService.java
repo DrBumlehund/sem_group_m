@@ -1,6 +1,8 @@
 package m.group.sem.projectm.Services;
 
 import android.app.IntentService;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -51,9 +53,13 @@ public class TipNotificationCommentService extends IntentService {
             }
         }
         int reportId = intent.getIntExtra(getString(R.string.i_notification_report_id), 0);
+
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.cancel(reportId);
+
         Bundle b = RemoteInput.getResultsFromIntent(intent);
         String comment = b != null ? (String) b.getCharSequence(getString(R.string.i_notification_comment)) : "Comment Unavailable";
-        comment = comment.replaceAll(" ", "%20");
+        comment = comment.replaceAll(" ", "%20").replaceAll("'", "%27").replaceAll("\"", "%22");
         final String url = Constants.getBaseUrl() + String.format("/comments?report-id=%1$s&comment=%2$s&user-id=%3$s", reportId, comment, mUser.getId());
         int i = 0;
 

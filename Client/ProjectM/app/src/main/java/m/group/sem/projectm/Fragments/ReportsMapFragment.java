@@ -98,12 +98,12 @@ public class ReportsMapFragment extends Fragment implements OnMapReadyCallback {
         // Get saved reports, if any
         SharedPreferences prefs = getContext().getSharedPreferences(getString(R.string.sp_key), MODE_PRIVATE);
         String reportsSerialized = prefs.getString(Constants.REPORTS_ONLY_COORDINATES, null);
-        receivedLatitude = Utilities.getDouble(prefs,getString(R.string.last_known_lat), 0);
-        receivedLongitude = Utilities.getDouble(prefs,getString(R.string.last_known_long), 0);
+        receivedLatitude = Utilities.getDouble(prefs, getString(R.string.last_known_lat), 0);
+        receivedLongitude = Utilities.getDouble(prefs, getString(R.string.last_known_long), 0);
 
         if (reportsSerialized != null && !reportsSerialized.isEmpty()) {
             try {
-                mReports = (Report[])Utilities.fromString(reportsSerialized);
+                mReports = (Report[]) Utilities.fromString(reportsSerialized);
             } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
@@ -153,6 +153,9 @@ public class ReportsMapFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
+
+        mMap.getUiSettings().setMyLocationButtonEnabled(true);
+
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
@@ -188,7 +191,7 @@ public class ReportsMapFragment extends Fragment implements OnMapReadyCallback {
 
     private boolean onMarkerClicked(Marker marker) {
         Object tag = marker.getTag();
-        if (!(tag instanceof Integer)){
+        if (!(tag instanceof Integer)) {
             // This marker does not have an integer in its tag. Probably not a report then.
             return false;
         }
@@ -196,7 +199,7 @@ public class ReportsMapFragment extends Fragment implements OnMapReadyCallback {
             int reportId = (int) tag;
             Report report = null;
             for (Report _report : mReports) {
-                if (_report.getId() == reportId){
+                if (_report.getId() == reportId) {
                     report = _report;
                     break;
                 }

@@ -1,6 +1,8 @@
 package m.group.sem.projectm.Services;
 
 import android.app.IntentService;
+import android.app.NotificationManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.Nullable;
@@ -49,9 +51,12 @@ public class TipNotificationVoteService extends IntentService {
             }
         }
         int reportId = intent.getIntExtra(getString(R.string.i_notification_report_id), 0);
+
+        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        mNotificationManager.cancel(reportId);
+
         boolean vote = intent.getBooleanExtra(getString(R.string.i_notification_vote), false);
         final String url = Constants.getBaseUrl() + String.format("/votes?report-id=%1$s&vote=%2$s&user-id=%3$s", reportId, vote, mUser.getId());
-        int i = 0;
 
         mHttpClient.post(url, new AsyncHttpResponseHandler() {
             @Override

@@ -76,8 +76,6 @@ public class TipNotificationService extends Service {
                 if (!TipDistanceHandler.getInstance().hasHandler()) {
                     TipDistanceHandler.getInstance().setHandler(locationPrecisionHandler);
                     Log.d(tag, "Successfully tried to add MessageHandler to LocationPrecisionHandler");
-                } else {
-                    Log.e(tag, "Unsuccessfully tried to add MessageHandler to LocationPrecisionHandler");
                 }
             }
         }

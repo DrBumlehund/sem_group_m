@@ -38,8 +38,8 @@ public class TipNotificationHandler {
 
     private TipNotificationHandler() {
 
-//        notificationInterval = 30L * 24L * 60L * 60L * 1000L; // thirty days in milliseconds
-        notificationInterval = 20L * 1000L; // thirty days in milliseconds
+        notificationInterval = 30L * 24L * 60L * 60L * 1000L; // thirty days in milliseconds
+//        notificationInterval = 20L * 1000L; // thirty days in milliseconds
     }
 
     static TipNotificationHandler getInstance() {
@@ -174,7 +174,7 @@ public class TipNotificationHandler {
         // The id = 0 prevents multiple notifications to appear,
         // it will only show one in the drawer at a time,
         // but will still notify whenever a new notification appears
-        mNotificationManager.notify(0, builder.build());
+        mNotificationManager.notify(report.getId(), builder.build());
 
         SharedPreferences.Editor spEditor = sp.edit();
 

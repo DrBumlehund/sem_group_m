@@ -17,7 +17,6 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.loopj.android.http.AsyncHttpClient;
@@ -109,7 +108,6 @@ public class CreateReportActivity extends AppCompatActivity implements OnMapRead
         map.addMarker(new MarkerOptions()
                 .draggable(false)
                 .position(mPosition)
-                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.arrow))
         );
         map.getUiSettings().setAllGesturesEnabled(false);
         mLatView.setText(String.valueOf(mPosition.latitude));
@@ -125,7 +123,7 @@ public class CreateReportActivity extends AppCompatActivity implements OnMapRead
             return;
         }
 
-        String description = String.valueOf(mDescription.getText()).replaceAll(" ", "%20");
+        String description = String.valueOf(mDescription.getText()).replaceAll(" ", "%20").replaceAll("'", "%27").replaceAll("\"", "%22");
 
         final String url = Constants.getBaseUrl() + "/reports?latitude=" + mPosition.latitude + "&longitude=" + mPosition.longitude + "&comment=" + description + "&user-id=" + mUser.getId();
 
@@ -136,6 +134,7 @@ public class CreateReportActivity extends AppCompatActivity implements OnMapRead
                 super.onStart();
                 mRequestRunning = true;
                 showProgress(true);
+                Log.d(tag, String.format("Attempting to request url: %s", url));
             }
 
             @Override
