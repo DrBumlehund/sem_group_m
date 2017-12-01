@@ -76,4 +76,13 @@
     <string name="comment">Comment</string>
     <string name="title_activity_view_report" translatable="false">ViewReportActivity</string>
     <string name="i_report" translatable="false">report</string>
+
+    <!-- TODO: Remove this before hand in -->
+    <string name="rank_points">Your points: 25. You are winning!</string>
+    <string name="rank" translatable="false">Simon, points: 25
+    Thomas, points: 15
+    Veronika, points: 10
+    Anonym, points: 5
+    Hans: points: 5
+    </string>
 </resources>
