@@ -8,6 +8,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.RemoteInput;
@@ -143,6 +146,18 @@ public class TipNotificationHandler {
                         .setVibrate(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400})
                         .setContentTitle(context.getString(R.string.notification_title))
                         .setContentText(String.format(context.getString(R.string.notification_content_text), report.getComment()));
+
+        Uri sound = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.arpeggio);
+        builder.setSound(sound);
+
+        try {
+            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            Ringtone r = RingtoneManager.getRingtone(context, sound);
+            r.play();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
         // Create Intent for confirm vote
         Intent confirmIntent = new Intent(context, TipNotificationVoteService.class);
