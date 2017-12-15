@@ -6,6 +6,7 @@ package m.group.sem.projectm;
 
 public class Constants {
 
+    public static final int NOTIFICATION_ID = 0;
     public static final String PRECISION = "PRECISION";
     public static final String BASE_URL = "http://51.254.127.173:8080/api";
     public static final String BASE_TEST_URL = "http://51.254.127.173:8181/api";

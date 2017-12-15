@@ -8,6 +8,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.media.Ringtone;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.RemoteInput;
@@ -45,8 +48,7 @@ public class TipNotificationHandler {
 
     private TipNotificationHandler() {
 
-        notificationInterval = 30L * 24L * 60L * 60L * 1000L; // thirty days in milliseconds
-//        notificationInterval = 20L * 1000L; // thirty days in milliseconds
+        notificationInterval = BuildConfig.DEBUG ? 30L * 1000L : 30L * 24L * 60L * 60L * 1000L; // thirty seconds if debug days if not, in milliseconds
     }
 
     static TipNotificationHandler getInstance() {
@@ -103,7 +105,7 @@ public class TipNotificationHandler {
         return true;
     }
 
-    private void dispatchNotification (Report report, Context context) {
+    private void dispatchNotification(Report report, Context context) {
 
         SharedPreferences sp = context.getSharedPreferences(context.getString(R.string.sp_key), MODE_PRIVATE);
 
@@ -144,6 +146,18 @@ public class TipNotificationHandler {
                         .setVibrate(new long[]{100, 200, 300, 400, 500, 400, 300, 200, 400})
                         .setContentTitle(context.getString(R.string.notification_title))
                         .setContentText(String.format(context.getString(R.string.notification_content_text), report.getComment()));
+
+        Uri sound = Uri.parse("android.resource://" + context.getPackageName() + "/" + R.raw.arpeggio);
+        builder.setSound(sound);
+
+        try {
+            Uri notification = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+            Ringtone r = RingtoneManager.getRingtone(context, sound);
+            r.play();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
 
         // Create Intent for confirm vote
         Intent confirmIntent = new Intent(context, TipNotificationVoteService.class);
@@ -209,7 +223,7 @@ public class TipNotificationHandler {
         // The id = 0 prevents multiple notifications to appear,
         // it will only show one in the drawer at a time,
         // but will still notify whenever a new notification appears
-        mNotificationManager.notify(report.getId(), builder.build());
+        mNotificationManager.notify(Constants.NOTIFICATION_ID, builder.build());
 
         SharedPreferences.Editor spEditor = sp.edit();
 
