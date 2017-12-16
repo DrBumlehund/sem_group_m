@@ -4,6 +4,43 @@
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage[colorinlistoftodos]{todonotes}
+\usepackage{appendix}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{float}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{hyperref}
+\usepackage{tabularx}
+
+\widowpenalty 10000
+\clubpenalty 10000
+
+\bibliographystyle{alpha}
+
+\definecolor{linkcol}{RGB}{42, 93, 176}
+\hypersetup{
+	colorlinks=true,
+	linktoc=all,
+	linkcolor=black,
+	citecolor=teal,
+	urlcolor=linkcol,
+	bookmarksopen=true
+}
+
+\newcommand{\changeNumbering}[1]{
+	\fancypagestyle{plain}{
+		\renewcommand\headrulewidth{0pt}
+		\fancyhf{}
+		\fancyfoot[R]{\thepage\ of \pageref{#1}}
+	}
+	\fancyfoot[R]{\thepage\ of \pageref{#1}}
+}
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{SM1-SEM-U1-1-E17}
+\fancyhead[R]{Group M}
+
 
 \begin{document}
 
@@ -41,15 +78,15 @@ Veronika \textsc{Zemanova}\\
 Mikkel \textsc{B. Kjærgaard}
 \end{flushright}
 \end{minipage}\\[2cm]
+Student emails: \texttt{\{sila114, thlem14, vezem17\}@student.sdu.dk}\\[2em]
+{\large December 21, 2017}\\[2cm] 
 
-{\large December 2.1, 2017}\\[2cm] 
-
-\includegraphics{images/logo.png}\\[1cm]
+\includegraphics[width=.5\textwidth]{images/logo.png}\\[1cm]
 
 \vfill 
 
 \end{titlepage}
-
+\changeNumbering{EndOfMainMatter}
 
 \begin{abstract}
 \input{subfiles/abstract}
@@ -63,5 +100,7 @@ Mikkel \textsc{B. Kjærgaard}
 \clearpage
 
 \input{content}
+
+
 
 \end{document}

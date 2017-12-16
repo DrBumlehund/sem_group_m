@@ -1,3 +1,5 @@
+% !TEX root = main.tex
+
 \section{Introduction} \label{sec:intro}
 \input{subfiles/introduction}
 
@@ -15,3 +17,25 @@
 
 \section{Conclusion, Outlook and Future Work} \label{sec:conclusion}
 \input{subfiles/conclusion}
+
+
+\nocite{*}
+%\begin{multicols}{2}
+\bibliography{ref}
+%\end{multicols}
+\addcontentsline{toc}{chapter}{Bibliography}
+\label{sec:ref}
+\label{EndOfMainMatter}
+\newpage
+\setcounter{page}{1}
+\pagenumbering{Alph}
+\changeNumbering{LastPage}
+%\thispagestyle{empty}
+\begin{appendices}
+
+	\addtocontents{toc}{\protect\setcounter{tocdepth}{-1}}
+	\section{Use Case Descriptions}
+	\input{appendices/ucdesc.tex}
+	
+
+\end{appendices}

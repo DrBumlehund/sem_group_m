@@ -1,0 +1,328 @@
+% !TEX root = main.tex
+
+% UC1
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+Name              & Register User \\ \hline 
+Id                & UC1 \\ \hline
+Description       & Allows unregistered users to create an account, and become a registered user.\\ \hline
+Primary Actors    & Unregistered User \\ \hline
+Secondary Actors  & Server \\ \hline
+Preconditions     & The unregistered do not have an account \\ \hline
+Main Flow         & {\footnotesize \begin{enumerate}
+\item The unregistered user enters a username, and password.
+\begin{enumerate}
+\item Password has to be entered twice to make sure the user did not mistype it.
+\end{enumerate}
+\item The password is hashed for security reasons.
+\item The username and hashed password is sent to the server.
+\begin{enumerate}
+\item Alternative flow: No connection to server.
+\end{enumerate}
+\item The server stores the password in the database.
+\begin{enumerate}
+\item Alternative flow: Username is already in use.
+\end{enumerate}
+\item end.
+\end{enumerate}} \\ \hline
+Postconditions    & The unregistered user has become a registered user. \\ \hline
+Alternative Flows & 
+No connection to Server:
+{\footnotesize \begin{enumerate}
+\item The user is informed of the missing connection.
+\item end.
+\end{enumerate}}
+Username is already in use:
+{\footnotesize \begin{enumerate}
+\item The unregistered user is prompted to pick a new username.
+\item Return to step 1 in main flow.
+\end{enumerate}}
+\\ \hline
+\end{tabularx}
+
+% UC2
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+Name              & Login \\ \hline 
+Id                & UC2 \\ \hline
+Description       & Allows user to login to the application. \\ \hline
+Primary Actors    & Registered user \\ \hline
+Secondary Actors  & Server \\ \hline
+Preconditions     & The user is not logged into the application \\ \hline
+Main Flow         &
+{\footnotesize \begin{enumerate}
+\item The user enters his username and password and selects the login option.
+\item The password is hashed to match against the password hash in the database.
+\item The username and hashed password is sent to the server.
+\begin{enumerate}
+\item Alternative flow: No connection to server.
+\end{enumerate}
+\item The server matches the username and hashed password with data from the database.
+\begin{enumerate}
+\item Alternative flow: Username or password does not match data in database.
+\end{enumerate}
+\item The user is logged in, and receives a user object from the server.
+\item end.
+\end{enumerate}} \\ \hline
+Postconditions    & The registered user is now logged into the application. \\ \hline
+Alternative Flows & 
+No connection to Server:
+{\footnotesize \begin{enumerate}
+\item The user is informed of the missing connection.
+\item end.
+\end{enumerate}}
+Username or password does not match data in database.
+{\footnotesize \begin{enumerate}
+\item The user is prompted to pick a new username.
+\item Return to step 1 in main flow.
+\end{enumerate}}
+\\ \hline
+\end{tabularx}
+
+\begin{enumerate}
+\item 
+\end{enumerate}
+
+% UC3
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+Name              & Create Report\\ \hline 
+Id                & UC3 \\ \hline
+Description       & Allows a registered user to report issues to the municipality \\ \hline
+Primary Actors    & Registered user \\ \hline
+Secondary Actors  & Server \\ \hline
+Preconditions     & A registered user is logged in, and has encountered an issue, which the municipality is responsible for fixing. \\ \hline
+Main Flow         &
+{\footnotesize \begin{enumerate}
+\item The user selects the ‘create report’ option.
+\item The user enters a short description of the issue.
+\item The user confirms the location of the report
+\begin{enumerate}
+\item Alternative flow: Wrong location.
+\end{enumerate}
+\item The user selects the submit report’ option.
+\item The report is sent to the server.
+\begin{enumerate}
+\item Alternative Flow: No connection to the server.
+\end{enumerate}
+\item The user is informed of a successful submission.
+\item end
+\end{enumerate}} \\ \hline
+Postconditions    & The report has been created. \\ \hline
+Alternative Flows & 
+Wrong Location:
+{\footnotesize \begin{enumerate}
+\item The user corrects the location by selecting the correct location.
+\item Return to step 4 in main flow.
+\end{enumerate}}
+No connection to Server:
+{\footnotesize \begin{enumerate}
+\item The user is informed of the missing connection.
+\item end.
+\end{enumerate}}
+\\ \hline
+\end{tabularx}
+
+% UC4
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+Name              & Change Settings \\ \hline 
+Id                & UC4 \\ \hline
+Description       & Allows users to change the distance threshold for receiving notifications. \\ \hline
+Primary Actors    & User \\ \hline
+Secondary Actors  & NA \\ \hline
+Preconditions     & User wishes to change the distance needed to reports, in order to receive notifications \\ \hline
+Main Flow         &
+{\footnotesize \begin{enumerate}
+\item The user selects the ‘settings’ option.
+\item The user selects the distance threshold.
+\item end.
+\end{enumerate}} \\ \hline
+Postconditions    & The distance threshold needed is updated. \\ \hline
+Alternative Flows & NA \\ \hline
+\end{tabularx}
+
+% UC5
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+Name              & View Report \\ \hline 
+Id                & UC5 \\ \hline
+Description       & Allows users to view report details, such as description, comments and votes. \\ \hline
+Primary Actors    & User \\ \hline
+Secondary Actors  & Server \\ \hline
+Preconditions     & The user wishes to see information about a report. \\ \hline
+Main Flow         &
+{\footnotesize \begin{enumerate}
+\item The user selects a report on the map to see.
+\item The application collects the newest data on the report from the server.
+\begin{enumerate}
+\item Alternative flow: No connection to server.
+\end{enumerate}
+\item The report is is shown to the user.
+\item end.
+\end{enumerate}} \\ \hline
+Postconditions    & The user can see the report details. \\ \hline
+Alternative Flows & 
+No connection to Server:
+{\footnotesize \begin{enumerate}
+\item The user is informed of the missing connection.
+\item end.
+\end{enumerate}}
+\\ \hline
+\end{tabularx}
+
+% UC6
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+Name              & View Leaderboard \\ \hline 
+Id                & UC6 \\ \hline
+Description       & Allows users to see the leaderboard standings. \\ \hline
+Primary Actors    & User \\ \hline
+Secondary Actors  & Server \\ \hline
+Preconditions     & The user wants to see the leaderboard \\ \hline
+Main Flow         &
+{\footnotesize \begin{enumerate}
+\item The user selects the ‘view leaderboard’ option.
+\item The application collects the newest information from the leaderboard.
+\begin{enumerate}
+\item Alternative flow: No connection to server.
+\end{enumerate}
+\item The leaderboard is shown to the user.
+\item end.
+\end{enumerate}} \\ \hline
+Postconditions    & The user can see the leaderboard. \\ \hline
+Alternative Flows & 
+No connection to Server:
+{\footnotesize \begin{enumerate}
+\item The user is informed of the missing connection.
+\item end.
+\end{enumerate}}
+\\ \hline
+\end{tabularx}
+
+% UC7
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+Name              & Validate Report \\ \hline 
+Id                & UC7 \\ \hline
+Description       & Allows users to validate reports, by giving them an upvote or downvote. \\ \hline
+Primary Actors    & Registered user \\ \hline
+Secondary Actors  & Server \\ \hline
+Preconditions     & The user is viewing a report, or have received a notification from based on his proximity to a report. \\ \hline
+Main Flow         &
+Precondition = View report:
+{\footnotesize \begin{enumerate}
+\item The user selects either the 'upvote' or the 'downvote' option on the report.
+\item The vote is sent to the server.
+ \begin{enumerate}
+\item Alternative Flow: No connection to server.
+\end{enumerate}
+\item end.
+\end{enumerate}}
+Precondition = notification:
+{\footnotesize \begin{enumerate}
+\item The user selects the ‘confirm’ or the ‘deny’ option in the notification.
+\item The vote is sent to the server.
+ \begin{enumerate}
+\item Alternative Flow: No connection to server.
+\end{enumerate}
+\item end.
+\end{enumerate}} 
+\\ \hline
+Postconditions    & The user has validated the report \\ \hline
+Alternative Flows & 
+No connection to Server:
+{\footnotesize \begin{enumerate}
+\item The user is informed of the missing connection.
+\item Validation option is stored, for later retry
+\item end.
+\end{enumerate}}
+\\ \hline
+\end{tabularx}
+
+% UC8
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+Name              & Comment on Report \\ \hline 
+Id                & UC8 \\ \hline
+Description       & Allows users to comment on each others reports, to add more information to the reports \\ \hline
+Primary Actors    & Registered user \\ \hline
+Secondary Actors  & Server \\ \hline
+Preconditions     & The user is viewing a report, or have received a notification from based on his proximity to a report. \\ \hline
+Main Flow         &
+Precondition = View report:
+{\footnotesize \begin{enumerate}
+\item The user enters a comment for the report.
+\item The user selects the 'submit comment' option
+\item The comment is sent to the server
+ \begin{enumerate}
+\item Alternative Flow: No connection to server.
+\end{enumerate}
+\item end.
+\end{enumerate}}
+Precondition = notification:
+{\footnotesize \begin{enumerate}
+\item User selects the 'comment' option in the notification.
+\item The user enters a comment for the report.
+\item The user selects the 'submit comment' option
+\item The comment is sent to the server
+ \begin{enumerate}
+\item Alternative Flow: No connection to server.
+\end{enumerate}
+\item end.
+\end{enumerate}} 
+\\ \hline
+Postconditions    & The user has submitted a comment to the report. \\ \hline
+Alternative Flows & 
+No connection to Server:
+{\footnotesize \begin{enumerate}
+\item The user is informed of the missing connection.
+\item Comment is stored, for later retry
+\item end.
+\end{enumerate}}
+\\ \hline
+\end{tabularx}
+
+% UC9
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+Name              & Display Report Notification \\ \hline 
+Id                & UC9 \\ \hline
+Description       & Allows the application to send notifications to the user, if he is within his set distance threshold of a report. \\ \hline
+Primary Actors    & Location \\ \hline
+Secondary Actors  & NA \\ \hline
+Preconditions     & The user has location services enabled. \\ \hline
+Main Flow         &
+{\footnotesize \begin{enumerate}
+\item The distance from the user’s current location is within the set threshold
+\item The application checks if the user has already contributed to this report.
+\begin{enumerate}
+\item Alternative flow: Alternative Flow: User already contributed to report:
+\end{enumerate}
+\item The application checks if the user has been shown this report before
+\begin{enumerate}
+\item Alternative Flow: Report already shown.
+\end{enumerate}
+\item The application gets the latest information about the report.
+\begin{enumerate}
+\item Alternative Flow: No connection to server.
+\end{enumerate}
+\item The user is asked to validate the report.
+\item end.
+\end{enumerate}} \\ \hline
+Postconditions    & A notification is shown to the user, and he can respond to ut with UC7 or UC8. \\ \hline
+Alternative Flows & 
+User already contributed to report:
+{\footnotesize \begin{enumerate}
+\item end.
+\end{enumerate}}
+Report already shown:
+{\footnotesize \begin{enumerate}
+\item end.
+\end{enumerate}}
+No connection to Server:
+{\footnotesize \begin{enumerate}
+\item end.
+\end{enumerate}}
+\\ \hline
+\end{tabularx}
