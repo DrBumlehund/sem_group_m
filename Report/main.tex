@@ -1,0 +1,67 @@
+\documentclass[12pt]{article}
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage[colorinlistoftodos]{todonotes}
+
+\begin{document}
+
+\listoftodos
+
+\begin{titlepage}
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for the horizontal lines, change thickness here
+
+\center % Center everything on the page
+ 
+
+\textsc{\LARGE University of Southern Denmark}\\[1.5cm] % Name of your university/college
+\textsc{\Large Software Engineering of Mobile Systems}\\[0.5cm] % Major heading such as course name
+\textsc{\large Group m}\\[0.5cm] % Minor heading such as course title
+
+
+\HRule \\[0.4cm]
+{ \huge \bfseries Give a Tip}\\[0.4cm] 
+\HRule \\[1.5cm]
+ 
+
+\begin{minipage}[t]{0.4\textwidth}
+\begin{flushleft} \large
+\emph{Authors:}\\
+Simon \textsc{H. Larsen}\\
+Thomas \textsc{A. Lemqvist}\\
+Veronika \textsc{Zemanova}\\
+\end{flushleft}
+\end{minipage}
+~
+\begin{minipage}[t]{0.4\textwidth}
+\begin{flushright} \large
+\emph{Supervisor:} \\
+Mikkel \textsc{B. Kjærgaard}
+\end{flushright}
+\end{minipage}\\[2cm]
+
+{\large December 2.1, 2017}\\[2cm] 
+
+\includegraphics{images/logo.png}\\[1cm]
+
+\vfill 
+
+\end{titlepage}
+
+
+\begin{abstract}
+\input{subfiles/abstract}
+\end{abstract}
+
+\vfill
+
+\setcounter{tocdepth}{2}
+\tableofcontents
+
+\clearpage
+
+\input{content}
+
+\end{document}
