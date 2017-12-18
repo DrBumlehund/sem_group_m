@@ -3,9 +3,9 @@
 This section will analyze the problem domain of our solution, in order to be able to come up with an optimal implementation. We will analyze the current application, present the actors of the system, define the use cases which have been chosen for the prototype, present the requirements specified for the system, and finally, describe the domain model for the application.
 
 
-\subsubsection{GUI Analysis}
+\subsection{GUI Analysis}
 \todo[inline]{maybe we should remove this}
-\subsubsection{Actors}
+\subsection{Actors}
 This section will present the actors of the system. There are four actors of the prototype, the unregistered user, the registered user, location, and Server.
 
 \begin{description}
@@ -17,7 +17,7 @@ This section will present the actors of the system. There are four actors of the
 These actors will be used in the following section in the use cases, which presents the features of the system.
 
 
-\subsubsection{Use Cases}
+\subsection{Use Cases}
 With the actors from the previous section, we created use cases in order to figure out what services our prototype application should offer.
 
 \begin{enumerate}[label=UC\arabic*]
@@ -41,7 +41,7 @@ These use cases can be seen in the use case diagram in \autoref{fig:uc_diag}. Th
 \caption{Use case diagram for the system} \label{fig:uc_diag}
 \end{figure}
 
-\paragraph{Use Case Descriptions}~\\
+\subsubsection{Use Case Descriptions}~\\
 \noindent This section will describe the use case UC9 into greater detail. For descriptions of all use cases look in \appref{app:ucd}.
 
 \autoref{tab:uc9} shows the description of UC9. It shows the main flow with its alternative flows, which ends the flow. The reason for the alternative flows to end the use case, is that this is supposed to happen in the background, and the user should not be interrupted, unless there actually is something to notify him about.
@@ -95,12 +95,12 @@ No connection to Server:
 
 This section has introduced the use cases, which has been worked with within this project. These use cases will be used in the following section to lay basis for some of the requirements to the system.
 
-\subsubsection{Requirements}
+\subsection{Requirements}
 This section defines the requirements set up for the prototype system. These requirements has been based upon the use cases from the previous sections, and based on the development knowledge within the team.
 
 The requirements has been divided into the Functional and Nonfunctional requirements.
 
-\paragraph{Functional Requirements}~\\
+\subsubsection{Functional Requirements}~\\
 The functional requirements are the requirements which defines the functionality of the system. The functional requirements can be seen in the list below.
 
 \begin{enumerate}[label=F\arabic*]
@@ -117,11 +117,11 @@ The functional requirements are the requirements which defines the functionality
 \item The system should notify the user, whenever he is within the distance threshold of a report, and ask for a validation.
 \end{enumerate}
 
-\paragraph{Nonfunctional Requirements}~\\
+\subsubsection{Nonfunctional Requirements}~\\
 The nonfunctional requirements has been divided into what parts of the system they belong to, e.g. the requirements for the server is in the server category, and the requirements for the mobile application is in the mobile application category.
 The categories and requirements can be seen in the lists below.
 
-\subparagraph{Server}
+\paragraph{Server}
 \begin{enumerate}[label=NS\arabic*]
 \item The Server should be RESTful, in order to serve both the application and a web client.
 \item The Server should be able to run on Debian linux.
@@ -129,7 +129,7 @@ The categories and requirements can be seen in the lists below.
 \item The server should have a connection to a MySQL database.
 \end{enumerate}
 
-\subparagraph{Mobile application}
+\paragraph{Mobile application}
 \begin{enumerate}[label=NA\arabic*]
 \item The application should be developed with minimum SDK 23.
 \item The application should use as little powers as possible.
@@ -147,7 +147,7 @@ The key requirements, which is necessary in order to solve the problems, which t
 \textbf{F8} and \textbf{F9}, without these functional requirements ensures that there will be features for verifying the reports.
 
 
-\subsubsection{Domain Model}
+\subsection{Domain Model}
 The domain model is a conceptual model of our platform. It identifies objects or entities in the real world which will be a part of the system.
 
 \begin{figure}[hbt]
