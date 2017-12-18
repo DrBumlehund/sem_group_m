@@ -1,3 +1,31 @@
 % !TEX root = ../main.tex
 
-\todo[inline]{Describe the solution on a high-level (note: you can reuse and extend the pitch you already made).}.
+This section will describe the solution approaches for the problems described in the previous section, which has been taken in this project on a high level.
+~\\
+
+To reduce the amount of resources needed in order to validate the reports, this project will focus on implementing functionality for crowdsourcing validation of reports.
+
+Whenever an issue report is created, its location will be added to the map, and when users pass by these reports, they will receive a notification, which asks them to confirm or deny that the reported issue is real, and relevant. The user will have the option to add comments to further improve the details of the report, and add new images as well. 
+
+This way the users of the application can contribute to the validation of the reports, this could potentially save the municipality a lot of time and resources spent on validating reports.
+~\\
+
+To help prioritizing the reports, we believe that the amount of activity for a report e.g. the reports with a lot of confirmations, or pictures and comments, will be prioritized highest, as they have more activity and affects more people. Whereas the reports which have been denied by multiple users will not be shown, or at least will be prioritized less.
+~\\
+
+To create an incentive for using the application, this project proposes a reward system, where users are rewarded an amount of points, each time they interact with reports on the system. It could work like the following: if a user creates an issue report, he will receive 10 points, if he confirms or denies a report he will receive 2 points, and if he adds more information by commenting or adding an image to an existing report, he will get 5 points.
+
+The point system can be used in different solutions, and this report describes three different ways of using it.
+\begin{description}
+\item [Leaderboard:] in this solution the platform will use the points to compare the users of the platform with each other. This could create a competitive spirit, and motivate users rise to the top of the leaderboard.
+\item [Lottery:] in this solution the platform will use the points as lottery tickets for a lottery of prizes provided by local businesses or the municipality. The more points a user has, the more lottery tickets, and chance he has to win a prize. This could motivate users with the chance of winning free items.
+\item [Charity:] in this solution the platform will use the points as votes, which the users can pledge to a charity organization or event. The municipality or local businesses will then donate money to a pool, which is either goes fully to the majority vote, or is split between the charities, according to their share of the votes.
+\end{description}
+
+
+Some of these gamification solutions require a donation from the municipality or local businesses. We believe that these will be willing to take part, in order to keep users on the platform, which could lead to a more issue free city.
+
+
+\vspace{3em}
+\hrule
+This section has introduced the solution at a high level, it has introduced the report validation feature, the prioritization feature, and the three different solutions for the gamification element.

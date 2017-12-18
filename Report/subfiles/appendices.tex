@@ -3,11 +3,12 @@
 \setcounter{page}{1}
 \pagenumbering{Alph}
 \changeNumbering{LastPage}
+\addcontentsline{toc}{section}{Appendices}
 %\thispagestyle{empty}
 \begin{appendices}
 
 	\addtocontents{toc}{\protect\setcounter{tocdepth}{-1}}
-	\section{Use Case Descriptions}
+	\section{Use Case Descriptions} \label{app:ucd}
 	\input{appendices/ucdesc.tex}
 	
 

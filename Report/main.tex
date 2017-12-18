@@ -12,6 +12,8 @@
 \usepackage{lastpage}
 \usepackage{hyperref}
 \usepackage{tabularx}
+\usepackage{parskip}
+\usepackage{enumitem}
 
 \widowpenalty 10000
 \clubpenalty 10000
@@ -28,6 +30,8 @@
 	bookmarksopen=true
 }
 
+\newcommand{\appref}[1]{\hyperref[#1]{Appendix \ref{#1}}}
+
 \newcommand{\changeNumbering}[1]{
 	\fancypagestyle{plain}{
 		\renewcommand\headrulewidth{0pt}
@@ -37,10 +41,10 @@
 	\fancyfoot[R]{\thepage\ of \pageref{#1}}
 }
 \pagestyle{fancy}
-\fancyhf{}
-\fancyhead[L]{SM1-SEM-U1-1-E17}
-\fancyhead[R]{Group M}
-
+%	\fancyhf{}
+\fancyhead[LE, LO]{SM1-SEM-U1-1-E17}
+\fancyhead[RO]{Group M}
+\fancyhead[RE]{sila114, thlem14, vezem17}
 
 \begin{document}
 
@@ -55,7 +59,7 @@
 
 \textsc{\LARGE University of Southern Denmark}\\[1.5cm] % Name of your university/college
 \textsc{\Large Software Engineering of Mobile Systems}\\[0.5cm] % Major heading such as course name
-\textsc{\large Group m}\\[0.5cm] % Minor heading such as course title
+\textsc{\large Group M}\\[0.5cm] % Minor heading such as course title
 
 
 \includegraphics[width=5cm]{images/ic_launcher}
@@ -79,13 +83,14 @@ Veronika \textsc{Zemanova}\\
 \emph{Supervisor:} \\
 Mikkel \textsc{B. Kjærgaard}
 \end{flushright}
-\end{minipage}\\[2cm]
-Student emails: \texttt{\{sila114, thlem14, vezem17\}@student.sdu.dk}\\[1.5em]
+\end{minipage}\\[1cm]
+Author emails: \texttt{\{sila114, thlem14, vezem17\}@student.sdu.dk}\\[1.5em]
 {\large December 21, 2017}\\[1.5cm] 
-
+\hspace{1em}
+\vfill 
 \includegraphics[width=.35\textwidth]{images/logo.png}\\[1cm]
 
-\vfill 
+
 
 \end{titlepage}
 \changeNumbering{EndOfMainMatter}
