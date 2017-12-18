@@ -1,4 +1,4 @@
-% !TEX root = main.tex
+% !TEX root = ../main.tex
 
 % UC1
 \begin{tabularx}{\textwidth}{|l|X|}
@@ -325,4 +325,24 @@ No connection to Server:
 \item end.
 \end{enumerate}}
 \\ \hline
+\end{tabularx}
+
+% UC9
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+Name              & Logout \\ \hline 
+Id                & UC10 \\ \hline
+Description       & Allows the user to logout. \\ \hline
+Primary Actors    & User \\ \hline
+Secondary Actors  & NA \\ \hline
+Preconditions     & The user wishes to log out of the application. \\ \hline
+Main Flow         &
+{\footnotesize \begin{enumerate}
+\item The user selects the 'logout’ option in the menu.
+\item The application removes stored account information.
+\item The user is redirected to the login screen.
+\item end.
+\end{enumerate}} \\ \hline
+Postconditions    & The user is now logged out. \\ \hline
+Alternative Flows & NA \\ \hline
 \end{tabularx}
