@@ -22,6 +22,8 @@ import com.google.android.gms.location.ActivityRecognitionClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.tasks.Task;
 
+import java.util.Date;
+
 import m.group.sem.projectm.BroadcastReceivers.LocationBroadcastReceiver;
 import m.group.sem.projectm.Constants;
 import m.group.sem.projectm.R;
@@ -32,6 +34,7 @@ public class TipNotificationService extends Service {
     private final static String tag = "TipNotificationService";
     private TipLocationService mService;
     private boolean mBound;
+    private long lastPrecisionChange = 0;
 
     @SuppressLint("HandlerLeak")
     Handler locationPrecisionHandler = new Handler() {
@@ -39,16 +42,26 @@ public class TipNotificationService extends Service {
         public void handleMessage(Message msg) {
             Bundle reply = msg.getData();
             if (mBound) {
+                long now = new Date().getTime();
+                if (now - lastPrecisionChange < 30 * 1000) {
+                    Log.d(tag, "Tried to change Precision too soon");
+                    return;
+                }
+                lastPrecisionChange = now;
                 boolean increase = reply.getBoolean(Constants.PRECISION);
                 if (increase) {
                     if (mService.getPrecision() != LocationRequest.PRIORITY_HIGH_ACCURACY) {
                         Log.d(String.valueOf(this.getClass()), "INCREASING LOCATION PRECISION");
                         mService.changeLocationRequest(3, 10000, 5000);
+                    } else {
+                        Log.d(tag, "Tried to increase precision, but it was already increased");
                     }
                 } else {
                     if (mService.getPrecision() != LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY) {
                         Log.d(String.valueOf(this.getClass()), "DECREASING LOCATION PRECISION TO PRESERVE POWER");
                         mService.changeLocationRequest(2, 10000, 5000);
+                    } else {
+                        Log.d(tag, "Tried to decrease precision, but it was already decreased");
                     }
                 }
             }

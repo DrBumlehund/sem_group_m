@@ -65,6 +65,12 @@ public class TipDistanceHandler {
             } else {
                 checkReportProximity();
             }
+        } else {
+            Bundle b = new Bundle();
+            b.putBoolean(Constants.PRECISION, activityRecognitionContainer.isOnFoot());
+            Message msg = new Message();
+            msg.setData(b);
+            handler.dispatchMessage(msg);
         }
     }
 
