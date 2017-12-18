@@ -5,7 +5,6 @@
 \usepackage{graphicx}
 \usepackage[colorinlistoftodos]{todonotes}
 \usepackage{appendix}
-\usepackage{graphicx}
 \usepackage{xcolor}
 \usepackage{float}
 \usepackage{fancyhdr}
@@ -14,6 +13,18 @@
 \usepackage{tabularx}
 \usepackage{parskip}
 \usepackage{enumitem}
+\usepackage[toc]{multitoc}
+\usepackage[top=3cm,bottom=2cm,left=3cm,right=3cm,headsep=10pt]{geometry}
+
+
+\renewcommand*{\multicolumntoc}{2}
+\setlength{\columnseprule}{.5pt}
+
+
+\usepackage[newfloat=true]{minted}
+\setminted{linenos, breaklines, breakanywhere, numbersep=5pt, framesep=2pt, autogobble, xleftmargin=28pt, xrightmargin=27pt, fontsize=\footnotesize, frame=single}
+\usemintedstyle{pastie}
+\SetupFloatingEnvironment{listing}{name=Code Snippet}
 
 \widowpenalty 10000
 \clubpenalty 10000
@@ -41,15 +52,12 @@
 	\fancyfoot[R]{\thepage\ of \pageref{#1}}
 }
 \pagestyle{fancy}
-%	\fancyhf{}
+	\fancyhf{}
 \fancyhead[LE, LO]{SM1-SEM-U1-1-E17}
 \fancyhead[RO]{Group M}
 \fancyhead[RE]{sila114, thlem14, vezem17}
 
 \begin{document}
-
-\listoftodos
-
 \begin{titlepage}
 
 \newcommand{\HRule}{\rule{\linewidth}{0.5mm}} % Defines a new command for the horizontal lines, change thickness here
@@ -94,16 +102,20 @@ Author emails: \texttt{\{sila114, thlem14, vezem17\}@student.sdu.dk}\\[1.5em]
 
 \end{titlepage}
 \changeNumbering{EndOfMainMatter}
-
+\hspace{0em}
+\vfill
 \begin{abstract}
 \input{subfiles/abstract}
 \end{abstract}
-
+\thispagestyle{empty}
 \vfill
-
+\clearpage
+\hspace{0em}
+\vfill
 \setcounter{tocdepth}{2}
 \tableofcontents
-
+\vfill
+\thispagestyle{empty}
 \clearpage
 
 \input{content}
