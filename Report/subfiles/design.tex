@@ -14,12 +14,12 @@ Extending upon the  domain model in figure \ref{fig:dom_diag} a class diagram ha
 
 The class diagram in figure \ref{fig:class_diagram} shows the fields of each class and each of their types. The \textit{Report} class aggregates a \textit{User}, a list of \textit{Vote}, and a list of \textit{UserComment} to support the demands for reports having comments and votes as described in the domain model \ref{section:domain_model}. The domain model also describes that a report belongs to a location, this is covered by the fields latitude and longitude. 
 
-\subsection{Database}
-\todo[inline]{Maybe change the title from Database to Backend and argue that we want Java Spring REST and MySQL. 
-
-...
-
- On second thought. Isn’t this an implementation problem rather than a design problem. idk.}
+%\subsection{Database}
+%\todo[inline]{Maybe change the title from Database to Backend and argue that we want Java Spring REST and MySQL. 
+%
+%...
+%
+% On second thought. Isn’t this an implementation problem rather than a design problem. idk.}
 
 \subsection{Architecture of prototype diagram}
 \subsubsection{Deployment Diagram}
@@ -99,7 +99,7 @@ Response Measure & increased the reporting time by maximum 2 minutes. \\ \hline
 \end{tabularx}
 \end{table}
 
-\subsection{Android Device Tactics}
+\subsection{Android Device Tactics} \label{sec:tactics}
 To address architectural design challenges mentioned above in Quality Attribute Scenarios and to support non-functional requirements, we propose using several architectural, energy efficiency and resource adaptability tactics.
 
 \subsubsection{QAS I and II}
@@ -112,7 +112,7 @@ Disabling direct location service, to trigger only updates from other applicatio
 Resource availability tactic \textbf{\textit{Increase resources}} can be used for our last QAS table. To avoid delivering a degraded quality of service, the tactic increases number of available resources. In our case, we can consider user input as additional resource. When the application fails to deliver location, be it any location or just a correct one, user will have an option to manually submit location data. This could be done by writing down the exact location or referencing nearby address/building/structure for reference.
 ~\\
 
-Additionally, to have even more efficient application we can consider using tactics outside of our quality attribute scenarios. Continuous location sensing while the service is active consumes a lot of energy. To improve optimization, we can implement \textbf{\textit{Static Duty Cycle}} by setting radius for geofence - in code, by user input through frontend settings, or both. By adjusting this parameter we can lower, or increase if that is needed, the boundary around reports that will trigger method to increase location service precision.
+Additionally, to have even more efficient application we can consider using tactics outside of our quality attribute scenarios. Continuous location sensing while the service is active consumes a lot of energy. To improve optimization, we can implement \textbf{\textit{Dynamic Duty Cycle}} by setting radius for geofence - in code, by user input through frontend settings, or both. By adjusting this parameter we can lower, or increase if that is needed, the boundary around reports that will trigger method to increase location service precision.
 ~\\
 
 To continue with the thought that location sensing has high demands on energy, we can use activity recognition service as a trigger for starting location service in chain reaction with tactic named \textbf{\textit{Sensor Replacement}}.
@@ -124,7 +124,7 @@ To continue with the thought that location sensing has high demands on energy, w
 Selecting resources for delivering location updates with the highest quality – in this case we want the latest known user location, helps us deliver augmented service. \textbf{\textit{Resource Selection}} can make use of two methods of Location Request: setInterval(long millis) and setFastestInterval(long millis). By fine-tuning both, we can benefit both from the application's and other applications location updates.
 
 
-\subsection{User Interface Design}
+\subsection{User Interface Design} \label{sec:uidesign}
 \begin{figure}[H]
 \begin{minipage}{.55\textwidth}
 \includegraphics[width=\textwidth]{images/activityDesign}
