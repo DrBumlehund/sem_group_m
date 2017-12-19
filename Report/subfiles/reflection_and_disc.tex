@@ -2,9 +2,6 @@
 This section will reflect and discuss the reached solution, based upon tests and the results therefrom. It will elaborate on the parts of the problems, which was not solved. And finally reflect upon the project as a whole.
 
 \subsection{Not Solved}
-This section will address the parts of our problem, which the project has not solved, but have been planning to solve.
-~\\
-
 We wanted to create a web client, which should include a suite of administrative tools, for the municipality workers to use, to select issues to solve. In this web client, we would have solved the prioritization problem. But as we have not created this web client, as we deemed it out of the scope of the course, which focuses on mobile sensing.
 
 Although it has not been implemented, we have made the architecture of our server application ready to serve a web client, and we believe that it would not be of great risk to implement such a client.
@@ -16,9 +13,6 @@ The lacking incentive for using the platform, has not been implemented in this p
 The reports in the current Giv et Tip application, has categories and images, both of which have not been implemented in this prototype, as it did not add any value to the problem domains. Although the categories could be used for weighing the prioritizations in the web client, so that more demanding categories would be weighed higher that less demanding categories.
 
 \subsection{Project Reflection}
-This section will reflect on the process of the project, the project pitch at the municipality, and the project team.
-~\\
-
 We have tried to utilize an agile approach to the development of the application, where we started by identifying the use cases, and assigned them to weekly sprints, and used a kanban system on GitHub, to keep track of the development progress. This system has worked out well for us, although we moved away from the weekly sprints, and just implemented the features, as we had time for it.
 ~\\
 
@@ -27,7 +21,6 @@ The project pitch at Odense Castle went well, this project won the “Giv et Tip
 The teamwork within the team, has worked out great, there has been great information and knowledge sharing throughout the process of this project.
 
 \subsection{Known Issues}
-In this section we will address the known issues with the current prototype, which would be fixed if there was more time for the implementation.
 
 \begin{description}
 \item [Location permissions:] There is an issue with the location service, the first time the application is started, which renders the location service useless, as it never updates, unless the application is force-stopped, through the android application settings menu. This issue is caused by the lacking confirmation whether GPS is enabled on the first startup of the application. It could probably be fixed by waiting to start the location service until it is known that GPS is enabled.
@@ -56,8 +49,8 @@ Thomas went out for a walk while having the app running in the background. Googl
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=\linewidth]{images/thomas_walk}
-\caption{Map of Thomas' walk} 
+\includegraphics[width=.85\linewidth]{images/thomas_walk}
+\caption{Map of the Thomas walk}
 \label{fig:thomas_walk}
 \end{figure}
 
@@ -86,3 +79,10 @@ The accumulated discharge throughout the test was 7 percent with a test duration
 Our solution comes in on a top 5 of the most battery consuming activities with 0.52\% battery consumption. This means that our app is responsible for 7.14\% of the battery consumption throughout the 1 hours and 20 minutes test. Compared to playing music using Spotify for the same duration, the battery consumption of our app is close to just one third of Spotify. 
 
 Increasing the battery consumption by 7.14\% using our application would reduce the battery lifetime - of the device in question - by an estimated 1 hour and 20 minutes. Taking it from a 19 hour battery life to a 17 hour and 50 minutes lifetime. This seems like a fairly acceptable battery consumption considering that the application is relying on very precise GPS positioning. 
+
+Potentially the battery consumption of the application could be reduced by optimizing the background service. Some of the ways to optimze the application are mentioned in the known issues section of the discussion. This includes using the geofencing to reduce activity recognition in the background. Other factors, methods, and tactics can also be investigated further to optimize battery usage.
+
+
+\vspace{3em}
+\hrule
+Unsolved tasks has been stated as well as known issues. Project reflection described the agile approach to the project and the discussion section shows the validation and battery consumption test of the application. 
