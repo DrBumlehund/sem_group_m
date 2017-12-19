@@ -2,9 +2,6 @@
 This section will reflect and discuss the reached solution, based upon tests and the results therefrom. It will elaborate on the parts of the problems, which was not solved. And finally reflect upon the project as a whole.
 
 \subsection{Not Solved}
-This section will address the parts of our problem, which the project has not solved, but have been planning to solve.
-~\\
-
 We wanted to create a web client, which should include a suite of administrative tools, for the municipality workers to use, to select issues to solve. In this web client, we would have solved the prioritization problem. But as we have not created this web client, as we deemed it out of the scope of the course, which focuses on mobile sensing.
 
 Although it has not been implemented, we have made the architecture of our server application ready to serve a web client, and we believe that it would not be of great risk to implement such a client.
@@ -16,9 +13,6 @@ The lacking incentive for using the platform, has not been implemented in this p
 The reports in the current Giv et Tip application, has categories and images, both of which have not been implemented in this prototype, as it did not add any value to the problem domains. Although the categories could be used for weighing the prioritizations in the web client, so that more demanding categories would be weighed higher that less demanding categories.
 
 \subsection{Project Reflection}
-This section will reflect on the process of the project, the project pitch at the municipality, and the project team.
-~\\
-
 We have tried to utilize an agile approach to the development of the application, where we started by identifying the use cases, and assigned them to weekly sprints, and used a kanban system on GitHub, to keep track of the development progress. This system has worked out well for us, although we moved away from the weekly sprints, and just implemented the features, as we had time for it.
 ~\\
 
@@ -27,7 +21,6 @@ The project pitch at Odense Castle went well, this project won the “Giv et Tip
 The teamwork within the team, has worked out great, there has been great information and knowledge sharing throughout the process of this project.
 
 \subsection{Known Issues}
-In this section we will address the known issues with the current prototype, which would be fixed if there was more time for the implementation.
 
 \begin{description}
 \item [Location permissions:] There is an issue with the location service, the first time the application is started, which renders the location service useless, as it never updates, unless the application is force-stopped, through the android application settings menu. This issue is caused by the lacking confirmation whether GPS is enabled on the first startup of the application. It could probably be fixed by waiting to start the location service until it is known that GPS is enabled.
