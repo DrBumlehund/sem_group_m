@@ -47,12 +47,12 @@ public class TipNotificationService extends Service {
                     Log.d(tag, "Tried to change Precision too soon");
                     return;
                 }
-                lastPrecisionChange = now;
                 boolean increase = reply.getBoolean(Constants.PRECISION);
                 if (increase) {
                     if (mService.getPrecision() != LocationRequest.PRIORITY_HIGH_ACCURACY) {
                         Log.d(String.valueOf(this.getClass()), "INCREASING LOCATION PRECISION");
                         mService.changeLocationRequest(3, 10000, 5000);
+                        lastPrecisionChange = now;
                     } else {
                         Log.d(tag, "Tried to increase precision, but it was already increased");
                     }
@@ -60,6 +60,7 @@ public class TipNotificationService extends Service {
                     if (mService.getPrecision() != LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY) {
                         Log.d(String.valueOf(this.getClass()), "DECREASING LOCATION PRECISION TO PRESERVE POWER");
                         mService.changeLocationRequest(2, 10000, 5000);
+                        lastPrecisionChange = now;
                     } else {
                         Log.d(tag, "Tried to decrease precision, but it was already decreased");
                     }
