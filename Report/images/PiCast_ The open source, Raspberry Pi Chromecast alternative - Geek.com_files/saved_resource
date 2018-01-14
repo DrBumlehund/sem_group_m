@@ -1,0 +1,14 @@
+/**/ this.facebookCallback({
+   "share": {
+      "comment_count": 0,
+      "share_count": 67
+   },
+   "og_object": {
+      "id": "500979829981648",
+      "description": "If you were one of the many fortunate enough to grab Google\u2019s new Chromecast HDMI dongle before it sold out, you\u2019re already well aware of what a great experience it provides. It\u2019s not \u2026",
+      "title": "PiCast: The open source, Raspberry Pi Chromecast alternative - Geek.com",
+      "type": "article",
+      "updated_time": "2017-12-25T16:41:32+0000"
+   },
+   "id": "http://www.geek.com/android/picast-the-open-source-raspberry-pi-chromecast-alternative-1564550/"
+});

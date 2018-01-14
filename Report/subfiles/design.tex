@@ -12,7 +12,7 @@ Extending upon the  domain model in figure \ref{fig:dom_diag} a class diagram ha
 \caption{Class diagram, showing the model of the system.} \label{fig:class_diagram}
 \end{figure}
 
-The class diagram in figure \ref{fig:class_diagram} shows the fields of each class and each of their types. The \textit{Report} class aggregates a \textit{User}, a list of \textit{Vote}, and a list of \textit{UserComment} to support the demands for reports having comments and votes as described in the domain model \ref{section:domain_model}. The domain model also describes that a report belongs to a location, this is covered by the fields latitude and longitude. 
+The class diagram in figure \ref{fig:class_diagram} shows the fields of each class and each of their types. The \textit{Report} class aggregates a \textit{User}, a list of \textit{Vote}, and a list of \textit{UserComment} to support the demands for reports having comments and votes as described in the domain model \ref{sec:domain_model}. The domain model also describes that a report belongs to a location, this is covered by the fields latitude and longitude. 
 
 %\subsection{Database}
 %\todo[inline]{Maybe change the title from Database to Backend and argue that we want Java Spring REST and MySQL. 
@@ -21,8 +21,8 @@ The class diagram in figure \ref{fig:class_diagram} shows the fields of each cla
 %
 % On second thought. Isn’t this an implementation problem rather than a design problem. idk.}
 
-\subsection{Architecture of prototype diagram}
-\subsubsection{Deployment Diagram}
+%\subsection{Architecture of prototype diagram}
+\subsection{Deployment Diagram}
 The deployment of the system requires a specific set of computation units. The required units have been mapped the deployment diagram figure \ref{fig:deployment_diagram}.
 
 \begin{figure}[hbt]

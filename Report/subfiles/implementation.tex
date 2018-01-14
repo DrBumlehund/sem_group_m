@@ -44,7 +44,7 @@ public class ReportsController {
 
 In Spring a REST endpoint is defined by using annotations. Specifically the annotation "\textit{@RestController}" is used to define an endpoint known as a  controller. This controller does not default to any URI, but another annotation is used for specifying the endpoint URI. The "\textit{@RequestMapping}" annotation is used for specifying URI's - the specific methods as well as the controller itself can use this annotation. All of the controllers maintain a reference to a database facade which is responsible for making the transactions with MySQL database to maintain persistent data.
 
-\subsection{Databse}
+\subsection{Database}
 The REST service is responsible for enabling HTTP access to the backend while the database facade is responsible for communicating with the MySQL database through JDBC. The database schema required to support the application is shown in figure \ref{fig:database_diagram}.
 
 \begin{figure}[hbt]
